@@ -737,7 +737,8 @@ function initRouter(){
 window.addEventListener('hashchange',initRouter);
 
 function copyShareLink(tripId){
-  const url=location.href.split('#')[0]+'#trip-'+tripId;
+  const base=location.href.split('#')[0].replace(/\/$/,'');
+  const url=base+'/share/'+tripId;
   navigator.clipboard.writeText(url).then(()=>showToast('הקישור הועתק! שתפו עם חברים')).catch(()=>prompt('העתיקו:',url));
 }
 
