@@ -3,280 +3,452 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🥾 טיולים ביחד</title>
+<title>Tiyulim+ | טיולים ביחד</title>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
 <style>
-:root{--sand:#f2e8d5;--clay:#c4864a;--terracotta:#b85c38;--forest:#3a5a40;--moss:#588157;
-  --night:#1a1a2e;--stone:#6b6560;--parchment:#faf6ee;--shadow:0 4px 24px rgba(60,40,20,.12);--radius:18px;}
+i[class^="ri-"],i[class*=" ri-"]{vertical-align:middle;line-height:1;}
+:root{
+  --teal:#00b4d8;--teal-dark:#0096b7;--teal-light:#90e0ef;--teal-pale:#caf0f8;
+  --orange:#f6a623;--orange-dark:#e8951a;--orange-light:#fcd98e;
+  --green:#2ecc71;--green-dark:#27ae60;
+  --dark:#1a2332;--text:#2c3e50;--gray:#7f8c8d;--light-gray:#bdc3c7;
+  --bg:#f0faf5;--white:#ffffff;--card-shadow:0 4px 20px rgba(0,0,0,.08);
+  --radius:16px;--radius-sm:10px;
+}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Heebo',sans-serif;background:var(--sand);color:var(--night);min-height:100vh;
-  background-image:radial-gradient(ellipse at 80% 0%,rgba(196,134,74,.15) 0%,transparent 55%),
-  radial-gradient(ellipse at 10% 90%,rgba(58,90,64,.1) 0%,transparent 50%);}
-header{background:var(--forest);color:var(--sand);padding:0 1.5rem;display:flex;align-items:center;
-  justify-content:space-between;height:62px;box-shadow:0 2px 18px rgba(0,0,0,.22);position:sticky;top:0;z-index:500;}
-.logo{font-size:1.3rem;font-weight:900;display:flex;align-items:center;gap:.4rem;}
-.logo span{color:var(--clay);}
-.hbtns{display:flex;gap:.5rem;}
-.hbtn{background:var(--clay);color:white;border:none;border-radius:9px;padding:.45rem 1rem;
-  font-family:'Heebo',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .2s;}
-.hbtn:hover{background:var(--terracotta);transform:translateY(-1px);}
-.hbtn.ghost{background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.3);}
-.hbtn.ghost:hover{background:rgba(255,255,255,.28);}
-.container{max-width:1060px;margin:0 auto;padding:1.8rem 1.4rem;}
-.page-title{font-size:1.8rem;font-weight:900;color:var(--forest);margin-bottom:.2rem;}
-.page-sub{color:var(--stone);font-size:.9rem;margin-bottom:1.6rem;}
+body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;
+  padding-bottom:70px;}
+a{text-decoration:none;color:inherit;}
+
+/* ===== HEADER ===== */
+.site-header{background:linear-gradient(135deg,#00b4d8 0%,#48cae4 50%,#90e0ef 100%);
+  padding:0;position:sticky;top:0;z-index:500;box-shadow:0 2px 20px rgba(0,180,216,.3);}
+.header-top{display:flex;align-items:center;justify-content:space-between;padding:.6rem 1.5rem;gap:1rem;}
+.logo{display:flex;align-items:center;gap:.5rem;color:white;font-weight:900;font-size:1.3rem;white-space:nowrap;}
+.logo-icon{font-size:1.6rem;}
+.logo-plus{color:var(--orange);font-size:1.5rem;}
+.logo-sub{font-size:.65rem;font-weight:400;opacity:.85;display:block;margin-top:-4px;}
+.search-bar{flex:1;max-width:340px;position:relative;}
+.search-bar input{width:100%;padding:.5rem 1rem .5rem 2.2rem;border-radius:25px;border:none;
+  font-family:'Heebo',sans-serif;font-size:.85rem;background:rgba(255,255,255,.92);
+  color:var(--text);outline:none;}
+.search-bar input::placeholder{color:var(--gray);}
+.search-bar::after{position:absolute;left:.75rem;top:50%;transform:translateY(-50%);font-size:.9rem;color:var(--gray);font-family:'remixicon';content:'\f0cd';}
+.header-user{display:flex;align-items:center;gap:.5rem;color:white;}
+.user-avatar{width:34px;height:34px;border-radius:50%;background:var(--orange);display:flex;
+  align-items:center;justify-content:center;font-weight:800;font-size:.85rem;color:white;
+  border:2px solid white;}
+.user-name{font-weight:700;font-size:.85rem;white-space:nowrap;}
+.hamburger{background:none;border:none;color:white;font-size:1.4rem;cursor:pointer;padding:.3rem;display:none;}
+
+/* NAV */
+.header-nav{display:flex;justify-content:center;gap:.3rem;padding:0 1.5rem .6rem;flex-wrap:wrap;}
+.nav-item{color:white;padding:.35rem .9rem;border-radius:20px;font-size:.82rem;font-weight:600;
+  cursor:pointer;transition:all .2s;white-space:nowrap;}
+.nav-item:hover{background:rgba(255,255,255,.2);}
+.nav-item.active{background:rgba(255,255,255,.95);color:var(--teal-dark);font-weight:700;}
+
+/* ===== HERO ===== */
+.hero{position:relative;background:linear-gradient(135deg,#48cae4,#00b4d8);
+  min-height:320px;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;
+  background:url('https://images.unsplash.com/photo-1551632811-561732d1e306?w=1200&q=80') center/cover;
+  opacity:.35;}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,180,216,.5),rgba(0,150,190,.7));}
+.hero-content{position:relative;z-index:2;text-align:center;padding:2.5rem 1.5rem;color:white;}
+.hero-title{font-size:2.8rem;font-weight:900;line-height:1.15;margin-bottom:.5rem;
+  text-shadow:0 3px 12px rgba(0,0,0,.2);}
+.hero-sub{font-size:1.05rem;opacity:.92;margin-bottom:1.5rem;font-weight:400;line-height:1.5;}
+.hero-btns{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;}
+.hero-btn{padding:.7rem 1.8rem;border-radius:30px;font-family:'Heebo',sans-serif;font-size:.95rem;
+  font-weight:700;cursor:pointer;transition:all .25s;border:2.5px solid white;}
+.hero-btn-primary{background:white;color:var(--teal-dark);}
+.hero-btn-primary:hover{background:transparent;color:white;transform:translateY(-2px);}
+.hero-btn-secondary{background:var(--orange);color:white;border-color:var(--orange);}
+.hero-btn-secondary:hover{background:var(--orange-dark);border-color:var(--orange-dark);transform:translateY(-2px);}
+
+/* DECORATIVE */
+.hero-decor-left,.hero-decor-right{position:absolute;bottom:0;z-index:1;font-size:4rem;opacity:.18;}
+.hero-decor-left{right:5%;}.hero-decor-right{left:5%;}
+
+/* ===== CONTAINER ===== */
+.container{max-width:1100px;margin:0 auto;padding:1.8rem 1.4rem;}
+.section-heading{font-size:1.5rem;font-weight:900;color:var(--dark);text-align:center;margin-bottom:1.5rem;}
 .view{display:none;}.view.active{display:block;}
 
-/* TRIPS GRID */
-.trips-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:1.3rem;}
-.trip-card{background:var(--parchment);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);
-  cursor:pointer;transition:all .25s;border:2px solid transparent;position:relative;}
-.trip-card:hover{transform:translateY(-3px);border-color:var(--clay);box-shadow:0 8px 28px rgba(196,134,74,.2);}
-.trip-card-banner{height:78px;display:flex;align-items:center;justify-content:center;font-size:2.7rem;position:relative;}
-.trip-card-banner::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 50%,rgba(0,0,0,.12));}
-.trip-card-body{padding:.9rem 1rem 1rem;}
-.tc-name{font-size:1.1rem;font-weight:800;color:var(--forest);margin-bottom:.2rem;}
-.tc-meta{font-size:.8rem;color:var(--stone);margin-bottom:.35rem;}
-.tc-stats{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.4rem;}
-.sp{background:var(--sand);border-radius:20px;padding:.18rem .55rem;font-size:.76rem;font-weight:600;color:var(--forest);border:1px solid rgba(58,90,64,.15);}
-.sp.car{background:#fff3e0;color:#e65100;border-color:#ffcc80;}
-.sp.seats{background:#e8f5e9;color:#2e7d32;border-color:#a5d6a7;}
-.trip-status{position:absolute;top:.65rem;left:.65rem;background:var(--moss);color:white;border-radius:7px;padding:.15rem .5rem;font-size:.7rem;font-weight:700;z-index:2;}
-.add-trip-card{background:transparent;border:2.5px dashed var(--clay);border-radius:var(--radius);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:.4rem;min-height:165px;cursor:pointer;color:var(--clay);font-weight:700;font-size:.9rem;transition:all .2s;}
-.add-trip-card:hover{background:rgba(196,134,74,.07);transform:scale(1.02);}
-.add-trip-card .plus{font-size:2.2rem;line-height:1;}
+/* ===== TRIP CARDS GRID ===== */
+.trips-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.3rem;}
+.trip-card{background:var(--white);border-radius:var(--radius);overflow:hidden;box-shadow:var(--card-shadow);
+  cursor:pointer;transition:all .3s;border:2px solid transparent;}
+.trip-card:hover{transform:translateY(-4px);border-color:var(--teal);box-shadow:0 8px 30px rgba(0,180,216,.15);}
+.trip-card-img{height:150px;position:relative;overflow:hidden;}
+.trip-card-img img{width:100%;height:100%;object-fit:cover;transition:transform .4s;}
+.trip-card:hover .trip-card-img img{transform:scale(1.05);}
+.trip-card-img .location-badge{position:absolute;bottom:.6rem;right:.6rem;background:rgba(255,255,255,.93);
+  backdrop-filter:blur(6px);padding:.25rem .7rem;border-radius:20px;font-size:.78rem;
+  font-weight:700;color:var(--dark);box-shadow:0 2px 8px rgba(0,0,0,.1);}
+.trip-card-img .emoji-overlay{position:absolute;top:.6rem;left:.6rem;font-size:1.8rem;
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.3));}
+.trip-card-body{padding:1rem 1.1rem;}
+.tc-title{font-size:1rem;font-weight:800;color:var(--dark);margin-bottom:.3rem;}
+.tc-meta{font-size:.8rem;color:var(--gray);margin-bottom:.15rem;display:flex;align-items:center;gap:.3rem;}
+.tc-divider{height:1px;background:#eef2f5;margin:.6rem 0;}
 
-/* MODALS */
-.modal-overlay{position:fixed;inset:0;background:rgba(26,26,46,.65);backdrop-filter:blur(5px);
+/* Carpool row */
+.tc-carpool{display:flex;align-items:center;justify-content:space-between;margin-bottom:.55rem;}
+.tc-carpool-status{display:flex;align-items:center;gap:.4rem;font-size:.8rem;color:var(--gray);font-weight:600;}
+.tc-carpool-icon{font-size:1.3rem;}
+.tc-pax-count{display:flex;align-items:center;gap:.3rem;font-size:.8rem;color:var(--gray);font-weight:600;}
+
+/* Card footer */
+.tc-footer{display:flex;align-items:center;justify-content:space-between;}
+.tc-join-btn{background:var(--orange);color:white;border:none;border-radius:20px;padding:.38rem 1rem;
+  font-family:'Heebo',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s;}
+.tc-join-btn:hover{background:var(--orange-dark);transform:scale(1.05);}
+.tc-avatars{display:flex;gap:-.3rem;direction:ltr;}
+.tc-avatar-mini{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:.6rem;font-weight:800;color:white;border:2px solid white;
+  margin-left:-6px;}
+.tc-avatar-name{font-size:.68rem;color:var(--gray);margin-right:.35rem;}
+
+/* Add trip card */
+.add-trip-card{background:transparent;border:2.5px dashed var(--teal);border-radius:var(--radius);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:.5rem;min-height:280px;cursor:pointer;color:var(--teal);font-weight:700;font-size:.95rem;transition:all .2s;}
+.add-trip-card:hover{background:rgba(0,180,216,.06);transform:scale(1.02);}
+.add-trip-card .plus{font-size:2.5rem;line-height:1;width:55px;height:55px;border-radius:50%;
+  background:var(--teal-pale);display:flex;align-items:center;justify-content:center;}
+
+/* ===== BOTTOM NAV ===== */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid #e8ecef;
+  display:flex;justify-content:space-around;align-items:center;height:62px;z-index:500;
+  box-shadow:0 -2px 16px rgba(0,0,0,.06);}
+.bnav-item{display:flex;flex-direction:column;align-items:center;gap:.15rem;padding:.3rem .8rem;
+  cursor:pointer;color:var(--gray);transition:color .2s;border:none;background:none;
+  font-family:'Heebo',sans-serif;}
+.bnav-item.active{color:var(--teal);}
+.bnav-icon{font-size:1.35rem;}
+.bnav-label{font-size:.68rem;font-weight:700;}
+.bnav-item-publish{position:relative;}
+.bnav-item-publish .bnav-icon{background:var(--teal);color:white;width:44px;height:44px;
+  border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.4rem;
+  margin-top:-18px;box-shadow:0 4px 14px rgba(0,180,216,.35);}
+
+/* ===== MODALS ===== */
+.modal-overlay{position:fixed;inset:0;background:rgba(26,35,50,.6);backdrop-filter:blur(5px);
   z-index:600;display:none;align-items:center;justify-content:center;padding:1rem;}
 .modal-overlay.open{display:flex;}
-.modal{background:var(--parchment);border-radius:var(--radius);width:100%;max-width:510px;
-  max-height:92vh;overflow-y:auto;padding:1.7rem;box-shadow:0 24px 60px rgba(0,0,0,.3);
+.modal{background:white;border-radius:var(--radius);width:100%;max-width:510px;
+  max-height:92vh;overflow-y:auto;padding:1.7rem;box-shadow:0 24px 60px rgba(0,0,0,.2);
   animation:slideUp .28s ease;}
 @keyframes slideUp{from{transform:translateY(28px);opacity:0}to{transform:translateY(0);opacity:1}}
-.modal-title{font-size:1.25rem;font-weight:900;color:var(--forest);margin-bottom:1.2rem;
+.modal-title{font-size:1.25rem;font-weight:900;color:var(--dark);margin-bottom:1.2rem;
   display:flex;justify-content:space-between;align-items:center;}
-.modal-close{background:none;border:none;font-size:1.35rem;cursor:pointer;color:var(--stone);border-radius:6px;padding:.1rem .4rem;}
-.modal-close:hover{background:var(--sand);}
+.modal-close{background:none;border:none;font-size:1.35rem;cursor:pointer;color:var(--gray);
+  border-radius:6px;padding:.1rem .4rem;}
+.modal-close:hover{background:var(--teal-pale);}
 
-/* FORMS */
+/* ===== FORMS ===== */
 .form-group{margin-bottom:.9rem;}
-label{display:block;font-size:.85rem;font-weight:700;color:var(--forest);margin-bottom:.32rem;}
-input,textarea,select{width:100%;padding:.6rem .85rem;border:2px solid rgba(58,90,64,.18);
-  border-radius:10px;font-family:'Heebo',sans-serif;font-size:.9rem;
-  background:white;color:var(--night);transition:border-color .2s;outline:none;}
-input:focus,textarea:focus,select:focus{border-color:var(--moss);}
+label{display:block;font-size:.85rem;font-weight:700;color:var(--dark);margin-bottom:.32rem;}
+input,textarea,select{width:100%;padding:.6rem .85rem;border:2px solid #e0e6ec;
+  border-radius:var(--radius-sm);font-family:'Heebo',sans-serif;font-size:.9rem;
+  background:white;color:var(--text);transition:border-color .2s;outline:none;}
+input:focus,textarea:focus,select:focus{border-color:var(--teal);}
 textarea{min-height:65px;resize:vertical;}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;}
-.btn{padding:.65rem 1.2rem;border-radius:10px;border:none;font-family:'Heebo',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .2s;}
-.btn-primary{background:var(--forest);color:white;}.btn-primary:hover{background:var(--moss);transform:translateY(-1px);}
-.btn-clay{background:var(--clay);color:white;}.btn-clay:hover{background:var(--terracotta);}
+.btn{padding:.65rem 1.2rem;border-radius:var(--radius-sm);border:none;font-family:'Heebo',sans-serif;
+  font-size:.88rem;font-weight:700;cursor:pointer;transition:all .2s;}
+.btn-primary{background:var(--teal);color:white;}.btn-primary:hover{background:var(--teal-dark);transform:translateY(-1px);}
+.btn-clay{background:var(--orange);color:white;}.btn-clay:hover{background:var(--orange-dark);}
 .btn-full{width:100%;}.btn-row{display:flex;gap:.65rem;margin-top:1.2rem;}
 .btn-sm{padding:.28rem .65rem;font-size:.78rem;border-radius:8px;}
-.btn-ghost{background:none;border:1.5px solid rgba(58,90,64,.25);color:var(--forest);}
-.btn-ghost:hover{background:var(--sand);}
+.btn-ghost{background:none;border:1.5px solid #d0d7de;color:var(--dark);}
+.btn-ghost:hover{background:var(--teal-pale);border-color:var(--teal);}
 .toggle-row{display:flex;align-items:center;gap:.65rem;margin-bottom:.75rem;}
 .toggle{position:relative;width:46px;height:25px;flex-shrink:0;}
 .toggle input{opacity:0;width:0;height:0;}
-.slider{position:absolute;cursor:pointer;inset:0;background:rgba(0,0,0,.18);border-radius:25px;transition:.3s;}
+.slider{position:absolute;cursor:pointer;inset:0;background:#d0d7de;border-radius:25px;transition:.3s;}
 .slider::before{content:'';position:absolute;width:17px;height:17px;right:4px;top:4px;background:white;border-radius:50%;transition:.3s;}
-input:checked+.slider{background:var(--clay);}
+input:checked+.slider{background:var(--orange);}
 input:checked+.slider::before{transform:translateX(-21px);}
-.toggle-label{font-weight:700;font-size:.86rem;color:var(--forest);}
-.inset-box{background:rgba(58,90,64,.06);border:1.5px solid rgba(58,90,64,.14);border-radius:11px;padding:.9rem;margin-bottom:.75rem;}
+.toggle-label{font-weight:700;font-size:.86rem;color:var(--dark);}
+.inset-box{background:var(--teal-pale);border:1.5px solid rgba(0,180,216,.2);border-radius:11px;padding:.9rem;margin-bottom:.75rem;}
 
-/* DETAIL */
-.back-btn{background:none;border:none;cursor:pointer;color:var(--forest);font-family:'Heebo',sans-serif;
+/* ===== DETAIL VIEW ===== */
+.back-btn{background:none;border:none;cursor:pointer;color:var(--teal-dark);font-family:'Heebo',sans-serif;
   font-size:.88rem;font-weight:700;display:flex;align-items:center;gap:.3rem;padding:.32rem .65rem;
   border-radius:8px;margin-bottom:1.2rem;transition:background .2s;}
-.back-btn:hover{background:rgba(58,90,64,.1);}
-.trip-header-card{background:var(--forest);color:var(--sand);border-radius:var(--radius);
-  padding:1.3rem 1.7rem;margin-bottom:1.2rem;display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;}
+.back-btn:hover{background:var(--teal-pale);}
+.trip-header-card{background:linear-gradient(135deg,var(--teal),var(--teal-dark));color:white;
+  border-radius:var(--radius);padding:1.3rem 1.7rem;margin-bottom:1.2rem;
+  display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;}
 .trip-header-title{font-size:1.65rem;font-weight:900;margin-bottom:.22rem;}
-.trip-header-meta{font-size:.86rem;opacity:.8;}
+.trip-header-meta{font-size:.86rem;opacity:.85;}
 .trip-header-desc{font-size:.88rem;margin-top:.38rem;opacity:.88;}
 .share-btn{background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.35);color:white;
   border-radius:9px;padding:.4rem .9rem;font-family:'Heebo',sans-serif;font-size:.82rem;
   font-weight:700;cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0;}
 .share-btn:hover{background:rgba(255,255,255,.3);}
 .summary-bar{display:flex;gap:.75rem;margin-bottom:1.2rem;flex-wrap:wrap;}
-.summary-item{background:white;border-radius:11px;padding:.65rem .9rem;box-shadow:var(--shadow);
+.summary-item{background:white;border-radius:12px;padding:.65rem .9rem;box-shadow:var(--card-shadow);
   display:flex;align-items:center;gap:.45rem;flex:1;min-width:105px;}
 .summary-icon{font-size:1.3rem;}
-.summary-val{font-size:1.28rem;font-weight:900;color:var(--forest);line-height:1;}
-.summary-lbl{font-size:.7rem;color:var(--stone);font-weight:600;}
-.section-card{background:var(--parchment);border-radius:var(--radius);padding:1.2rem;margin-bottom:1.2rem;box-shadow:var(--shadow);}
-.section-title{font-size:.98rem;font-weight:800;color:var(--forest);margin-bottom:.85rem;
-  display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--sand);padding-bottom:.55rem;}
+.summary-val{font-size:1.28rem;font-weight:900;color:var(--teal-dark);line-height:1;}
+.summary-lbl{font-size:.7rem;color:var(--gray);font-weight:600;}
+.section-card{background:white;border-radius:var(--radius);padding:1.2rem;margin-bottom:1.2rem;box-shadow:var(--card-shadow);}
+.section-title{font-size:.98rem;font-weight:800;color:var(--dark);margin-bottom:.85rem;
+  display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #eef2f5;padding-bottom:.55rem;}
 
 /* MAP */
 #trip-map{height:380px;border-radius:12px;overflow:hidden;z-index:1;}
-.map-key-banner{background:linear-gradient(135deg,#1a237e,#1565c0);color:white;border-radius:12px;
+.map-key-banner{background:linear-gradient(135deg,var(--teal-dark),var(--teal));color:white;border-radius:12px;
   padding:1.5rem;text-align:center;margin-bottom:.8rem;}
 .map-key-banner h3{font-size:1.1rem;font-weight:800;margin-bottom:.5rem;}
 .map-key-banner p{font-size:.85rem;opacity:.88;margin-bottom:1rem;line-height:1.5;}
 .map-key-banner .key-input-row{display:flex;gap:.5rem;}
 .map-key-banner input{background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.4);
-  color:white;border-radius:9px;padding:.55rem .9rem;font-family:'Heebo',sans-serif;
-  font-size:.88rem;flex:1;}
+  color:white;border-radius:9px;padding:.55rem .9rem;font-family:'Heebo',sans-serif;font-size:.88rem;flex:1;}
 .map-key-banner input::placeholder{color:rgba(255,255,255,.5);}
 .map-key-banner input:focus{outline:none;border-color:rgba(255,255,255,.8);}
-.map-key-banner .btn-activate{background:white;color:#1565c0;border:none;border-radius:9px;
+.map-key-banner .btn-activate{background:white;color:var(--teal-dark);border:none;border-radius:9px;
   padding:.55rem 1.2rem;font-family:'Heebo',sans-serif;font-size:.88rem;font-weight:800;cursor:pointer;white-space:nowrap;}
-.map-key-banner .btn-activate:hover{background:#e3f2fd;}
+.map-key-banner .btn-activate:hover{background:var(--teal-pale);}
 .map-key-banner a{color:rgba(255,255,255,.8);font-size:.78rem;display:block;margin-top:.6rem;text-decoration:underline;}
 .map-key-banner a:hover{color:white;}
-.next-stop-bar{background:linear-gradient(90deg,#1565c0,#1976d2);color:white;border-radius:10px;
+.next-stop-bar{background:linear-gradient(90deg,var(--teal),var(--teal-dark));color:white;border-radius:10px;
   padding:.65rem 1rem;margin-bottom:.8rem;display:flex;align-items:center;gap:.7rem;font-size:.88rem;font-weight:700;}
 .next-stop-bar.hidden{display:none;}
 .map-controls{display:flex;gap:.5rem;margin-bottom:.8rem;flex-wrap:wrap;}
-.map-ctrl-btn{background:white;border:1.5px solid rgba(58,90,64,.2);color:var(--forest);
+.map-ctrl-btn{background:white;border:1.5px solid #d0d7de;color:var(--dark);
   border-radius:9px;padding:.38rem .8rem;font-family:'Heebo',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .2s;}
-.map-ctrl-btn:hover{background:var(--forest);color:white;}
+.map-ctrl-btn:hover{background:var(--teal);color:white;border-color:var(--teal);}
 
 /* WAYPOINTS */
 .waypoints-list{display:flex;flex-direction:column;gap:.75rem;}
-.wp-card{background:white;border-radius:13px;border:2px solid rgba(58,90,64,.1);overflow:hidden;transition:border-color .2s;}
-.wp-card.next-stop{border-color:#1976d2;box-shadow:0 0 0 3px rgba(25,118,210,.15);}
+.wp-card{background:white;border-radius:13px;border:2px solid #eef2f5;overflow:hidden;transition:border-color .2s;}
+.wp-card.next-stop{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,180,216,.15);}
 .wp-card-header{display:flex;align-items:flex-start;gap:.75rem;padding:.85rem 1rem;}
-.wp-num{width:34px;height:34px;border-radius:50%;background:var(--forest);color:white;
+.wp-num{width:34px;height:34px;border-radius:50%;background:var(--teal);color:white;
   display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.92rem;flex-shrink:0;}
-.wp-num.next-num{background:#1565c0;}
+.wp-num.next-num{background:var(--teal-dark);}
 .wp-info{flex:1;}
-.wp-name{font-weight:800;font-size:.95rem;color:var(--night);}
-.wp-address{font-size:.78rem;color:var(--stone);margin-top:.1rem;}
-.wp-time-badge{font-size:.76rem;color:var(--clay);font-weight:700;}
-.wp-notes{font-size:.8rem;color:var(--stone);margin-top:.18rem;font-style:italic;}
+.wp-name{font-weight:800;font-size:.95rem;color:var(--dark);}
+.wp-address{font-size:.78rem;color:var(--gray);margin-top:.1rem;}
+.wp-time-badge{font-size:.76rem;color:var(--orange);font-weight:700;}
+.wp-notes{font-size:.8rem;color:var(--gray);margin-top:.18rem;font-style:italic;}
 .wp-rating-row{display:flex;align-items:center;gap:.5rem;margin-top:.4rem;}
 .wp-stars{color:#f9a825;font-size:.95rem;letter-spacing:-.5px;}
-.wp-rating-num{font-size:.88rem;font-weight:800;color:#e65100;}
-.wp-rating-count{font-size:.76rem;color:var(--stone);}
-.wp-rating-loading{font-size:.76rem;color:var(--stone);font-style:italic;}
-.wp-actions{display:flex;gap:.4rem;flex-wrap:wrap;padding:.6rem 1rem;border-top:1.5px solid rgba(58,90,64,.08);background:rgba(58,90,64,.02);}
+.wp-rating-num{font-size:.88rem;font-weight:800;color:var(--orange-dark);}
+.wp-rating-count{font-size:.76rem;color:var(--gray);}
+.wp-rating-loading{font-size:.76rem;color:var(--gray);font-style:italic;}
+.wp-actions{display:flex;gap:.4rem;flex-wrap:wrap;padding:.6rem 1rem;border-top:1.5px solid #eef2f5;background:#f8fafb;}
 .wp-action-btn{display:flex;align-items:center;gap:.3rem;padding:.28rem .65rem;border-radius:8px;
   font-family:'Heebo',sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;border:1.5px solid;text-decoration:none;transition:all .2s;}
 .wp-nav{background:#e8f5e9;color:#1b5e20;border-color:#a5d6a7;}.wp-nav:hover{background:#1b5e20;color:white;}
 .wp-reviews{background:#fff8e1;color:#e65100;border-color:#ffe082;}.wp-reviews:hover{background:#e65100;color:white;}
 .wp-phone-btn{background:#e3f2fd;color:#1565c0;border-color:#90caf9;}.wp-phone-btn:hover{background:#1565c0;color:white;}
-.wp-gmaps-btn{background:#fce4ec;color:#c62828;border-color:#f48fb1;}.wp-gmaps-btn:hover{background:#c62828;color:white;}
-.wp-rm{background:none;border:1.5px solid #ffcdd2;color:var(--terracotta);border-radius:8px;
+.wp-rm{background:none;border:1.5px solid #ffcdd2;color:#c62828;border-radius:8px;
   padding:.28rem .55rem;font-size:.76rem;font-weight:700;font-family:'Heebo',sans-serif;cursor:pointer;margin-right:auto;transition:all .2s;}
-.wp-rm:hover{background:var(--terracotta);color:white;}
-.wp-editor-item{background:rgba(58,90,64,.05);border-radius:10px;padding:.75rem;border:1.5px solid rgba(58,90,64,.12);position:relative;margin-bottom:.6rem;}
+.wp-rm:hover{background:#c62828;color:white;}
+.wp-editor-item{background:#f8fafb;border-radius:10px;padding:.75rem;border:1.5px solid #e0e6ec;position:relative;margin-bottom:.6rem;}
 .wp-editor-remove{position:absolute;top:.5rem;left:.5rem;background:none;border:none;cursor:pointer;color:#ccc;font-size:.9rem;padding:.15rem .35rem;border-radius:5px;}
-.wp-editor-remove:hover{background:#ffebee;color:var(--terracotta);}
+.wp-editor-remove:hover{background:#ffebee;color:#c62828;}
 
 /* CAR / PAX */
-.car-block{background:white;border-radius:13px;border:2px solid #ffe0b2;overflow:hidden;margin-bottom:.85rem;}
-.car-block-header{display:flex;align-items:flex-start;gap:.75rem;padding:.85rem 1rem;background:linear-gradient(90deg,#fff8ee,white);}
+.car-block{background:white;border-radius:13px;border:2px solid var(--orange-light);overflow:hidden;margin-bottom:.85rem;}
+.car-block-header{display:flex;align-items:flex-start;gap:.75rem;padding:.85rem 1rem;background:linear-gradient(90deg,#fffbf0,white);}
 .car-driver-name{font-weight:800;font-size:.92rem;}
-.car-driver-meta{font-size:.76rem;color:var(--stone);margin-top:.1rem;}
+.car-driver-meta{font-size:.76rem;color:var(--gray);margin-top:.1rem;}
 .seats-row{display:flex;gap:.28rem;margin-top:.45rem;flex-wrap:wrap;align-items:center;}
-.seat{width:25px;height:25px;border-radius:6px;border:2px solid #ffcc80;display:flex;align-items:center;justify-content:center;font-size:.68rem;}
-.seat.driver-seat{background:#e65100;border-color:#e65100;color:white;}
+.seat{width:25px;height:25px;border-radius:6px;border:2px solid var(--orange-light);display:flex;align-items:center;justify-content:center;font-size:.68rem;}
+.seat.driver-seat{background:var(--orange);border-color:var(--orange);color:white;}
 .seat.taken{background:#ff8a65;border-color:#ff8a65;color:white;}
 .seat.free{background:#fff3e0;color:#bf360c;}
-.seats-lbl{font-size:.73rem;color:var(--stone);font-weight:600;}
-.car-passengers{border-top:1.5px solid #ffe0b2;}
-.car-pax-row{display:flex;align-items:center;gap:.65rem;padding:.55rem .9rem;border-bottom:1px solid #fff8ee;}
+.seats-lbl{font-size:.73rem;color:var(--gray);font-weight:600;}
+.car-passengers{border-top:1.5px solid var(--orange-light);}
+.car-pax-row{display:flex;align-items:center;gap:.65rem;padding:.55rem .9rem;border-bottom:1px solid #fef6e8;}
 .car-pax-row:last-child{border-bottom:none;}
-.suggest-row{display:flex;align-items:center;gap:.65rem;padding:.5rem .9rem;background:#f9fbe7;border-bottom:1px dashed #c5e1a5;}
+.suggest-row{display:flex;align-items:center;gap:.65rem;padding:.5rem .9rem;background:#f0faf5;border-bottom:1px dashed #a5d6a7;}
 .suggest-row:last-child{border-bottom:none;}
 .pax-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:800;flex-shrink:0;}
 .pax-name2{font-weight:700;font-size:.84rem;}
-.pax-city2{font-size:.72rem;color:var(--stone);}
+.pax-city2{font-size:.72rem;color:var(--gray);}
 .unassign-btn{background:none;border:none;cursor:pointer;color:#ccc;font-size:.82rem;padding:.18rem .38rem;border-radius:6px;margin-right:auto;}
-.unassign-btn:hover{background:#ffe0b2;color:var(--terracotta);}
-.add-btn{background:none;border:1.5px solid var(--moss);color:var(--moss);border-radius:7px;padding:.2rem .5rem;font-size:.74rem;font-weight:700;font-family:'Heebo',sans-serif;cursor:pointer;transition:all .2s;white-space:nowrap;}
-.add-btn:hover{background:var(--moss);color:white;}
-.car-empty{padding:.65rem .9rem;font-size:.8rem;color:var(--stone);font-style:italic;}
+.unassign-btn:hover{background:var(--orange-light);color:var(--orange-dark);}
+.add-btn{background:none;border:1.5px solid var(--teal);color:var(--teal);border-radius:7px;padding:.2rem .5rem;
+  font-size:.74rem;font-weight:700;font-family:'Heebo',sans-serif;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.add-btn:hover{background:var(--teal);color:white;}
+.car-empty{padding:.65rem .9rem;font-size:.8rem;color:var(--gray);font-style:italic;}
 .pool-list{display:flex;flex-direction:column;gap:.55rem;}
-.pool-row{background:white;border-radius:11px;padding:.7rem .9rem;border:1.5px solid rgba(58,90,64,.12);display:flex;align-items:center;gap:.75rem;}
-.pool-info{flex:1;}.pool-name{font-weight:700;font-size:.88rem;}.pool-city{font-size:.74rem;color:var(--stone);}
-.assign-select{border:1.5px solid rgba(58,90,64,.2);border-radius:8px;padding:.26rem .5rem;font-size:.76rem;font-family:'Heebo',sans-serif;background:white;max-width:155px;cursor:pointer;}
-.assign-btn{background:var(--forest);color:white;border:none;border-radius:8px;padding:.26rem .6rem;font-size:.76rem;font-weight:700;font-family:'Heebo',sans-serif;cursor:pointer;transition:all .2s;white-space:nowrap;}
-.assign-btn:hover{background:var(--moss);}
+.pool-row{background:white;border-radius:11px;padding:.7rem .9rem;border:1.5px solid #e0e6ec;display:flex;align-items:center;gap:.75rem;}
+.pool-info{flex:1;}.pool-name{font-weight:700;font-size:.88rem;}.pool-city{font-size:.74rem;color:var(--gray);}
+.assign-select{border:1.5px solid #d0d7de;border-radius:8px;padding:.26rem .5rem;font-size:.76rem;font-family:'Heebo',sans-serif;background:white;max-width:155px;cursor:pointer;}
+.assign-btn{background:var(--teal);color:white;border:none;border-radius:8px;padding:.26rem .6rem;font-size:.76rem;font-weight:700;font-family:'Heebo',sans-serif;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.assign-btn:hover{background:var(--teal-dark);}
 .participants-list{display:flex;flex-direction:column;gap:.55rem;}
-.pax-row{background:white;border-radius:11px;padding:.7rem .9rem;display:flex;align-items:center;gap:.75rem;border:1.5px solid rgba(58,90,64,.1);}
+.pax-row{background:white;border-radius:11px;padding:.7rem .9rem;display:flex;align-items:center;gap:.75rem;border:1.5px solid #e0e6ec;}
 .pav{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.95rem;font-weight:800;flex-shrink:0;}
-.p-name{font-weight:700;font-size:.88rem;}.p-meta{font-size:.74rem;color:var(--stone);}
+.p-name{font-weight:700;font-size:.88rem;}.p-meta{font-size:.74rem;color:var(--gray);}
 .p-tags{display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.22rem;}
 .tag{padding:.1rem .38rem;border-radius:6px;font-size:.68rem;font-weight:700;}
 .tag-car{background:#fff3e0;color:#bf360c;}.tag-ride{background:#fce4ec;color:#880e4f;}
-.tag-assigned{background:#e3f2fd;color:#1565c0;}.tag-solo{background:var(--sand);color:var(--stone);}
+.tag-assigned{background:var(--teal-pale);color:var(--teal-dark);}.tag-solo{background:#f0f0f0;color:var(--gray);}
 .rm-btn{background:none;border:none;cursor:pointer;color:#ccc;font-size:.85rem;padding:.18rem .38rem;border-radius:6px;}
-.rm-btn:hover{background:#ffebee;color:var(--terracotta);}
-.join-section{background:linear-gradient(135deg,var(--forest),var(--moss));border-radius:var(--radius);padding:1.4rem;color:white;margin-bottom:1.2rem;}
+.rm-btn:hover{background:#ffebee;color:#c62828;}
+.join-section{background:linear-gradient(135deg,var(--teal),var(--teal-dark));border-radius:var(--radius);padding:1.4rem;color:white;margin-bottom:1.2rem;}
 .join-section label{color:rgba(255,255,255,.88);}
 .join-section input,.join-section select,.join-section textarea{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.28);color:white;}
 .join-section input::placeholder,.join-section textarea::placeholder{color:rgba(255,255,255,.45);}
 .join-section input:focus,.join-section select:focus,.join-section textarea:focus{border-color:rgba(255,255,255,.7);}
-.join-section select option{background:var(--forest);}.join-section .toggle-label{color:white;}
+.join-section select option{background:var(--teal-dark);}.join-section .toggle-label{color:white;}
 .join-section .inset-box{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);}
 .js-title{font-size:.98rem;font-weight:800;color:white;border-bottom:1.5px solid rgba(255,255,255,.2);padding-bottom:.55rem;margin-bottom:.95rem;}
-.empty-state{text-align:center;padding:1.8rem;color:var(--stone);}
+.empty-state{text-align:center;padding:1.8rem;color:var(--gray);}
 .empty-state .ei{font-size:2.3rem;margin-bottom:.5rem;}
-.toast{position:fixed;bottom:1.8rem;left:50%;transform:translateX(-50%);background:var(--forest);color:white;
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--dark);color:white;
   padding:.65rem 1.3rem;border-radius:11px;font-weight:700;font-size:.88rem;box-shadow:0 8px 26px rgba(0,0,0,.22);
   z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;max-width:90vw;text-align:center;}
 .toast.show{opacity:1;}
-.direct-link-notice{background:#e3f2fd;border-radius:12px;padding:.7rem 1rem;margin-bottom:1.2rem;font-size:.84rem;color:#1565c0;font-weight:600;display:flex;align-items:center;gap:.5rem;}
-@media(max-width:600px){.form-row{grid-template-columns:1fr;}.summary-bar{flex-direction:column;}.trip-header-card{flex-direction:column;}.map-key-banner .key-input-row{flex-direction:column;}}
+.direct-link-notice{background:var(--teal-pale);border-radius:12px;padding:.7rem 1rem;margin-bottom:1.2rem;
+  font-size:.84rem;color:var(--teal-dark);font-weight:600;display:flex;align-items:center;gap:.5rem;}
+
+/* ===== RESPONSIVE ===== */
+@media(min-width:769px){
+  .bottom-nav{display:none;}
+  body{padding-bottom:0;}
+  .hamburger{display:none;}
+}
+@media(max-width:768px){
+  .header-nav{display:none;}
+  .search-bar{max-width:180px;}
+  .user-name{display:none;}
+  .hamburger{display:block;}
+  .hero-title{font-size:2rem;}
+  .hero-sub{font-size:.9rem;}
+  .form-row{grid-template-columns:1fr;}
+  .summary-bar{flex-direction:column;}
+  .trip-header-card{flex-direction:column;}
+  .map-key-banner .key-input-row{flex-direction:column;}
+  .trips-grid{grid-template-columns:1fr;}
+}
+@media(max-width:480px){
+  .header-top{padding:.5rem .8rem;}
+  .hero{min-height:260px;}
+  .hero-title{font-size:1.7rem;}
+  .hero-btns{flex-direction:column;align-items:center;}
+  .container{padding:1.2rem .8rem;}
+}
 </style>
 </head>
 <body>
-<header>
-  <div class="logo">🥾 <span>טיולים</span> ביחד</div>
-  <div class="hbtns">
-    <button id="btn-back-list" class="hbtn ghost" onclick="showList()" style="display:none">← הרשימה</button>
-    <button class="hbtn ghost" onclick="openModal('modal-api-key')" title="הגדרות מפה">🗺️ מפת גוגל</button>
-    <button class="hbtn" onclick="openModal('modal-add-trip')">+ טיול חדש</button>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="header-top">
+    <div class="logo">
+      <i class="ri-tent-line logo-icon"></i>
+      <div>Tiyulim<span class="logo-plus">+</span>
+        <span class="logo-sub">(טיולים+)</span>
+      </div>
+    </div>
+    <div class="search-bar">
+      <input type="text" placeholder="חפש טיול...">
+    </div>
+    <div class="header-user">
+      <span class="user-name">שלום!</span>
+      <div class="user-avatar"><i class="ri-user-3-fill"></i></div>
+    </div>
+    <button class="hamburger" onclick="document.querySelector('.header-nav').classList.toggle('mobile-show')"><i class="ri-menu-line"></i></button>
   </div>
+  <nav class="header-nav">
+    <span class="nav-item active" onclick="showList()"><i class="ri-home-4-line"></i> דף הבית</span>
+    <span class="nav-item"><i class="ri-compass-3-line"></i> מצא טיול</span>
+    <span class="nav-item" onclick="openModal('modal-add-trip')"><i class="ri-add-circle-line"></i> פרסם טיול</span>
+    <span class="nav-item" onclick="openModal('modal-api-key')"><i class="ri-map-2-line"></i> הגדרות מפה</span>
+  </nav>
 </header>
 
+<!-- HERO -->
+<section class="hero" id="hero-section">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-decor-left"><i class="ri-landscape-line"></i></div>
+  <div class="hero-decor-right"><i class="ri-tree-line"></i></div>
+  <div class="hero-content">
+    <div class="hero-title">!צאו לטייל<br>יחד בישראל</div>
+    <div class="hero-sub">מצאו טיולים, הצטרפו לנסיעות משותפות<br>והכירו חברים חדשים!</div>
+    <div class="hero-btns">
+      <button class="hero-btn hero-btn-primary" onclick="document.getElementById('trips-grid').scrollIntoView({behavior:'smooth'})"><i class="ri-compass-3-line"></i> מצא טיול והצטרף</button>
+      <button class="hero-btn hero-btn-secondary" onclick="openModal('modal-add-trip')"><i class="ri-add-line"></i> פרסם טיול חדש</button>
+    </div>
+  </div>
+</section>
+
 <div class="container">
+  <!-- LIST VIEW -->
   <div id="view-list" class="view active">
-    <h1 class="page-title">הטיולים שלנו</h1>
-    <p class="page-sub">לחצו על טיול לניהול מלא • שתפו קישור ישיר לכל טיול</p>
+    <h2 class="section-heading">טיולים מובילים השבוע</h2>
     <div class="trips-grid" id="trips-grid"></div>
   </div>
+
+  <!-- DETAIL VIEW -->
   <div id="view-detail" class="view">
-    <button id="back-to-list-btn" class="back-btn" onclick="showList()">← חזרה לרשימה</button>
+    <button id="back-to-list-btn" class="back-btn" onclick="showList()"><i class="ri-arrow-right-line"></i> חזרה לרשימה</button>
     <div id="detail-content"></div>
   </div>
 </div>
+
+<!-- BOTTOM NAV (mobile) -->
+<nav class="bottom-nav">
+  <button class="bnav-item active" onclick="showList()">
+    <span class="bnav-icon"><i class="ri-home-4-fill"></i></span>
+    <span class="bnav-label">דף הבית</span>
+  </button>
+  <button class="bnav-item">
+    <span class="bnav-icon"><i class="ri-search-line"></i></span>
+    <span class="bnav-label">חיפוש</span>
+  </button>
+  <button class="bnav-item bnav-item-publish" onclick="openModal('modal-add-trip')">
+    <span class="bnav-icon"><i class="ri-add-line"></i></span>
+    <span class="bnav-label">פרסם</span>
+  </button>
+  <button class="bnav-item">
+    <span class="bnav-icon"><i class="ri-user-3-line"></i></span>
+    <span class="bnav-label">פרופיל</span>
+  </button>
+</nav>
 
 <!-- API KEY MODAL -->
 <div class="modal-overlay" id="modal-api-key">
   <div class="modal" style="max-width:540px;">
     <div class="modal-title">
-      <span>🗺️ הגדרת גוגל מאפס</span>
-      <button class="modal-close" onclick="closeModal('modal-api-key')">✕</button>
+      <span><i class="ri-map-2-line"></i> הגדרת גוגל מאפס</span>
+      <button class="modal-close" onclick="closeModal('modal-api-key')"><i class="ri-close-line"></i></button>
     </div>
-    <div style="background:#e8f5e9;border-radius:10px;padding:1rem;margin-bottom:1rem;font-size:.85rem;color:#1b5e20;line-height:1.6;">
+    <div style="background:var(--teal-pale);border-radius:10px;padding:1rem;margin-bottom:1rem;font-size:.85rem;color:var(--teal-dark);line-height:1.6;">
       <b>כדי להציג מפת גוגל עם ציוני ביקורות</b> יש צורך במפתח API של Google Maps.<br>
       המפתח נדרש לשימוש ב-Maps JavaScript API ו-Places API.
     </div>
     <div class="form-group">
       <label>Google Maps API Key</label>
       <input id="api-key-input" type="text" placeholder="AIzaSy..." dir="ltr">
-      <div style="font-size:.76rem;color:var(--stone);margin-top:.3rem;">המפתח נשמר בסשן הנוכחי בלבד ולא נשלח לאף שרת.</div>
+      <div style="font-size:.76rem;color:var(--gray);margin-top:.3rem;">המפתח נשמר בדפדפן בלבד ולא נשלח לאף שרת.</div>
     </div>
-    <div style="background:var(--sand);border-radius:10px;padding:.9rem;font-size:.82rem;color:var(--stone);line-height:1.7;">
-      <b style="color:var(--forest);">איך מקבלים מפתח?</b><br>
-      1. גשו ל־<a href="https://console.cloud.google.com" target="_blank" style="color:var(--sky)">console.cloud.google.com</a><br>
+    <div style="background:#f8fafb;border-radius:10px;padding:.9rem;font-size:.82rem;color:var(--gray);line-height:1.7;">
+      <b style="color:var(--dark);">איך מקבלים מפתח?</b><br>
+      1. גשו ל־<a href="https://console.cloud.google.com" target="_blank" style="color:var(--teal)">console.cloud.google.com</a><br>
       2. צרו פרויקט חדש (חינמי)<br>
       3. הפעילו את <b>Maps JavaScript API</b> ו-<b>Places API</b><br>
       4. תחת "Credentials" – צרו API Key<br>
-      5. הדביקו כאן ✅
+      5. הדביקו כאן
     </div>
     <div class="btn-row">
-      <button class="btn btn-primary btn-full" onclick="saveApiKey()">✅ הפעל גוגל מאפס</button>
+      <button class="btn btn-primary btn-full" onclick="saveApiKey()">הפעל גוגל מאפס</button>
     </div>
     <div style="text-align:center;margin-top:.8rem;">
-      <button onclick="clearApiKey()" style="background:none;border:none;cursor:pointer;color:var(--stone);font-size:.8rem;font-family:Heebo,sans-serif;">הסר מפתח (חזרה למפת ברירת מחדל)</button>
+      <button onclick="clearApiKey()" style="background:none;border:none;cursor:pointer;color:var(--gray);font-size:.8rem;font-family:Heebo,sans-serif;">הסר מפתח (חזרה למפת ברירת מחדל)</button>
     </div>
   </div>
 </div>
@@ -285,16 +457,16 @@ input:checked+.slider::before{transform:translateX(-21px);}
 <div class="modal-overlay" id="modal-add-trip">
   <div class="modal" style="max-width:560px;">
     <div class="modal-title">
-      <span>✏️ פרסום טיול חדש</span>
-      <button class="modal-close" onclick="closeModal('modal-add-trip')">✕</button>
+      <span><i class="ri-edit-line"></i> פרסום טיול חדש</span>
+      <button class="modal-close" onclick="closeModal('modal-add-trip')"><i class="ri-close-line"></i></button>
     </div>
     <div class="form-group"><label>שם הטיול</label><input id="trip-name" type="text" placeholder="הר מירון, נחל דוד..."></div>
     <div class="form-row">
-      <div class="form-group"><label>תאריך 📅</label><input id="trip-date" type="date"></div>
-      <div class="form-group"><label>שעת יציאה ⏰</label><input id="trip-time" type="time" value="08:00"></div>
+      <div class="form-group"><label>תאריך</label><input id="trip-date" type="date"></div>
+      <div class="form-group"><label>שעת יציאה</label><input id="trip-time" type="time" value="08:00"></div>
     </div>
     <div class="form-group"><label>נקודת מפגש ראשית</label><input id="trip-meeting" type="text" placeholder="איפה מתכנסים?"></div>
-    <div class="form-group"><label>תיאור הטיול 📝</label><textarea id="trip-desc" placeholder="מה מחכה לנו? רמת קושי, ציוד נדרש..."></textarea></div>
+    <div class="form-group"><label>תיאור הטיול</label><textarea id="trip-desc" placeholder="מה מחכה לנו? רמת קושי, ציוד נדרש..."></textarea></div>
     <div class="form-group">
       <label>אמוג'י לטיול</label>
       <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
@@ -309,8 +481,8 @@ input:checked+.slider::before{transform:translateX(-21px);}
       </div>
       <input id="trip-emoji" type="hidden" value="🏔️">
     </div>
-    <div style="border-top:2px solid var(--sand);padding-top:.9rem;margin-top:.5rem;">
-      <div style="font-size:.96rem;font-weight:800;color:var(--forest);margin-bottom:.7rem;">📍 נקודות הטיול (אופציונלי)</div>
+    <div style="border-top:2px solid #eef2f5;padding-top:.9rem;margin-top:.5rem;">
+      <div style="font-size:.96rem;font-weight:800;color:var(--dark);margin-bottom:.7rem;">📍 נקודות הטיול (אופציונלי)</div>
       <div id="wp-editor-list"></div>
       <button class="btn btn-ghost btn-sm" onclick="addWpEditorItem()">+ הוסף נקודה</button>
     </div>
@@ -322,13 +494,13 @@ input:checked+.slider::before{transform:translateX(-21px);}
 <div class="modal-overlay" id="modal-add-wp">
   <div class="modal">
     <div class="modal-title">
-      <span>📍 הוסף נקודת טיול</span>
-      <button class="modal-close" onclick="closeModal('modal-add-wp')">✕</button>
+      <span><i class="ri-map-pin-add-line"></i> הוסף נקודת טיול</span>
+      <button class="modal-close" onclick="closeModal('modal-add-wp')"><i class="ri-close-line"></i></button>
     </div>
     <div class="form-group"><label>שם המקום *</label><input id="wp-name" type="text" placeholder="עין גדי, מפל דוד..."></div>
     <div class="form-group"><label>כתובת / שם לחיפוש</label><input id="wp-address" type="text" placeholder="Ein Gedi Nature Reserve Israel"></div>
     <div class="form-row">
-      <div class="form-group"><label>טלפון 📞</label><input id="wp-phone" type="tel" placeholder="08-658xxxx"></div>
+      <div class="form-group"><label>טלפון</label><input id="wp-phone" type="tel" placeholder="08-658xxxx"></div>
       <div class="form-group"><label>שעת הגעה משוערת</label><input id="wp-time" type="time"></div>
     </div>
     <div class="form-group"><label>הערות</label><textarea id="wp-notes" rows="2" placeholder="חנייה, כניסה, מה לדעת..."></textarea></div>
@@ -340,6 +512,14 @@ input:checked+.slider::before{transform:translateX(-21px);}
 
 <script>
 const AVC=['#a8d5ba','#f9d8a8','#b0d4e8','#f5b8b8','#d4b8f5','#c8e6c9','#ffe0b2','#b2dfdb'];
+const TRIP_IMAGES=[
+  'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=600&q=80',
+  'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=600&q=80',
+  'https://images.unsplash.com/photo-1501555088652-021faa106b9b?w=600&q=80',
+  'https://images.unsplash.com/photo-1551632811-561732d1e306?w=600&q=80',
+  'https://images.unsplash.com/photo-1533240332313-0db49b459ad6?w=600&q=80',
+  'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80'
+];
 let gmapsKey=(()=>{try{return localStorage.getItem('tiyulim_gmaps_key')||'';}catch(e){return '';}})();
 let gmapsScriptLoaded=false;
 let gmapsMap=null;
@@ -421,7 +601,6 @@ function clearApiKey(){
 function loadGoogleMapsScript(key){
   return new Promise((resolve,reject)=>{
     if(gmapsScriptLoaded&&window.google&&window.google.maps){resolve();return;}
-    // Remove old script if exists
     const old=document.getElementById('gmaps-script');
     if(old)old.remove();
     window._gmapsReady=()=>{gmapsScriptLoaded=true;resolve();};
@@ -442,7 +621,6 @@ function initRouter(){
     if(t){
       isDirectLink=true;
       document.getElementById('back-to-list-btn').style.display='none';
-      document.getElementById('btn-back-list').style.display='flex';
       showTrip(id);
     }else showList();
   }else showList();
@@ -456,27 +634,44 @@ function copyShareLink(tripId){
 
 // ===================== LIST =====================
 function renderList(){
+  document.getElementById('hero-section').style.display='';
   const g=document.getElementById('trips-grid');
-  const colors=['#a8d5ba','#f9d8a8','#b0d4e8','#f5b8b8','#d4b8f5'];
-  let h=trips.map(t=>{
+  let h=trips.map((t,idx)=>{
     const drivers=t.participants.filter(p=>p.hasCar);
     const fs=drivers.reduce((s,d)=>{const tk=t.participants.filter(p=>p.assignedTo===d.id).length;return s+Math.max(0,parseInt(d.seats)-tk);},0);
-    const bg=colors[t.id%colors.length];
+    const img=TRIP_IMAGES[idx%TRIP_IMAGES.length];
+    const paxAvatars=t.participants.slice(0,3).map((p,i)=>
+      `<div class="tc-avatar-mini" style="background:${AVC[i%8]}">${ini(p.name)}</div>`).join('');
+    const paxNames=t.participants.slice(0,2).map(p=>p.name.split(' ')[0]).join(', ');
     return`<div class="trip-card" onclick="showTrip(${t.id})">
-      <div class="trip-card-banner" style="background:${bg}">${t.emoji}<span class="trip-status">פתוח</span></div>
+      <div class="trip-card-img">
+        <img src="${img}" alt="${t.name}" loading="lazy">
+        <div class="location-badge"><i class="ri-map-pin-2-fill"></i> ${t.name.split(' ').slice(-2).join(' ')}</div>
+        <div class="emoji-overlay">${t.emoji}</div>
+      </div>
       <div class="trip-card-body">
-        <div class="tc-name">${t.name}</div>
-        <div class="tc-meta">📅 ${fmtDate(t.date)} &nbsp;⏰ ${t.time}</div>
-        <div class="tc-meta">📍 ${t.meeting}</div>
-        <div class="tc-stats">
-          <span class="sp">👥 ${t.participants.length}</span>
-          <span class="sp car">🚗 ${drivers.length}</span>
-          <span class="sp seats">💺 ${fs}</span>
-          <span class="sp">📍 ${t.waypoints.length} נקודות</span>
+        <div class="tc-title">${t.name}</div>
+        <div class="tc-meta"><i class="ri-calendar-line"></i> ${fmtDate(t.date)} &nbsp;|&nbsp; <i class="ri-time-line"></i> ${t.time}</div>
+        <div class="tc-meta"><i class="ri-map-pin-line"></i> ${t.meeting}</div>
+        <div class="tc-divider"></div>
+        <div class="tc-carpool">
+          <div class="tc-carpool-status">
+            <span class="tc-carpool-icon"><i class="ri-car-line"></i></span>
+            <span>Carpool: ${drivers.length} רכבים | ${fs} פנויים</span>
+          </div>
+          <div class="tc-pax-count"><i class="ri-group-line"></i> ${t.participants.length}</div>
         </div>
-      </div></div>`;
+        <div class="tc-footer">
+          <button class="tc-join-btn"><i class="ri-user-add-line"></i> הצטרף</button>
+          <div style="display:flex;align-items:center;gap:.3rem;">
+            ${paxNames?`<span class="tc-avatar-name">${paxNames}</span>`:''}
+            <div class="tc-avatars">${paxAvatars}</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
   }).join('');
-  h+=`<div class="add-trip-card" onclick="openModal('modal-add-trip')"><div class="plus">+</div><div>הוסף טיול חדש</div></div>`;
+  h+=`<div class="add-trip-card" onclick="openModal('modal-add-trip')"><div class="plus"><i class="ri-add-line"></i></div><div>פרסם טיול חדש</div></div>`;
   g.innerHTML=h;
 }
 
@@ -485,6 +680,7 @@ function showTrip(id){
   currentTripId=id;
   location.hash='trip-'+id;
   if(!isDirectLink) document.getElementById('back-to-list-btn').style.display='flex';
+  document.getElementById('hero-section').style.display='none';
   cleanupMap();
   renderDetail(trips.find(x=>x.id===id));
   document.getElementById('view-list').classList.remove('active');
@@ -496,17 +692,17 @@ function renderDetail(t){
   const drivers=t.participants.filter(p=>p.hasCar);
   const unassigned=t.participants.filter(p=>!p.hasCar&&p.needRide&&!p.assignedTo);
   const fs=drivers.reduce((s,d)=>{const tk=t.participants.filter(p=>p.assignedTo===d.id).length;return s+Math.max(0,parseInt(d.seats)-tk);},0);
-  const directNotice=isDirectLink?`<div class="direct-link-notice">🔗 אתה צופה בטיול זה דרך קישור ישיר</div>`:'';
+  const directNotice=isDirectLink?`<div class="direct-link-notice"><i class="ri-link"></i> אתה צופה בטיול זה דרך קישור ישיר</div>`:'';
   const sumH=`<div class="summary-bar">
-    <div class="summary-item"><div class="summary-icon">👥</div><div><div class="summary-val">${t.participants.length}</div><div class="summary-lbl">נרשמו</div></div></div>
-    <div class="summary-item"><div class="summary-icon">🚗</div><div><div class="summary-val">${drivers.length}</div><div class="summary-lbl">רכבים</div></div></div>
-    <div class="summary-item"><div class="summary-icon">💺</div><div><div class="summary-val">${fs}</div><div class="summary-lbl">מקומות פנויים</div></div></div>
-    <div class="summary-item"><div class="summary-icon">📍</div><div><div class="summary-val">${t.waypoints.length}</div><div class="summary-lbl">נקודות מסלול</div></div></div>
+    <div class="summary-item"><div class="summary-icon"><i class="ri-group-line" style="font-size:1.4rem;color:var(--teal)"></i></div><div><div class="summary-val">${t.participants.length}</div><div class="summary-lbl">נרשמו</div></div></div>
+    <div class="summary-item"><div class="summary-icon"><i class="ri-car-line" style="font-size:1.4rem;color:var(--orange)"></i></div><div><div class="summary-val">${drivers.length}</div><div class="summary-lbl">רכבים</div></div></div>
+    <div class="summary-item"><div class="summary-icon"><i class="ri-armchair-line" style="font-size:1.4rem;color:var(--green)"></i></div><div><div class="summary-val">${fs}</div><div class="summary-lbl">מקומות פנויים</div></div></div>
+    <div class="summary-item"><div class="summary-icon"><i class="ri-map-pin-line" style="font-size:1.4rem;color:#e65100"></i></div><div><div class="summary-val">${t.waypoints.length}</div><div class="summary-lbl">נקודות מסלול</div></div></div>
   </div>`;
 
   const mapKeyBanner=!gmapsKey?`
     <div class="map-key-banner">
-      <h3>🗺️ הפעל מפת גוגל עם ציוני ביקורות</h3>
+      <h3><i class="ri-map-2-line"></i> הפעל מפת גוגל עם ציוני ביקורות</h3>
       <p>הזן מפתח API של Google Maps כדי להציג מפה אינטראקטיבית עם דירוגים, ביקורות ותמונות של כל נקודה.</p>
       <div class="key-input-row">
         <input type="text" id="inline-key-input" placeholder="AIzaSy..." dir="ltr">
@@ -516,9 +712,9 @@ function renderDetail(t){
     </div>`:'';
 
   const mapControlsHTML=`<div class="map-controls">
-    <button class="map-ctrl-btn" onclick="locateMe()">📍 מיקום שלי</button>
-    ${gmapsKey?`<button class="map-ctrl-btn" onclick="refreshRatings()">⭐ טען ביקורות</button>`:''}
-    <button class="map-ctrl-btn" onclick="openModal('modal-api-key')">${gmapsKey?'🔑 שנה מפתח':'🗺️ גוגל מאפס'}</button>
+    <button class="map-ctrl-btn" onclick="locateMe()"><i class="ri-focus-3-line"></i> מיקום שלי</button>
+    ${gmapsKey?`<button class="map-ctrl-btn" onclick="refreshRatings()"><i class="ri-star-line"></i> טען ביקורות</button>`:''}
+    <button class="map-ctrl-btn" onclick="openModal('modal-api-key')">${gmapsKey?'<i class="ri-key-line"></i> שנה מפתח':'<i class="ri-map-2-line"></i> גוגל מאפס'}</button>
   </div>`;
 
   document.getElementById('detail-content').innerHTML=`
@@ -526,41 +722,41 @@ function renderDetail(t){
     <div class="trip-header-card">
       <div>
         <div class="trip-header-title">${t.emoji} ${t.name}</div>
-        <div class="trip-header-meta">📅 ${fmtDate(t.date)} &nbsp;⏰ ${t.time} &nbsp;📍 ${t.meeting}</div>
+        <div class="trip-header-meta"><i class="ri-calendar-line"></i> ${fmtDate(t.date)} &nbsp;<i class="ri-time-line"></i> ${t.time} &nbsp;<i class="ri-map-pin-line"></i> ${t.meeting}</div>
         ${t.desc?`<div class="trip-header-desc">${t.desc}</div>`:''}
       </div>
-      <button class="share-btn" onclick="copyShareLink(${t.id})">🔗 שתף קישור</button>
+      <button class="share-btn" onclick="copyShareLink(${t.id})"><i class="ri-share-line"></i> שתף קישור</button>
     </div>
     ${sumH}
     <div class="section-card">
-      <div class="section-title"><span>🗺️ מפת המסלול</span></div>
+      <div class="section-title"><span><i class="ri-road-map-line"></i> מפת המסלול</span></div>
       ${mapKeyBanner}
-      <div id="next-stop-bar" class="next-stop-bar hidden"><span>➡️</span><span id="next-stop-text"></span></div>
+      <div id="next-stop-bar" class="next-stop-bar hidden"><span><i class="ri-navigation-line"></i></span><span id="next-stop-text"></span></div>
       ${mapControlsHTML}
-      <div id="trip-map" style="height:380px;border-radius:12px;background:#e8e0d5;display:flex;align-items:center;justify-content:center;color:var(--stone);font-weight:600;">
-        <div style="text-align:center"><div style="font-size:2rem;margin-bottom:.5rem">🗺️</div>טוען מפה...</div>
+      <div id="trip-map" style="height:380px;border-radius:12px;background:#e8f0f5;display:flex;align-items:center;justify-content:center;color:var(--gray);font-weight:600;">
+        <div style="text-align:center"><div style="font-size:2rem;margin-bottom:.5rem"><i class="ri-map-2-line"></i></div>טוען מפה...</div>
       </div>
     </div>
     <div class="section-card">
       <div class="section-title">
-        <span>📍 נקודות הטיול (${t.waypoints.length})</span>
+        <span><i class="ri-map-pin-line"></i> נקודות הטיול (${t.waypoints.length})</span>
         <button class="btn btn-ghost btn-sm" onclick="openModal('modal-add-wp')">+ הוסף נקודה</button>
       </div>
       <div class="waypoints-list" id="waypoints-list">
-        ${buildWaypointsHTML(t)||`<div class="empty-state"><div class="ei">🗺️</div><p>הוסף נקודות מסלול</p></div>`}
+        ${buildWaypointsHTML(t)||`<div class="empty-state"><div class="ei"><i class="ri-map-2-line" style="font-size:2.3rem"></i></div><p>הוסף נקודות מסלול</p></div>`}
       </div>
     </div>
     ${buildJoinHTML()}
     <div class="section-card">
-      <div class="section-title">🚗 רכבים ושיבוץ נוסעים</div>
+      <div class="section-title"><i class="ri-car-line"></i> רכבים ושיבוץ נוסעים</div>
       ${buildCarsHTML(t,drivers,unassigned)}
     </div>
     <div class="section-card">
-      <div class="section-title">🙏 ממתינים לשיבוץ (${unassigned.length})</div>
+      <div class="section-title"><i class="ri-time-line"></i> ממתינים לשיבוץ (${unassigned.length})</div>
       <div class="pool-list">${buildPoolHTML(t,unassigned,drivers)}</div>
     </div>
     <div class="section-card">
-      <div class="section-title">👥 כל המשתתפים (${t.participants.length})</div>
+      <div class="section-title"><i class="ri-group-line"></i> כל המשתתפים (${t.participants.length})</div>
       <div class="participants-list">${buildPaxHTML(t)}</div>
     </div>`;
 
@@ -594,121 +790,75 @@ function initMap(t){
   if(gmapsKey&&gmapsScriptLoaded&&window.google&&window.google.maps){
     initGoogleMap(t,el);
   } else if(gmapsKey&&!gmapsScriptLoaded){
-    // Script not yet loaded, load it
     loadGoogleMapsScript(gmapsKey).then(()=>initGoogleMap(t,el)).catch(()=>initLeafletMap(t,el));
   } else {
     initLeafletMap(t,el);
   }
 }
 
-/* ---- GOOGLE MAPS ---- */
 function initGoogleMap(t,el){
   const wps=t.waypoints.filter(w=>w.lat&&w.lng);
   const center=wps.length?{lat:wps[0].lat,lng:wps[0].lng}:{lat:31.5,lng:34.9};
   const zoom=wps.length>1?10:14;
   gmapsMap=new google.maps.Map(el,{
-    center,zoom,
-    mapTypeId:'roadmap',
-    streetViewControl:false,
-    fullscreenControl:true,
-    mapTypeControl:false,
-    zoomControlOptions:{position:google.maps.ControlPosition.LEFT_BOTTOM}
+    center,zoom,mapTypeId:'roadmap',streetViewControl:false,fullscreenControl:true,
+    mapTypeControl:false,zoomControlOptions:{position:google.maps.ControlPosition.LEFT_BOTTOM}
   });
-
   const placesService=new google.maps.places.PlacesService(gmapsMap);
   const bounds=new google.maps.LatLngBounds();
-
   wps.forEach((w,i)=>{
-    const pos={lat:w.lat,lng:w.lng};
-    bounds.extend(pos);
-
-    // Custom SVG marker with number
+    const pos={lat:w.lat,lng:w.lng};bounds.extend(pos);
     const isNext=(i===nextWpIndex);
-    const bgColor=isNext?'#1565c0':'#3a5a40';
+    const bgColor=isNext?'#0096b7':'#00b4d8';
     const marker=new google.maps.Marker({
       position:pos,map:gmapsMap,
       label:{text:String(i+1),color:'white',fontWeight:'bold',fontSize:'13px'},
-      icon:{
-        path:google.maps.SymbolPath.CIRCLE,
-        scale:16,
-        fillColor:bgColor,fillOpacity:1,
-        strokeColor:'white',strokeWeight:2.5
-      },
+      icon:{path:google.maps.SymbolPath.CIRCLE,scale:16,fillColor:bgColor,fillOpacity:1,strokeColor:'white',strokeWeight:2.5},
       title:w.name,zIndex:100-i
     });
-
-    // Build info window content
     const ratingHTML=w.rating?`<div style="margin-top:4px">${starsHTML(w.rating)} <b>${w.rating}</b> <span style="color:#888;font-size:.78rem">(${num(w.ratingsTotal)})</span></div>`:'';
     const gmapsLink=w.placeId?`https://www.google.com/maps/place/?q=place_id:${w.placeId}`:`https://www.google.com/maps/search/${encodeURIComponent(w.name+' '+w.address)}`;
     const infoContent=`<div style="font-family:Heebo,sans-serif;direction:rtl;min-width:200px;padding:4px;">
-      <b style="font-size:.95rem;color:#1a1a2e">${w.name}</b>
-      ${ratingHTML}
+      <b style="font-size:.95rem;color:#1a2332">${w.name}</b>${ratingHTML}
       ${w.time?`<div style="font-size:.8rem;color:#888;margin-top:2px">⏰ ${w.time}</div>`:''}
       ${w.notes?`<div style="font-size:.8rem;color:#555;margin-top:3px;font-style:italic">${w.notes}</div>`:''}
-      ${w.phone?`<div style="margin-top:6px"><a href="tel:${w.phone}" style="color:#1565c0;font-size:.82rem;font-weight:700">📞 ${w.phone}</a></div>`:''}
+      ${w.phone?`<div style="margin-top:6px"><a href="tel:${w.phone}" style="color:#0096b7;font-size:.82rem;font-weight:700">📞 ${w.phone}</a></div>`:''}
       <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">
         <a href="https://www.google.com/maps/dir/?api=1&destination=${w.lat},${w.lng}" target="_blank" style="background:#e8f5e9;color:#1b5e20;padding:3px 8px;border-radius:6px;font-size:.78rem;font-weight:700;text-decoration:none">🧭 נווט</a>
         <a href="${gmapsLink}" target="_blank" style="background:#fff8e1;color:#e65100;padding:3px 8px;border-radius:6px;font-size:.78rem;font-weight:700;text-decoration:none">⭐ ביקורות</a>
-      </div>
-    </div>`;
+      </div></div>`;
     const infoWindow=new google.maps.InfoWindow({content:infoContent});
     marker.addListener('click',()=>infoWindow.open(gmapsMap,marker));
-
-    // Fetch place rating
-    fetchPlaceRating(placesService,w,()=>{
-      // Update infowindow and card
-      updateWaypointCardRating(w);
-    });
+    fetchPlaceRating(placesService,w,()=>updateWaypointCardRating(w));
   });
-
-  // Polyline
   if(wps.length>=2){
     new google.maps.Polyline({
-      path:wps.map(w=>({lat:w.lat,lng:w.lng})),
-      geodesic:true,
-      strokeColor:'#3a5a40',strokeOpacity:.85,strokeWeight:3,
-      map:gmapsMap
+      path:wps.map(w=>({lat:w.lat,lng:w.lng})),geodesic:true,
+      strokeColor:'#00b4d8',strokeOpacity:.85,strokeWeight:3,map:gmapsMap
     });
   }
-
   if(wps.length>1) gmapsMap.fitBounds(bounds,{padding:50});
-
-  // Geolocation
   tryGeolocation(t);
 }
 
 function fetchPlaceRating(svc,w,cb){
   if(w.rating!==null){cb&&cb();return;}
   const q=(w.name||'')+(w.address?' '+w.address:' ישראל');
-  svc.findPlaceFromQuery({
-    query:q,
-    fields:['name','rating','user_ratings_total','place_id']
-  },(results,status)=>{
+  svc.findPlaceFromQuery({query:q,fields:['name','rating','user_ratings_total','place_id']},(results,status)=>{
     if(status===google.maps.places.PlacesServiceStatus.OK&&results&&results[0]){
-      const r=results[0];
-      w.rating=r.rating||null;
-      w.ratingsTotal=r.user_ratings_total||null;
-      w.placeId=r.place_id||null;
-      cb&&cb();
+      const r=results[0];w.rating=r.rating||null;w.ratingsTotal=r.user_ratings_total||null;w.placeId=r.place_id||null;cb&&cb();
     }
   });
 }
-
 function refreshRatings(){
   if(!gmapsScriptLoaded||!window.google||!gmapsMap)return;
-  const t=trips.find(x=>x.id===currentTripId);
-  if(!t)return;
+  const t=trips.find(x=>x.id===currentTripId);if(!t)return;
   const svc=new google.maps.places.PlacesService(gmapsMap);
-  t.waypoints.forEach(w=>{
-    w.rating=null;w.ratingsTotal=null;w.placeId=null;
-    fetchPlaceRating(svc,w,()=>updateWaypointCardRating(w));
-  });
+  t.waypoints.forEach(w=>{w.rating=null;w.ratingsTotal=null;w.placeId=null;fetchPlaceRating(svc,w,()=>updateWaypointCardRating(w));});
   showToast('⭐ מרענן ביקורות...');
 }
-
 function updateWaypointCardRating(w){
-  const el=document.getElementById('wpr-'+w.id);
-  if(!el)return;
+  const el=document.getElementById('wpr-'+w.id);if(!el)return;
   if(w.rating){
     el.innerHTML=`<span class="wp-stars">${starsHTML(w.rating)}</span>
       <span class="wp-rating-num">${w.rating.toFixed(1)}</span>
@@ -723,19 +873,10 @@ function updateWaypointCardRating(w){
 /* ---- LEAFLET FALLBACK ---- */
 function initLeafletMap(t,el){
   if(typeof L==='undefined'){
-    // Load leaflet
-    const css=document.createElement('link');
-    css.rel='stylesheet';css.href='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css';
-    document.head.appendChild(css);
-    const s=document.createElement('script');
-    s.src='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';
-    s.onload=()=>_initLeaflet(t,el);
-    document.head.appendChild(s);
-  } else {
-    _initLeaflet(t,el);
-  }
+    const css=document.createElement('link');css.rel='stylesheet';css.href='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css';document.head.appendChild(css);
+    const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';s.onload=()=>_initLeaflet(t,el);document.head.appendChild(s);
+  } else { _initLeaflet(t,el); }
 }
-
 let leafletMapObj=null;
 function _initLeaflet(t,el){
   if(leafletMapObj){leafletMapObj.remove();leafletMapObj=null;}
@@ -745,66 +886,46 @@ function _initLeaflet(t,el){
   if(!wps.length){leafletMapObj.setView([31.5,34.9],8);return;}
   wps.forEach((w,i)=>{
     const icon=L.divIcon({className:'',
-      html:`<div style="background:${i===nextWpIndex?'#1565c0':'#3a5a40'};color:white;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;border:2px solid white;box-shadow:0 2px 8px rgba(0,0,0,.3)">${i+1}</div>`,
+      html:`<div style="background:${i===nextWpIndex?'#0096b7':'#00b4d8'};color:white;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;border:2px solid white;box-shadow:0 2px 8px rgba(0,0,0,.3)">${i+1}</div>`,
       iconSize:[30,30],iconAnchor:[15,15]});
     L.marker([w.lat,w.lng],{icon}).addTo(leafletMapObj)
       .bindPopup(`<b style="direction:rtl">${w.name}</b>${w.phone?`<br>📞 ${w.phone}`:''}`);
   });
   if(wps.length>=2){
-    L.polyline(wps.map(w=>[w.lat,w.lng]),{color:'#3a5a40',weight:3,dashArray:'8,6'}).addTo(leafletMapObj);
+    L.polyline(wps.map(w=>[w.lat,w.lng]),{color:'#00b4d8',weight:3,dashArray:'8,6'}).addTo(leafletMapObj);
     leafletMapObj.fitBounds(L.latLngBounds(wps.map(w=>[w.lat,w.lng])),{padding:[35,35]});
-  } else {
-    leafletMapObj.setView([wps[0].lat,wps[0].lng],13);
-  }
+  } else { leafletMapObj.setView([wps[0].lat,wps[0].lng],13); }
   tryGeolocation(t);
 }
 
 /* ---- GEOLOCATION ---- */
 function tryGeolocation(t){
   if(!navigator.geolocation)return;
-  navigator.geolocation.getCurrentPosition(pos=>{
-    placeUserMarker(pos.coords.latitude,pos.coords.longitude,t);
-  },null,{enableHighAccuracy:true,timeout:6000});
+  navigator.geolocation.getCurrentPosition(pos=>{placeUserMarker(pos.coords.latitude,pos.coords.longitude,t);},null,{enableHighAccuracy:true,timeout:6000});
 }
-
 function locateMe(){
   if(!navigator.geolocation){showToast('⚠️ גישה למיקום לא נתמכת');return;}
   showToast('🔍 מחפש מיקום...');
   navigator.geolocation.getCurrentPosition(pos=>{
-    const t=trips.find(x=>x.id===currentTripId);
-    placeUserMarker(pos.coords.latitude,pos.coords.longitude,t,true);
+    const t=trips.find(x=>x.id===currentTripId);placeUserMarker(pos.coords.latitude,pos.coords.longitude,t,true);
   },()=>showToast('⚠️ לא ניתן לאחזר מיקום'),{enableHighAccuracy:true,timeout:8000});
 }
-
 function placeUserMarker(lat,lng,t,pan){
-  // Google Maps
   if(gmapsMap&&window.google){
     const pos={lat,lng};
     if(userMarkerG){userMarkerG.setPosition(pos);}
-    else{
-      userMarkerG=new google.maps.Marker({
-        position:pos,map:gmapsMap,
-        icon:{path:google.maps.SymbolPath.CIRCLE,scale:9,fillColor:'#2196F3',fillOpacity:1,strokeColor:'white',strokeWeight:2.5},
-        title:'המיקום שלך',zIndex:200
-      });
-    }
+    else{userMarkerG=new google.maps.Marker({position:pos,map:gmapsMap,icon:{path:google.maps.SymbolPath.CIRCLE,scale:9,fillColor:'#2196F3',fillOpacity:1,strokeColor:'white',strokeWeight:2.5},title:'המיקום שלך',zIndex:200});}
     if(pan) gmapsMap.setCenter(pos);
-  }
-  // Leaflet
-  else if(leafletMapObj&&typeof L!=='undefined'){
+  } else if(leafletMapObj&&typeof L!=='undefined'){
     if(userMarkerG){userMarkerG.remove();}
-    const icon=L.divIcon({className:'',
-      html:`<div style="width:14px;height:14px;background:#2196F3;border:2.5px solid white;border-radius:50%;box-shadow:0 0 0 4px rgba(33,150,243,.3)"></div>`,
-      iconSize:[14,14],iconAnchor:[7,7]});
+    const icon=L.divIcon({className:'',html:`<div style="width:14px;height:14px;background:#2196F3;border:2.5px solid white;border-radius:50%;box-shadow:0 0 0 4px rgba(33,150,243,.3)"></div>`,iconSize:[14,14],iconAnchor:[7,7]});
     userMarkerG=L.marker([lat,lng],{icon}).addTo(leafletMapObj).bindPopup('📍 המיקום שלך');
     if(pan) leafletMapObj.setView([lat,lng],14);
   }
   updateNextWaypoint(lat,lng,t);
 }
-
 function updateNextWaypoint(lat,lng,t){
-  const wps=t.waypoints.filter(w=>w.lat&&w.lng);
-  if(!wps.length)return;
+  const wps=t.waypoints.filter(w=>w.lat&&w.lng);if(!wps.length)return;
   let minD=Infinity,ni=-1;
   wps.forEach((w,i)=>{const d=haversine(lat,lng,w.lat,w.lng);if(d<minD){minD=d;ni=i;}});
   nextWpIndex=ni;
@@ -814,7 +935,7 @@ function updateNextWaypoint(lat,lng,t){
     txt.textContent=`הנקודה הבאה: ${w.name}  •  ${minD<1?Math.round(minD*1000)+'מ׳':minD.toFixed(1)+'ק"מ'}`;
     bar.classList.remove('hidden');
     document.querySelectorAll('.wp-card').forEach((el,i)=>el.classList.toggle('next-stop',i===ni));
-    document.querySelectorAll('.wp-num').forEach((el,i)=>el.style.background=i===ni?'#1565c0':'#3a5a40');
+    document.querySelectorAll('.wp-num').forEach((el,i)=>el.style.background=i===ni?'#0096b7':'#00b4d8');
   }
 }
 
@@ -824,7 +945,7 @@ function buildWaypointsHTML(t){
   return t.waypoints.map((w,i)=>{
     const hasCoords=w.lat&&w.lng;
     const navTarget=hasCoords?`${w.lat},${w.lng}`:encodeURIComponent(w.address||w.name+' ישראל');
-    const navUrl=hasCoords?`https://www.google.com/maps/dir/?api=1&destination=${navTarget}`:`https://www.google.com/maps/dir/?api=1&destination=${navTarget}`;
+    const navUrl=`https://www.google.com/maps/dir/?api=1&destination=${navTarget}`;
     const reviewUrl=w.placeId?`https://www.google.com/maps/place/?q=place_id:${w.placeId}`:`https://www.google.com/maps/search/${encodeURIComponent((w.name||'')+' '+(w.address||''))}`;
     const ratingContent=w.rating?
       `<span class="wp-stars">${starsHTML(w.rating)}</span>
@@ -836,17 +957,17 @@ function buildWaypointsHTML(t){
         <div class="wp-num" id="wpn-${w.id}">${i+1}</div>
         <div class="wp-info">
           <div class="wp-name">${w.name}</div>
-          ${w.address?`<div class="wp-address">📍 ${w.address}</div>`:''}
-          ${w.time?`<div class="wp-time-badge">⏰ ${w.time}</div>`:''}
+          ${w.address?`<div class="wp-address"><i class="ri-map-pin-2-line"></i> ${w.address}</div>`:''}
+          ${w.time?`<div class="wp-time-badge"><i class="ri-time-line"></i> ${w.time}</div>`:''}
           ${w.notes?`<div class="wp-notes">${w.notes}</div>`:''}
           <div class="wp-rating-row" id="wpr-${w.id}">${ratingContent}</div>
         </div>
-        <button class="wp-rm" onclick="removeWaypoint(${t.id},'${w.id}')">✕</button>
+        <button class="wp-rm" onclick="removeWaypoint(${t.id},'${w.id}')"><i class="ri-close-line"></i></button>
       </div>
       <div class="wp-actions">
-        <a class="wp-action-btn wp-nav" href="${navUrl}" target="_blank">🧭 נווט</a>
-        <a class="wp-action-btn wp-reviews" id="wpa-reviews-${w.id}" href="${reviewUrl}" target="_blank">⭐ ביקורות גוגל</a>
-        ${w.phone?`<a class="wp-action-btn wp-phone-btn" href="tel:${w.phone}">📞 ${w.phone}</a>`:''}
+        <a class="wp-action-btn wp-nav" href="${navUrl}" target="_blank"><i class="ri-compass-3-line"></i> נווט</a>
+        <a class="wp-action-btn wp-reviews" id="wpa-reviews-${w.id}" href="${reviewUrl}" target="_blank"><i class="ri-star-line"></i> ביקורות גוגל</a>
+        ${w.phone?`<a class="wp-action-btn wp-phone-btn" href="tel:${w.phone}"><i class="ri-phone-line"></i> ${w.phone}</a>`:''}
       </div>
     </div>`;
   }).join('');
@@ -856,31 +977,20 @@ function saveWaypoint(){
   const name=document.getElementById('wp-name').value.trim();
   if(!name){showToast('⚠️ נא להזין שם מקום');return;}
   const t=trips.find(x=>x.id===currentTripId);
-  const wp={id:'w'+(nextWpId++),name,
-    address:document.getElementById('wp-address').value.trim(),
-    phone:document.getElementById('wp-phone').value.trim(),
-    time:document.getElementById('wp-time').value,
-    notes:document.getElementById('wp-notes').value.trim(),
-    lat:null,lng:null,rating:null,ratingsTotal:null,placeId:null};
-  t.waypoints.push(wp);
-  saveTrips();
+  const wp={id:'w'+(nextWpId++),name,address:document.getElementById('wp-address').value.trim(),
+    phone:document.getElementById('wp-phone').value.trim(),time:document.getElementById('wp-time').value,
+    notes:document.getElementById('wp-notes').value.trim(),lat:null,lng:null,rating:null,ratingsTotal:null,placeId:null};
+  t.waypoints.push(wp);saveTrips();
   closeModal('modal-add-wp');
   ['wp-name','wp-address','wp-phone','wp-notes'].forEach(i=>document.getElementById(i).value='');
   document.getElementById('wp-time').value='';
   geocodeWaypoint(wp,()=>{saveTrips();renderDetail(t);});
-  renderDetail(t);
-  showToast(`📍 "${name}" נוסף למסלול`);
+  renderDetail(t);showToast(`📍 "${name}" נוסף למסלול`);
 }
 
 function removeWaypoint(tripId,wpId){
-  const t=trips.find(x=>x.id==tripId);
-  const i=t.waypoints.findIndex(x=>x.id===wpId);
-  if(i<0)return;
-  const name=t.waypoints[i].name;
-  t.waypoints.splice(i,1);
-  saveTrips();
-  showToast(`🗑️ "${name}" הוסר`);
-  renderDetail(t);
+  const t=trips.find(x=>x.id==tripId);const i=t.waypoints.findIndex(x=>x.id===wpId);if(i<0)return;
+  const name=t.waypoints[i].name;t.waypoints.splice(i,1);saveTrips();showToast(`🗑️ "${name}" הוסר`);renderDetail(t);
 }
 
 async function geocodeWaypoint(wp,cb){
@@ -895,12 +1005,10 @@ async function geocodeWaypoint(wp,cb){
 
 // ===================== WAYPOINT EDITOR =====================
 function addWpEditorItem(){
-  const id='wpe'+Date.now();
-  wpEditorItems.push({id});
-  const list=document.getElementById('wp-editor-list');
-  const div=document.createElement('div');
+  const id='wpe'+Date.now();wpEditorItems.push({id});
+  const list=document.getElementById('wp-editor-list');const div=document.createElement('div');
   div.className='wp-editor-item';div.id=id;
-  div.innerHTML=`<div style="font-weight:700;font-size:.83rem;color:var(--forest);margin-bottom:.45rem;">📍 נקודה ${wpEditorItems.length}</div>
+  div.innerHTML=`<div style="font-weight:700;font-size:.83rem;color:var(--dark);margin-bottom:.45rem;"><i class="ri-map-pin-add-line"></i> נקודה ${wpEditorItems.length}</div>
     <button class="wp-editor-remove" onclick="removeWpEditorItem('${id}')">✕</button>
     <div class="form-group" style="margin-bottom:.45rem"><input type="text" placeholder="שם המקום *" class="wpe-name" data-id="${id}"></div>
     <div class="form-row">
@@ -910,14 +1018,10 @@ function addWpEditorItem(){
     <div class="form-group" style="margin-bottom:0"><textarea placeholder="הערות" rows="1" class="wpe-notes" data-id="${id}" style="min-height:38px"></textarea></div>`;
   list.appendChild(div);
 }
-function removeWpEditorItem(id){
-  wpEditorItems=wpEditorItems.filter(x=>x.id!==id);
-  const el=document.getElementById(id);if(el)el.remove();
-}
+function removeWpEditorItem(id){wpEditorItems=wpEditorItems.filter(x=>x.id!==id);const el=document.getElementById(id);if(el)el.remove();}
 function collectWpEditorItems(){
   return wpEditorItems.map(({id})=>({
-    id:'w'+(nextWpId++),
-    name:document.querySelector(`.wpe-name[data-id="${id}"]`)?.value.trim()||'',
+    id:'w'+(nextWpId++),name:document.querySelector(`.wpe-name[data-id="${id}"]`)?.value.trim()||'',
     address:document.querySelector(`.wpe-addr[data-id="${id}"]`)?.value.trim()||'',
     phone:document.querySelector(`.wpe-phone[data-id="${id}"]`)?.value.trim()||'',
     notes:document.querySelector(`.wpe-notes[data-id="${id}"]`)?.value.trim()||'',
@@ -928,15 +1032,15 @@ function collectWpEditorItems(){
 // ===================== JOIN =====================
 function buildJoinHTML(){
   return`<div class="join-section">
-    <div class="js-title">🙋 הצטרפות לטיול</div>
+    <div class="js-title"><i class="ri-user-add-line"></i> הצטרפות לטיול</div>
     <div class="form-row">
       <div class="form-group"><label>שם מלא</label><input id="j-name" type="text" placeholder="השם שלך"></div>
       <div class="form-group"><label>טלפון</label><input id="j-phone" type="tel" placeholder="050-..."></div>
     </div>
-    <div class="form-group"><label>עיר מגורים 📍</label><input id="j-city" type="text" placeholder="מאיפה אתה?"></div>
+    <div class="form-group"><label><i class="ri-map-pin-line"></i> עיר מגורים</label><input id="j-city" type="text" placeholder="מאיפה אתה?"></div>
     <div class="toggle-row">
       <label class="toggle"><input type="checkbox" id="j-has-car" onchange="toggleJoinCar()"><span class="slider"></span></label>
-      <span class="toggle-label">🚗 אני מגיע/ה עם רכב</span>
+      <span class="toggle-label"><i class="ri-car-line"></i> אני מגיע/ה עם רכב</span>
     </div>
     <div id="j-car-fields" class="inset-box" style="display:none;">
       <div class="form-group"><label>מקומות פנויים (מלבדך)</label><input id="j-seats" type="number" min="1" max="8" value="3"></div>
@@ -949,7 +1053,7 @@ function buildJoinHTML(){
     <div id="j-no-car-sec">
       <div class="toggle-row">
         <label class="toggle"><input type="checkbox" id="j-need-ride"><span class="slider"></span></label>
-        <span class="toggle-label">🙏 אני מחפש/ת הסעה</span>
+        <span class="toggle-label"><i class="ri-hand-heart-line"></i> אני מחפש/ת הסעה</span>
       </div>
     </div>
     <div class="form-group"><label>הערות</label><textarea id="j-notes" rows="2" placeholder="אלרגיות, בקשות..."></textarea></div>
@@ -976,74 +1080,72 @@ function joinTrip(){
     carTo:hasCar?document.getElementById('j-car-to').value.trim():'',
     carNotes:hasCar?document.getElementById('j-car-notes').value.trim():'',
     needRide,assignedTo:null,notes:document.getElementById('j-notes').value.trim()});
-  saveTrips();
-  showToast(`✅ ${name} נרשם/ה לטיול!`);
-  renderDetail(t);
+  saveTrips();showToast(`✅ ${name} נרשם/ה לטיול!`);renderDetail(t);
 }
 
 // ===================== CARS =====================
 function buildCarsHTML(t,drivers,unassigned){
-  if(!drivers.length)return`<div class="empty-state"><div class="ei">🚗</div><p>אין רכבים עדיין</p></div>`;
+  if(!drivers.length)return`<div class="empty-state"><div class="ei"><i class="ri-car-line" style="font-size:2.3rem"></i></div><p>אין רכבים עדיין</p></div>`;
   return drivers.map(d=>{
     const assigned=t.participants.filter(p=>p.assignedTo===d.id);
     const freeC=Math.max(0,parseInt(d.seats)-assigned.length);
-    let seatsH=`<span class="seats-lbl">מקומות:</span><span class="seat driver-seat">👤</span>`;
-    assigned.forEach(()=>seatsH+=`<span class="seat taken">👤</span>`);
-    for(let i=0;i<freeC;i++) seatsH+=`<span class="seat free">💺</span>`;
+    let seatsH=`<span class="seats-lbl">מקומות:</span><span class="seat driver-seat"><i class="ri-user-3-fill"></i></span>`;
+    assigned.forEach(()=>seatsH+=`<span class="seat taken"><i class="ri-user-3-fill"></i></span>`);
+    for(let i=0;i<freeC;i++) seatsH+=`<span class="seat free"><i class="ri-armchair-line"></i></span>`;
     let paxH=assigned.map(p=>`<div class="car-pax-row">
       <div class="pax-av" style="background:${avc(p.id)}">${ini(p.name)}</div>
-      <div style="flex:1"><div class="pax-name2">${p.name}</div><div class="pax-city2">📍 ${p.city}</div></div>
-      <button class="unassign-btn" onclick="unassignPax('${t.id}','${p.id}')">✕</button></div>`).join('');
+      <div style="flex:1"><div class="pax-name2">${p.name}</div><div class="pax-city2"><i class="ri-map-pin-2-line"></i> ${p.city}</div></div>
+      <button class="unassign-btn" onclick="unassignPax('${t.id}','${p.id}')"><i class="ri-close-line"></i></button></div>`).join('');
     let sugH='';
     if(freeC>0&&unassigned.length>0){
       sugH=unassigned.map(p=>`<div class="suggest-row">
-        <div class="pax-av" style="background:#e8f5e9;font-size:.68rem;font-weight:700;color:var(--forest)">${p.city.slice(0,3)}</div>
-        <div style="flex:1"><div class="pax-name2" style="color:var(--stone)">${p.name}</div><div class="pax-city2">📍 ${p.city}</div></div>
-        <button class="add-btn" onclick="assignPax('${t.id}','${p.id}','${d.id}')">+ שבץ</button></div>`).join('');
+        <div class="pax-av" style="background:#e8f5e9;font-size:.68rem;font-weight:700;color:#2ecc71">${p.city.slice(0,3)}</div>
+        <div style="flex:1"><div class="pax-name2" style="color:var(--gray)">${p.name}</div><div class="pax-city2"><i class="ri-map-pin-2-line"></i> ${p.city}</div></div>
+        <button class="add-btn" onclick="assignPax('${t.id}','${p.id}','${d.id}')"><i class="ri-add-line"></i> שבץ</button></div>`).join('');
     }
     return`<div class="car-block">
       <div class="car-block-header">
-        <div style="font-size:1.7rem">🚗</div>
+        <div style="font-size:1.5rem;color:var(--orange)"><i class="ri-car-fill"></i></div>
         <div style="flex:1">
           <div class="car-driver-name">${d.name}</div>
-          <div class="car-driver-meta">🏠 ${d.city} &nbsp;|&nbsp; ${d.carFrom||'?'} → ${d.carTo||d.carFrom||'?'}</div>
-          ${d.carNotes?`<div class="car-driver-meta">💬 ${d.carNotes}</div>`:''}
+          <div class="car-driver-meta"><i class="ri-home-4-line"></i> ${d.city} &nbsp;|&nbsp; ${d.carFrom||'?'} → ${d.carTo||d.carFrom||'?'}</div>
+          ${d.carNotes?`<div class="car-driver-meta"><i class="ri-chat-1-line"></i> ${d.carNotes}</div>`:''}
           <div class="seats-row">${seatsH}</div>
         </div>
-        <div style="font-size:.76rem;color:var(--stone)">📞 ${d.phone}</div>
+        <div style="font-size:.76rem;color:var(--gray)"><i class="ri-phone-line"></i> ${d.phone}</div>
       </div>
       <div class="car-passengers">${!paxH&&!sugH?`<div class="car-empty">אין נוסעים משובצים</div>`:''}${paxH}${sugH}</div>
     </div>`;
   }).join('');
 }
 function buildPoolHTML(t,unassigned,drivers){
-  if(!unassigned.length)return`<div class="empty-state"><div class="ei">✅</div><p>כולם שובצו לרכב!</p></div>`;
+  if(!unassigned.length)return`<div class="empty-state"><div class="ei"><i class="ri-check-double-line" style="font-size:2.3rem;color:var(--green)"></i></div><p>כולם שובצו לרכב!</p></div>`;
   const opts=drivers.map(d=>{const tk=t.participants.filter(p=>p.assignedTo===d.id).length;const fr=Math.max(0,parseInt(d.seats)-tk);return`<option value="${d.id}" ${fr===0?'disabled':''}>🚗 ${d.name} – ${fr} מקומות</option>`;}).join('');
   return unassigned.map(p=>`<div class="pool-row">
     <div class="pax-av" style="background:${avc(p.id)}">${ini(p.name)}</div>
-    <div class="pool-info"><div class="pool-name">${p.name}</div><div class="pool-city">📍 ${p.city} &nbsp;📞 ${p.phone}</div></div>
+    <div class="pool-info"><div class="pool-name">${p.name}</div><div class="pool-city"><i class="ri-map-pin-2-line"></i> ${p.city} &nbsp;<i class="ri-phone-line"></i> ${p.phone}</div></div>
     ${drivers.length?`<select class="assign-select" id="sel-${p.id}"><option value="">בחר רכב...</option>${opts}</select>
-    <button class="assign-btn" onclick="assignFromSelect('${t.id}','${p.id}')">שבץ</button>`:`<span style="font-size:.76rem;color:var(--stone)">אין רכבים</span>`}
+    <button class="assign-btn" onclick="assignFromSelect('${t.id}','${p.id}')">שבץ</button>`:`<span style="font-size:.76rem;color:var(--gray)">אין רכבים</span>`}
   </div>`).join('');
 }
 function buildPaxHTML(t){
-  if(!t.participants.length)return`<div class="empty-state"><div class="ei">👀</div><p>עדיין אין נרשמים</p></div>`;
+  if(!t.participants.length)return`<div class="empty-state"><div class="ei"><i class="ri-user-search-line" style="font-size:2.3rem"></i></div><p>עדיין אין נרשמים</p></div>`;
   return t.participants.map((p,i)=>{
     const dr=p.assignedTo?t.participants.find(x=>x.id===p.assignedTo):null;
     return`<div class="pax-row">
       <div class="pav" style="background:${AVC[i%8]}">${ini(p.name)}</div>
       <div style="flex:1">
         <div class="p-name">${p.name}</div>
-        <div class="p-meta">📍 ${p.city} &nbsp;📞 ${p.phone}</div>
-        ${p.notes?`<div class="p-meta">💬 ${p.notes}</div>`:''}
+        <div class="p-meta"><i class="ri-map-pin-2-line"></i> ${p.city} &nbsp;<i class="ri-phone-line"></i> ${p.phone}</div>
+        ${p.notes?`<div class="p-meta"><i class="ri-chat-1-line"></i> ${p.notes}</div>`:''}
         <div class="p-tags">
-          ${p.hasCar?`<span class="tag tag-car">🚗 נוהג | ${p.carFrom||p.city} | ${p.seats} מקומות</span>`:''}
-          ${!p.hasCar&&p.needRide&&!p.assignedTo?`<span class="tag tag-ride">🙏 ממתין</span>`:''}
-          ${!p.hasCar&&p.needRide&&p.assignedTo?`<span class="tag tag-assigned">✅ ברכב של ${dr?dr.name:'?'}</span>`:''}
-          ${!p.hasCar&&!p.needRide?`<span class="tag tag-solo">🚶 לבד</span>`:''}
+          ${p.hasCar?`<span class="tag tag-car"><i class="ri-car-line"></i> נוהג | ${p.carFrom||p.city} | ${p.seats} מקומות</span>`:''}
+          ${!p.hasCar&&p.needRide&&!p.assignedTo?`<span class="tag tag-ride"><i class="ri-hand-heart-line"></i> ממתין</span>`:''}
+          ${!p.hasCar&&p.needRide&&p.assignedTo?`<span class="tag tag-assigned"><i class="ri-check-line"></i> ברכב של ${dr?dr.name:'?'}</span>`:''}
+          ${!p.hasCar&&!p.needRide?`<span class="tag tag-solo"><i class="ri-walk-line"></i> לבד</span>`:''}
         </div>
       </div>
-      <button class="rm-btn" onclick="removePax(${t.id},'${p.id}')">✕</button>
+      <button class="rm-btn" onclick="removePax(${t.id},'${p.id}')"><i class="ri-close-line"></i></button>
     </div>`;
   }).join('');
 }
@@ -1054,12 +1156,10 @@ function assignPax(tid,pid,did){
   const tk=t.participants.filter(p=>p.assignedTo===did).length;
   if(tk>=parseInt(d.seats)){showToast('❌ הרכב מלא!');return;}
   const p=t.participants.find(x=>x.id===pid);p.assignedTo=did;
-  saveTrips();
-  showToast(`✅ ${p.name} → רכב של ${d.name}`);renderDetail(t);
+  saveTrips();showToast(`✅ ${p.name} → רכב של ${d.name}`);renderDetail(t);
 }
 function assignFromSelect(tid,pid){
-  const sel=document.getElementById('sel-'+pid);
-  if(!sel||!sel.value){showToast('⚠️ בחר רכב');return;}
+  const sel=document.getElementById('sel-'+pid);if(!sel||!sel.value){showToast('⚠️ בחר רכב');return;}
   assignPax(tid,pid,sel.value);
 }
 function unassignPax(tid,pid){
@@ -1067,12 +1167,10 @@ function unassignPax(tid,pid){
   p.assignedTo=null;saveTrips();showToast(`↩️ ${p.name} הוסר`);renderDetail(t);
 }
 function removePax(tid,pid){
-  const t=trips.find(x=>x.id==tid),idx=t.participants.findIndex(x=>x.id===pid);
-  if(idx<0)return;
+  const t=trips.find(x=>x.id==tid),idx=t.participants.findIndex(x=>x.id===pid);if(idx<0)return;
   t.participants.forEach(p=>{if(p.assignedTo===pid)p.assignedTo=null;});
   const name=t.participants[idx].name;t.participants.splice(idx,1);
-  saveTrips();
-  showToast(`🗑️ ${name} הוסר`);renderDetail(t);
+  saveTrips();showToast(`🗑️ ${name} הוסר`);renderDetail(t);
 }
 
 // ===================== ADD TRIP =====================
@@ -1081,19 +1179,16 @@ function addTrip(){
   const date=document.getElementById('trip-date').value;
   if(!name||!date){showToast('⚠️ נא למלא שם ותאריך');return;}
   const newWps=collectWpEditorItems();
-  const t={id:nextTripId++,name,date,
-    time:document.getElementById('trip-time').value,
+  const t={id:nextTripId++,name,date,time:document.getElementById('trip-time').value,
     meeting:document.getElementById('trip-meeting').value.trim(),
     desc:document.getElementById('trip-desc').value.trim(),
     emoji:selectedEmoji,status:'open',participants:[],waypoints:newWps};
   trips.push(t);
-  newWps.forEach(w=>geocodeWaypoint(w,()=>saveTrips()));
-  saveTrips();
+  newWps.forEach(w=>geocodeWaypoint(w,()=>saveTrips()));saveTrips();
   closeModal('modal-add-trip');
   ['trip-name','trip-date','trip-meeting','trip-desc'].forEach(i=>document.getElementById(i).value='');
   document.getElementById('trip-time').value='08:00';
-  document.getElementById('wp-editor-list').innerHTML='';
-  wpEditorItems=[];
+  document.getElementById('wp-editor-list').innerHTML='';wpEditorItems=[];
   renderList();showToast('🎉 הטיול פורסם!');
 }
 function setEmoji(el){
@@ -1107,10 +1202,10 @@ function showList(){
   cleanupMap();
   if(leafletMapObj){leafletMapObj.remove();leafletMapObj=null;}
   location.hash='';isDirectLink=false;
-  document.getElementById('btn-back-list').style.display='none';
   document.getElementById('back-to-list-btn').style.display='none';
   document.getElementById('view-detail').classList.remove('active');
   document.getElementById('view-list').classList.add('active');
+  document.getElementById('hero-section').style.display='';
   renderList();
 }
 function openModal(id){document.getElementById(id).classList.add('open');}
@@ -1121,8 +1216,7 @@ document.querySelectorAll('.modal-overlay').forEach(m=>{
 
 // ===================== UTILS =====================
 function starsHTML(r){
-  if(!r)return'';
-  const full=Math.floor(r),half=r-full>=0.5?1:0,empty=5-full-half;
+  if(!r)return'';const full=Math.floor(r),half=r-full>=0.5?1:0,empty=5-full-half;
   return'★'.repeat(full)+(half?'½':'')+'☆'.repeat(empty);
 }
 function num(n){if(!n)return'0';return n>=1000?(n/1000).toFixed(1)+'k':String(n);}
