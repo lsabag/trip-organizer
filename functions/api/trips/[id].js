@@ -29,22 +29,15 @@ export async function onRequestGet(context) {
   return Response.json(tripRow(trip), { headers: CORS });
 }
 
-// PUT /api/trips/:id — update trip
+// PUT /api/trips/:id — update trip (collaborative: anyone can edit)
 export async function onRequestPut(context) {
   const { DB } = context.env;
   const { id } = context.params;
   const body = await context.request.json();
-  const creatorToken = context.request.headers.get('X-Creator-Token');
-  const adminToken = context.request.headers.get('X-Admin-Token');
 
-  const trip = await DB.prepare('SELECT creator_token FROM trips WHERE id = ?').bind(id).first();
+  const trip = await DB.prepare('SELECT id FROM trips WHERE id = ?').bind(id).first();
   if (!trip) {
     return Response.json({ error: 'Not found' }, { status: 404, headers: CORS });
-  }
-
-  const isAdmin = adminToken && adminToken === context.env.ADMIN_TOKEN;
-  if (trip.creator_token !== creatorToken && !isAdmin) {
-    return Response.json({ error: 'Unauthorized' }, { status: 403, headers: CORS });
   }
 
   await DB.prepare(`

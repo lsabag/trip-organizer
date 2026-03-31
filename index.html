@@ -127,10 +127,6 @@ a{text-decoration:none;color:inherit;}
 .bnav-item.active{color:var(--teal);}
 .bnav-icon{font-size:1.35rem;}
 .bnav-label{font-size:.68rem;font-weight:700;}
-.bnav-item-publish{position:relative;}
-.bnav-item-publish .bnav-icon{background:var(--teal);color:white;width:44px;height:44px;
-  border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.4rem;
-  margin-top:-18px;box-shadow:0 4px 14px rgba(0,180,216,.35);}
 
 /* ===== MODALS ===== */
 .modal-overlay{position:fixed;inset:0;background:rgba(26,35,50,.6);backdrop-filter:blur(5px);
@@ -482,8 +478,8 @@ input:checked+.slider::before{transform:translateX(-21px);}
     <span class="bnav-icon"><span class="ms">search</span></span>
     <span class="bnav-label">חיפוש</span>
   </button>
-  <button class="bnav-item bnav-item-publish" onclick="openModal('modal-add-trip')">
-    <span class="bnav-icon"><span class="ms">add</span></span>
+  <button class="bnav-item" onclick="openModal('modal-add-trip')">
+    <span class="bnav-icon"><span class="ms">add_circle</span></span>
     <span class="bnav-label">פרסם</span>
   </button>
 </nav>
