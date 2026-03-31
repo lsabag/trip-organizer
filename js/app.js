@@ -27,25 +27,7 @@ let isDirectLink=false;
 let wpEditorItems=[];
 let nextPaxId=100,nextWpId=10;
 
-const DEFAULT_TRIPS=[{
-  id:'t1',name:"שמורת עין גדי",date:"2025-04-18",time:"07:30",
-  meeting:"צומת מחלף גהה",desc:"נחל דוד ועין גדי. כובע ומים חובה! רמת קושי: קלה-בינונית.",
-  image:TRIP_IMAGES[3],status:"open",
-  waypoints:[
-    {id:'w1',name:"כניסת הפארק – עין גדי",address:"Ein Gedi Nature Reserve, Israel",phone:"08-6584285",time:"09:00",notes:"חנייה חינמית. יש לרכוש כרטיסים בכניסה.",lat:31.4627,lng:35.3827,rating:null,ratingsTotal:null,placeId:null},
-    {id:'w2',name:"מפל דוד",address:"David Waterfall Ein Gedi",phone:"",time:"10:00",notes:"עליה של כ-30 דק' מהכניסה.",lat:31.4656,lng:35.3889,rating:null,ratingsTotal:null,placeId:null},
-    {id:'w3',name:"בריכת השולמית",address:"Shulamit Spring Ein Gedi Israel",phone:"",time:"11:30",notes:"הנקודה הגבוהה של המסלול. נוף מדהים.",lat:31.4681,lng:35.3912,rating:null,ratingsTotal:null,placeId:null},
-    {id:'w4',name:"חוף עין גדי – ים המלח",address:"Ein Gedi Beach Dead Sea Israel",phone:"08-6591591",time:"14:00",notes:"מקלחות חיצוניות, שמן רחיצה מומלץ.",lat:31.4520,lng:35.3763,rating:null,ratingsTotal:null,placeId:null}
-  ],
-  participants:[
-    {id:'p1',name:"דניאל לוי",phone:"054-1234567",city:"תל אביב",hasCar:true,seats:3,carFrom:"תל אביב",carTo:"תל אביב",carNotes:"יוצא ב-7:00 בדיוק",needRide:false,assignedTo:null,notes:""},
-    {id:'p2',name:"מיכל כהן",phone:"052-9876543",city:"רמת גן",hasCar:false,seats:0,carFrom:"",carTo:"",carNotes:"",needRide:true,assignedTo:null,notes:"אלרגית לאבקנים"},
-    {id:'p3',name:"יוסי ברק",phone:"050-1112233",city:"פתח תקווה",hasCar:false,seats:0,carFrom:"",carTo:"",carNotes:"",needRide:true,assignedTo:null,notes:""},
-    {id:'p4',name:"שרה מזרחי",phone:"053-4445566",city:"גבעתיים",hasCar:true,seats:2,carFrom:"גבעתיים",carTo:"גבעתיים",carNotes:"",needRide:false,assignedTo:null,notes:""}
-  ]
-}];
-
-// ===================== PERSISTENCE (API + localStorage fallback) =====================
+// ===================== PERSISTENCE (API) =====================
 const API='/api';
 let creatorToken=localStorage.getItem('tiyulim_creator')||'';
 if(!creatorToken){creatorToken='ct_'+Math.random().toString(36).substr(2,12);localStorage.setItem('tiyulim_creator',creatorToken);}
@@ -55,11 +37,7 @@ async function loadTripsFromAPI(){
     const r=await fetch(`${API}/trips?mine=${encodeURIComponent(creatorToken)}`);
     if(r.ok) return await r.json();
   }catch(e){}
-  try{
-    const raw=localStorage.getItem('tiyulim_data');
-    if(raw){const s=JSON.parse(raw);if(Array.isArray(s)&&s.length)return s;}
-  }catch(e){}
-  return JSON.parse(JSON.stringify(DEFAULT_TRIPS));
+  return [];
 }
 function saveTrips(){
   if(currentTripId){
@@ -1217,6 +1195,8 @@ async function adminDeleteTrip(id){
 
 // ===================== INIT =====================
 (async function init(){
+  // Clean old localStorage data
+  try{localStorage.removeItem('tiyulim_data');}catch(e){}
   // Auto-load Google Maps API key from server config
   if(!gmapsKey){
     try{const r=await fetch(`${API}/config`);if(r.ok){const c=await r.json();
