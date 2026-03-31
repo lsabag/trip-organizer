@@ -406,17 +406,17 @@ input:checked+.slider::before{transform:translateX(-21px);}
 <!-- HEADER -->
 <header class="site-header">
   <div class="header-top">
+    <button class="hamburger" onclick="openDrawer()"><span class="ms">menu</span></button>
+    <div class="search-bar">
+      <span class="ms search-icon">search</span>
+      <input type="text" id="search-input" placeholder="חפש טיול..." oninput="filterTrips(this.value)">
+    </div>
     <div class="logo">
       <span class="ms logo-icon">hiking</span>
       <div>Tiyulim<span class="logo-plus">+</span>
         <span class="logo-sub">(טיולים+)</span>
       </div>
     </div>
-    <div class="search-bar">
-      <span class="ms search-icon">search</span>
-      <input type="text" id="search-input" placeholder="חפש טיול..." oninput="filterTrips(this.value)">
-    </div>
-    <button class="hamburger" onclick="openDrawer()"><span class="ms">menu</span></button>
   </div>
   <nav class="header-nav">
     <span class="nav-item active" onclick="showList()"><span class="ms">home</span> דף הבית</span>
@@ -537,6 +537,9 @@ input:checked+.slider::before{transform:translateX(-21px);}
     <div class="form-group"><label>תיאור הטיול</label><textarea id="trip-desc" placeholder="מה מחכה לנו? רמת קושי, ציוד נדרש..."></textarea></div>
     <div class="form-group">
       <label><span class="ms">image</span> תמונת רקע לטיול</label>
+      <div style="display:flex;gap:.5rem;margin-bottom:.5rem;">
+        <input id="trip-image-url" type="url" dir="ltr" placeholder="או הדבק קישור לתמונה..." style="flex:1;padding:.4rem .7rem;border-radius:8px;border:1.5px solid #e0e0e0;font-size:.82rem;font-family:'Heebo',sans-serif;" oninput="if(this.value.trim()){selectedImage=this.value.trim();document.querySelectorAll('.img-picker-item').forEach(x=>x.classList.remove('selected'));}">
+      </div>
       <div class="img-picker" id="img-picker"></div>
     </div>
     <div style="border-top:2px solid #eef2f5;padding-top:.9rem;margin-top:.5rem;">
@@ -817,16 +820,24 @@ function renderDetail(t){
     <button class="map-ctrl-btn" onclick="openModal('modal-api-key')">${gmapsKey?'<span class="ms">key</span> שנה מפתח':'<span class="ms">map</span> גוגל מאפס'}</button>
   </div>`;
 
+  const headerImg=t.image||TRIP_IMAGES[0];
   document.getElementById('detail-content').innerHTML=`
     ${directNotice}
+    <div style="position:relative;border-radius:var(--radius);overflow:hidden;margin-bottom:1rem;">
+      <img src="${headerImg}" style="width:100%;height:180px;object-fit:cover;display:block;" loading="lazy">
+      <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.6) 0%,transparent 50%);"></div>
+      <div style="position:absolute;bottom:0;left:0;right:0;padding:1rem 1.2rem;color:white;">
+        <div style="font-size:1.4rem;font-weight:900;text-shadow:0 2px 8px rgba(0,0,0,.4);">${t.name}</div>
+        <div style="font-size:.82rem;opacity:.9;margin-top:.2rem;"><span class="ms" style="font-size:.85rem;">calendar_today</span> ${fmtDate(t.date)} &nbsp;<span class="ms" style="font-size:.85rem;">schedule</span> ${t.time} &nbsp;<span class="ms" style="font-size:.85rem;">location_on</span> ${t.meeting}</div>
+      </div>
+    </div>
     <div class="trip-header-card">
-      <div>
-        <div class="trip-header-title">${t.name}</div>
-        <div class="trip-header-meta"><span class="ms">calendar_today</span> ${fmtDate(t.date)} &nbsp;<span class="ms">schedule</span> ${t.time} &nbsp;<span class="ms">location_on</span> ${t.meeting}</div>
+      <div style="flex:1;">
         ${t.desc?`<div class="trip-header-desc">${t.desc}</div>`:''}
       </div>
       <div style="display:flex;flex-direction:column;gap:.5rem;flex-shrink:0">
         <button class="share-btn" onclick="copyShareLink('${t.id}')"><span class="ms">share</span> שתף קישור</button>
+        <button class="share-btn" style="background:var(--teal-pale);color:var(--teal-dark);" onclick="editTrip('${t.id}')"><span class="ms">edit</span> ערוך טיול</button>
       </div>
     </div>
     <div class="privacy-bar">
@@ -1417,16 +1428,52 @@ function removePax(tid,pid){
 }
 
 // ===================== ADD TRIP =====================
+let editingTripId=null;
+function editTrip(id){
+  const t=trips.find(x=>String(x.id)===String(id));if(!t)return;
+  editingTripId=id;
+  document.getElementById('trip-name').value=t.name||'';
+  document.getElementById('trip-date').value=t.date||'';
+  document.getElementById('trip-time').value=t.time||'08:00';
+  document.getElementById('trip-meeting').value=t.meeting||'';
+  document.getElementById('trip-desc').value=t.desc||t.description||'';
+  document.getElementById('trip-private').checked=!!t.hidden;
+  document.getElementById('trip-image-url').value=t.image&&!TRIP_IMAGES.includes(t.image)?t.image:'';
+  selectedImage=t.image||TRIP_IMAGES[0];
+  openModal('modal-add-trip');
+  renderImagePicker();
+  // Update modal title for edit mode
+  document.querySelector('#modal-add-trip .modal-title span:first-child').innerHTML='<span class="ms">edit</span> עריכת טיול';
+  document.querySelector('#modal-add-trip .btn-primary').innerHTML='<span class="ms">save</span> שמור שינויים';
+}
 async function addTrip(){
   const name=document.getElementById('trip-name').value.trim();
   const date=document.getElementById('trip-date').value;
   if(!name||!date){showToast('נא למלא שם ותאריך');return;}
-  const newWps=collectWpEditorItems();
   const isPrivate=document.getElementById('trip-private').checked;
+  const imgUrl=document.getElementById('trip-image-url').value.trim();
+  const finalImage=imgUrl||selectedImage;
+
+  if(editingTripId){
+    // EDIT existing trip
+    const t=trips.find(x=>String(x.id)===String(editingTripId));if(!t)return;
+    t.name=name;t.date=date;
+    t.time=document.getElementById('trip-time').value;
+    t.meeting=document.getElementById('trip-meeting').value.trim();
+    t.desc=document.getElementById('trip-desc').value.trim();
+    t.image=finalImage;t.hidden=isPrivate;
+    currentTripId=t.id;saveTrips();
+    closeModal('modal-add-trip');resetTripModal();
+    renderDetail(t);showToast('הטיול עודכן');
+    return;
+  }
+
+  // ADD new trip
+  const newWps=collectWpEditorItems();
   const t={id:'t'+Math.random().toString(36).substr(2,9),name,date,time:document.getElementById('trip-time').value,
     meeting:document.getElementById('trip-meeting').value.trim(),
     desc:document.getElementById('trip-desc').value.trim(),
-    image:selectedImage,status:'open',hidden:isPrivate,participants:[],waypoints:newWps};
+    image:finalImage,status:'open',hidden:isPrivate,participants:[],waypoints:newWps};
   try{
     const r=await fetch(`${API}/trips`,{method:'POST',
       headers:{'Content-Type':'application/json','X-Creator-Token':creatorToken},
@@ -1436,13 +1483,19 @@ async function addTrip(){
   }catch(e){}
   trips.push(t);
   newWps.forEach(w=>geocodeWaypoint(w,()=>{currentTripId=t.id;saveTrips();}));
-  closeModal('modal-add-trip');
+  closeModal('modal-add-trip');resetTripModal();
+  showTrip(t.id);showToast(isPrivate?'טיול פרטי נוצר! שתפו קישור ישיר':'הטיול פורסם!');
+}
+function resetTripModal(){
+  editingTripId=null;
   ['trip-name','trip-date','trip-meeting','trip-desc'].forEach(i=>document.getElementById(i).value='');
   document.getElementById('trip-time').value='08:00';
   document.getElementById('trip-private').checked=false;
+  document.getElementById('trip-image-url').value='';
   document.getElementById('wp-editor-list').innerHTML='';wpEditorItems=[];
   selectedImage=TRIP_IMAGES[0];renderImagePicker();
-  showTrip(t.id);showToast(isPrivate?'טיול פרטי נוצר! שתפו קישור ישיר':'הטיול פורסם!');
+  document.querySelector('#modal-add-trip .modal-title span:first-child').innerHTML='<span class="ms">edit</span> פרסום טיול חדש';
+  document.querySelector('#modal-add-trip .btn-primary').innerHTML='<span class="ms">send</span> פרסם טיול';
 }
 function toggleTripHidden(id){
   const t=trips.find(x=>String(x.id)===String(id));if(!t)return;
@@ -1486,7 +1539,7 @@ function showList(){
 }
 function openModal(id){
   document.getElementById(id).classList.add('open');
-  if(id==='modal-add-trip'){renderImagePicker();setTimeout(()=>tryAttachAutocomplete('trip-meeting'),200);}
+  if(id==='modal-add-trip'){if(!editingTripId)resetTripModal();renderImagePicker();setTimeout(()=>tryAttachAutocomplete('trip-meeting'),200);}
   if(id==='modal-add-wp'){if(!document.getElementById('wp-edit-id').value)resetWpModal();setTimeout(()=>{tryAttachAutocomplete('wp-address');tryAttachWpAutocomplete();},200);}
 }
 function closeModal(id){document.getElementById(id).classList.remove('open');}
