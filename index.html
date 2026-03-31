@@ -311,6 +311,17 @@ input:checked+.slider::before{transform:translateX(-21px);}
   padding:.65rem 1.3rem;border-radius:11px;font-weight:700;font-size:.88rem;box-shadow:0 8px 26px rgba(0,0,0,.22);
   z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;max-width:90vw;text-align:center;}
 .toast.show{opacity:1;}
+/* ADMIN */
+.admin-toggle-btn{background:none;border:none;cursor:pointer;font-family:'Heebo',sans-serif;font-size:.85rem;border-radius:20px;}
+.admin-toggle-btn.admin-active{background:rgba(255,255,255,.95);color:var(--orange-dark)!important;font-weight:700;}
+.admin-card-bar{display:flex;gap:.5rem;padding:.6rem .8rem;background:#fff8f0;border-top:1.5px solid var(--orange-light);}
+.admin-card-btn{display:flex;align-items:center;gap:.3rem;padding:.3rem .75rem;border-radius:8px;border:1.5px solid var(--orange-light);background:white;color:var(--orange-dark);font-family:'Heebo',sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;transition:all .2s;}
+.admin-card-btn:hover{background:var(--orange);color:white;border-color:var(--orange);}
+.admin-card-btn-del{border-color:#ffcdd2;color:#c62828;}
+.admin-card-btn-del:hover{background:#c62828;border-color:#c62828;color:white;}
+.trip-card-hidden{opacity:.65;}
+.trip-card-hidden .trip-card-img::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(0,0,0,.06) 0px,rgba(0,0,0,.06) 4px,transparent 4px,transparent 10px);}
+.hidden-badge{position:absolute;top:.6rem;left:.6rem;background:rgba(0,0,0,.65);color:white;border-radius:8px;padding:.2rem .55rem;font-size:.72rem;font-weight:700;display:flex;align-items:center;gap:.25rem;}
 .direct-link-notice{background:var(--teal-pale);border-radius:12px;padding:.7rem 1rem;margin-bottom:1.2rem;
   font-size:.84rem;color:var(--teal-dark);font-weight:600;display:flex;align-items:center;gap:.5rem;}
 
@@ -363,6 +374,7 @@ input:checked+.slider::before{transform:translateX(-21px);}
     <span class="nav-item" onclick="focusSearch()"><i class="ri-compass-3-line"></i> מצא טיול</span>
     <span class="nav-item" onclick="openModal('modal-add-trip')"><i class="ri-add-circle-line"></i> פרסם טיול</span>
     <span class="nav-item" onclick="openModal('modal-api-key')"><i class="ri-map-2-line"></i> הגדרות מפה</span>
+    <button id="admin-toggle-btn" class="nav-item admin-toggle-btn" onclick="toggleAdminMode()" title="כניסה למצב ניהול"><i class="ri-settings-3-line"></i></button>
   </nav>
 </header>
 
@@ -624,22 +636,45 @@ function copyShareLink(tripId){
   navigator.clipboard.writeText(url).then(()=>showToast('🔗 הקישור הועתק! שתפו עם חברים')).catch(()=>prompt('העתיקו:',url));
 }
 
+// ===================== ADMIN MODE =====================
+let adminMode=false;
+function toggleAdminMode(){
+  adminMode=!adminMode;
+  const btn=document.getElementById('admin-toggle-btn');
+  btn.classList.toggle('admin-active',adminMode);
+  btn.title=adminMode?'יציאה ממצב ניהול':'כניסה למצב ניהול';
+  showToast(adminMode?'🔧 מצב ניהול פעיל':'👁️ מצב צפייה רגיל');
+  renderList();
+}
+
 // ===================== LIST =====================
 function renderList(){
   document.getElementById('hero-section').style.display='';
   const g=document.getElementById('trips-grid');
-  let h=trips.map((t,idx)=>{
+  const visibleTrips=trips.filter(t=>adminMode||!t.hidden);
+  let h=visibleTrips.map((t,idx)=>{
     const drivers=t.participants.filter(p=>p.hasCar);
     const fs=drivers.reduce((s,d)=>{const tk=t.participants.filter(p=>p.assignedTo===d.id).length;return s+Math.max(0,parseInt(d.seats)-tk);},0);
     const img=TRIP_IMAGES[idx%TRIP_IMAGES.length];
     const paxAvatars=t.participants.slice(0,3).map((p,i)=>
       `<div class="tc-avatar-mini" style="background:${AVC[i%8]}">${ini(p.name)}</div>`).join('');
     const paxNames=t.participants.slice(0,2).map(p=>p.name.split(' ')[0]).join(', ');
-    return`<div class="trip-card" onclick="showTrip(${t.id})">
+    const hiddenBadge=t.hidden?`<div class="hidden-badge"><i class="ri-eye-off-line"></i> מוסתר</div>`:'';
+    const adminBar=adminMode?`
+      <div class="admin-card-bar" onclick="event.stopPropagation()">
+        <button class="admin-card-btn" onclick="toggleTripHidden(${t.id})" title="${t.hidden?'הצג':'הסתר'} טיול">
+          <i class="ri-${t.hidden?'eye':'eye-off'}-line"></i> ${t.hidden?'הצג':'הסתר'}
+        </button>
+        <button class="admin-card-btn admin-card-btn-del" onclick="deleteTrip(${t.id})" title="מחק טיול">
+          <i class="ri-delete-bin-line"></i> מחק
+        </button>
+      </div>`:'';
+    return`<div class="trip-card${t.hidden?' trip-card-hidden':''}" onclick="showTrip(${t.id})">
       <div class="trip-card-img">
         <img src="${img}" alt="${t.name}" loading="lazy">
         <div class="location-badge"><i class="ri-map-pin-2-fill"></i> ${t.name.split(' ').slice(-2).join(' ')}</div>
         <div class="emoji-overlay">${t.emoji}</div>
+        ${hiddenBadge}
       </div>
       <div class="trip-card-body">
         <div class="tc-title">${t.name}</div>
@@ -660,11 +695,28 @@ function renderList(){
             <div class="tc-avatars">${paxAvatars}</div>
           </div>
         </div>
+        ${adminBar}
       </div>
     </div>`;
   }).join('');
-  h+=`<div class="add-trip-card" onclick="openModal('modal-add-trip')"><div class="plus"><i class="ri-add-line"></i></div><div>פרסם טיול חדש</div></div>`;
+  if(adminMode) h+=`<div class="add-trip-card" onclick="openModal('modal-add-trip')"><div class="plus"><i class="ri-add-line"></i></div><div>פרסם טיול חדש</div></div>`;
   g.innerHTML=h;
+}
+
+function toggleTripHidden(id){
+  const t=trips.find(x=>x.id===id);if(!t)return;
+  t.hidden=!t.hidden;
+  saveTrips();
+  showToast(t.hidden?`<i class="ri-eye-off-line"></i> "${t.name}" הוסתר`:`<i class="ri-eye-line"></i> "${t.name}" גלוי עכשיו`);
+  renderList();
+}
+function deleteTrip(id){
+  const t=trips.find(x=>x.id===id);if(!t)return;
+  if(!confirm(`למחוק את "${t.name}"?\nהמשתתפים וכל הנתונים יימחקו לצמיתות.`))return;
+  trips=trips.filter(x=>x.id!==id);
+  saveTrips();
+  showToast(`🗑️ "${t.name}" נמחק`);
+  renderList();
 }
 
 // ===================== DETAIL =====================
@@ -717,7 +769,11 @@ function renderDetail(t){
         <div class="trip-header-meta"><i class="ri-calendar-line"></i> ${fmtDate(t.date)} &nbsp;<i class="ri-time-line"></i> ${t.time} &nbsp;<i class="ri-map-pin-line"></i> ${t.meeting}</div>
         ${t.desc?`<div class="trip-header-desc">${t.desc}</div>`:''}
       </div>
-      <button class="share-btn" onclick="copyShareLink(${t.id})"><i class="ri-share-line"></i> שתף קישור</button>
+      <div style="display:flex;flex-direction:column;gap:.5rem;flex-shrink:0">
+        <button class="share-btn" onclick="copyShareLink(${t.id})"><i class="ri-share-line"></i> שתף קישור</button>
+        ${adminMode?`<button class="share-btn" style="${t.hidden?'background:rgba(246,166,35,.3)':''}" onclick="toggleTripHidden(${t.id})"><i class="ri-${t.hidden?'eye':'eye-off'}-line"></i> ${t.hidden?'הצג':'הסתר'}</button>
+        <button class="share-btn" style="background:rgba(198,40,40,.25)" onclick="deleteTrip(${t.id})"><i class="ri-delete-bin-line"></i> מחק</button>`:''}
+      </div>
     </div>
     ${sumH}
     <div class="section-card">
