@@ -528,7 +528,7 @@ input:checked+.slider::before{transform:translateX(-21px);}
       <div class="form-group"><label>שעת יציאה</label><input id="trip-time" type="time" value="08:00"></div>
     </div>
     <div class="form-group"><label>נקודת מפגש ראשית</label><input id="trip-meeting" type="text" placeholder="איפה מתכנסים?"></div>
-    <div class="form-group"><label>תיאור הטיול</label><textarea id="trip-desc" placeholder="מה מחכה לנו? רמת קושי, ציוד נדרש..."></textarea></div>
+    <div class="form-group"><label>תיאור הטיול</label><textarea id="trip-desc" placeholder="מה מחכה לנו? רמת קושי, ציוד נדרש..." oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';" style="min-height:60px;overflow:hidden;resize:none;"></textarea></div>
     <div class="form-group">
       <label><span class="ms">image</span> תמונת רקע לטיול</label>
       <div style="display:flex;gap:.5rem;margin-bottom:.5rem;">
@@ -549,7 +549,11 @@ input:checked+.slider::before{transform:translateX(-21px);}
       <div id="wp-editor-list"></div>
       <button class="btn btn-ghost btn-sm" onclick="addWpEditorItem()">+ הוסף נקודה</button>
     </div>
-    <div class="toggle-row" style="margin-top:.9rem;padding-top:.9rem;border-top:2px solid #eef2f5;">
+    <div class="form-group" style="margin-top:.9rem;padding-top:.9rem;border-top:2px solid #eef2f5;">
+      <label><span class="ms">lock</span> סיסמת עריכה (4-8 תווים)</label>
+      <input id="trip-password" type="text" minlength="4" maxlength="8" placeholder="סיסמה לעריכת הטיול" style="letter-spacing:2px;font-weight:700;" dir="ltr">
+    </div>
+    <div class="toggle-row" style="margin-top:.5rem;">
       <label class="toggle"><input type="checkbox" id="trip-private"><span class="slider"></span></label>
       <span class="toggle-label"><span class="ms">visibility_off</span> טיול פרטי — גלוי רק דרך קישור ישיר</span>
     </div>
@@ -1435,6 +1439,10 @@ function removePax(tid,pid){
 let editingTripId=null;
 function editTrip(id){
   const t=trips.find(x=>String(x.id)===String(id));if(!t)return;
+  if(t.password){
+    const pw=prompt('הזן סיסמת עריכה:');
+    if(pw!==t.password){showToast('סיסמה שגויה');return;}
+  }
   editingTripId=id;
   document.getElementById('trip-name').value=t.name||'';
   document.getElementById('trip-date').value=t.date||'';
@@ -1458,6 +1466,7 @@ async function addTrip(){
   const name=document.getElementById('trip-name').value.trim();
   const date=document.getElementById('trip-date').value;
   if(!name||!date){showToast('נא למלא שם ותאריך');return;}
+  const tripPw=document.getElementById('trip-password').value.trim();
   const isPrivate=document.getElementById('trip-private').checked;
   const imgUrl=document.getElementById('trip-image-url').value.trim();
   const finalImage=imgUrl||selectedImage;
@@ -1466,6 +1475,7 @@ async function addTrip(){
     // EDIT existing trip
     const t=trips.find(x=>String(x.id)===String(editingTripId));if(!t)return;
     t.name=name;t.date=date;
+    if(tripPw) t.password=tripPw;
     t.time=document.getElementById('trip-time').value;
     t.meeting=document.getElementById('trip-meeting').value.trim();
     t.desc=document.getElementById('trip-desc').value.trim();
@@ -1477,11 +1487,12 @@ async function addTrip(){
   }
 
   // ADD new trip
+  if(!tripPw||tripPw.length<4){showToast('נא להזין סיסמה (4-8 תווים)');return;}
   const newWps=collectWpEditorItems();
   const t={id:'t'+Math.random().toString(36).substr(2,9),name,date,time:document.getElementById('trip-time').value,
     meeting:document.getElementById('trip-meeting').value.trim(),
     desc:document.getElementById('trip-desc').value.trim(),
-    image:finalImage,cropY:selectedCropY,status:'open',hidden:isPrivate,participants:[],waypoints:newWps};
+    image:finalImage,cropY:selectedCropY,password:tripPw,status:'open',hidden:isPrivate,participants:[],waypoints:newWps};
   try{
     const r=await fetch(`${API}/trips`,{method:'POST',
       headers:{'Content-Type':'application/json','X-Creator-Token':creatorToken},
@@ -1499,6 +1510,7 @@ function resetTripModal(){
   ['trip-name','trip-date','trip-meeting','trip-desc'].forEach(i=>document.getElementById(i).value='');
   document.getElementById('trip-time').value='08:00';
   document.getElementById('trip-private').checked=false;
+  document.getElementById('trip-password').value='';
   document.getElementById('trip-image-url').value='';
   document.getElementById('wp-editor-list').innerHTML='';wpEditorItems=[];
   selectedImage=TRIP_IMAGES[0];selectedCropY=50;renderImagePicker();
@@ -1511,11 +1523,14 @@ function resetTripModal(){
 }
 function toggleTripHidden(id){
   const t=trips.find(x=>String(x.id)===String(id));if(!t)return;
+  if(t.password){const pw=prompt('הזן סיסמת עריכה:');if(pw!==t.password){showToast('סיסמה שגויה');return;}}
   t.hidden=!t.hidden;saveTrips();
   showToast(t.hidden?'הטיול הוסתר — גלוי רק דרך קישור':'הטיול גלוי לכולם');
   renderDetail(t);
 }
 async function deleteTrip(id){
+  const t=trips.find(x=>String(x.id)===String(id));
+  if(t&&t.password){const pw=prompt('הזן סיסמת עריכה:');if(pw!==t.password){showToast('סיסמה שגויה');return;}}
   if(!confirm('בטוח למחוק את הטיול לצמיתות?'))return;
   try{await fetch(`${API}/trips/${id}`,{method:'DELETE',headers:{'X-Creator-Token':creatorToken}});}catch(e){}
   const idx=trips.findIndex(x=>String(x.id)===String(id));if(idx<0)return;
