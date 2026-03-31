@@ -459,10 +459,11 @@ input:checked+.slider::before{transform:translateX(-21px);}
       <div style="font-size:2.5rem;margin-bottom:.5rem;"><span class="ms" style="font-size:2.5rem;">admin_panel_settings</span></div>
       <h2 style="margin-bottom:.5rem;color:var(--dark);">ניהול טיולים</h2>
       <p style="margin-bottom:1.2rem;color:var(--gray);font-size:.9rem;">הזן קוד אדמין לצפייה בכל הטיולים</p>
-      <input type="password" id="admin-token-input" placeholder="Admin Token" dir="ltr"
-        style="width:100%;padding:.65rem 1rem;border-radius:10px;border:2px solid #eef2f5;font-family:'Heebo',sans-serif;font-size:.95rem;margin-bottom:.8rem;outline:none;"
-        onkeydown="if(event.key==='Enter')adminLogin()">
-      <button class="btn btn-primary btn-full" onclick="adminLogin()"><span class="ms">login</span> כניסה</button>
+      <form onsubmit="event.preventDefault();adminLogin();">
+        <input type="password" id="admin-token-input" placeholder="Admin Token" dir="ltr"
+          style="width:100%;padding:.65rem 1rem;border-radius:10px;border:2px solid #eef2f5;font-family:'Heebo',sans-serif;font-size:.95rem;margin-bottom:.8rem;outline:none;">
+        <button class="btn btn-primary btn-full" type="submit"><span class="ms">login</span> כניסה</button>
+      </form>
     </div>
     <div id="admin-content" style="display:none;"></div>
   </div>
@@ -681,7 +682,7 @@ function loadGoogleMapsScript(key){
     window._gmapsReady=()=>{gmapsScriptLoaded=true;resolve();};
     const s=document.createElement('script');
     s.id='gmaps-script';
-    s.src=`https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places&language=he&callback=_gmapsReady`;
+    s.src=`https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places&language=he&callback=_gmapsReady`;s.async=true;
     s.onerror=()=>{gmapsScriptLoaded=false;reject();};
     document.head.appendChild(s);
   });
@@ -940,7 +941,6 @@ function initGoogleMap(t,el){
     });
   }
   if(wps.length>1) gmapsMap.fitBounds(bounds,{padding:50});
-  tryGeolocation(t);
 }
 
 function fetchPlaceRating(svc,w,cb){
@@ -997,7 +997,6 @@ function _initLeaflet(t,el){
     L.polyline(wps.map(w=>[w.lat,w.lng]),{color:'#00b4d8',weight:3,dashArray:'8,6'}).addTo(leafletMapObj);
     leafletMapObj.fitBounds(L.latLngBounds(wps.map(w=>[w.lat,w.lng])),{padding:[35,35]});
   } else { leafletMapObj.setView([wps[0].lat,wps[0].lng],13); }
-  tryGeolocation(t);
 }
 
 /* ---- GEOLOCATION ---- */
