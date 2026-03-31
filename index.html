@@ -506,7 +506,7 @@ input:checked+.slider::before{transform:translateX(-21px);}
       <span><span class="ms">edit</span> פרסום טיול חדש</span>
       <button class="modal-close" onclick="closeModal('modal-add-trip')"><span class="ms">close</span></button>
     </div>
-    <div class="form-group"><label>שם הטיול</label><input id="trip-name" type="text" placeholder="הר מירון, נחל דוד..."></div>
+    <div class="form-group"><label>שם הטיול</label><input id="trip-name" type="text" placeholder="הר מירון, נחל דוד..." oninput="autoTripImage(this.value)"></div>
     <div class="form-row">
       <div class="form-group"><label>תאריך</label><input id="trip-date" type="date"></div>
       <div class="form-group"><label>שעת יציאה</label><input id="trip-time" type="time" value="08:00"></div>
@@ -1279,6 +1279,12 @@ function deleteTrip(id){
   if(!confirm('בטוח למחוק את הטיול לצמיתות?'))return;
   const idx=trips.findIndex(x=>String(x.id)===String(id));if(idx<0)return;
   trips.splice(idx,1);saveTrips();showList();showToast('הטיול נמחק');
+}
+function autoTripImage(name){
+  if(!name.trim())return;
+  let h=0;for(const c of name)h=(h*31+c.charCodeAt(0))&0xffff;
+  selectedImage=TRIP_IMAGES[h%TRIP_IMAGES.length];
+  renderImagePicker();
 }
 function renderImagePicker(){
   const el=document.getElementById('img-picker');if(!el)return;
