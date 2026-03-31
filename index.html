@@ -247,6 +247,9 @@ input:checked+.slider::before{transform:translateX(-21px);}
 .wp-waze{background:#e8f0fb;color:#1a73e8;border-color:#aecbfa;}.wp-waze:hover{background:#1a73e8;color:white;}
 .wp-reviews{background:#fff8e1;color:#e65100;border-color:#ffe082;}.wp-reviews:hover{background:#e65100;color:white;}
 .wp-phone-btn{background:#e3f2fd;color:#1565c0;border-color:#90caf9;}.wp-phone-btn:hover{background:#1565c0;color:white;}
+.wp-move{background:none;border:1.5px solid #e0e0e0;color:var(--gray);border-radius:8px;
+  width:26px;height:26px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.8rem;transition:all .2s;padding:0;}
+.wp-move:hover{background:var(--teal-pale);color:var(--teal-dark);border-color:var(--teal-light);}
 .wp-edit{background:none;border:1.5px solid #bbdefb;color:#1565c0;border-radius:8px;
   width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.85rem;transition:all .2s;}
 .wp-edit:hover{background:#1565c0;color:white;}
@@ -1068,9 +1071,15 @@ function buildWaypointsHTML(t){
           ${w.notes?`<div class="wp-notes">${w.notes}</div>`:''}
           <div class="wp-rating-row" id="wpr-${w.id}">${ratingContent}</div>
         </div>
-        <div style="display:flex;gap:.25rem;">
-          <button class="wp-edit" onclick="editWaypoint('${t.id}','${w.id}')" title="ערוך"><span class="ms">edit</span></button>
-          <button class="wp-rm" onclick="removeWaypoint('${t.id}','${w.id}')" title="מחק"><span class="ms">close</span></button>
+        <div style="display:flex;flex-direction:column;gap:.2rem;align-items:center;">
+          <div style="display:flex;gap:.2rem;">
+            ${i>0?`<button class="wp-move" onclick="moveWaypoint('${t.id}',${i},-1)" title="הזז למעלה"><span class="ms">arrow_upward</span></button>`:''}
+            ${i<t.waypoints.length-1?`<button class="wp-move" onclick="moveWaypoint('${t.id}',${i},1)" title="הזז למטה"><span class="ms">arrow_downward</span></button>`:''}
+          </div>
+          <div style="display:flex;gap:.2rem;">
+            <button class="wp-edit" onclick="editWaypoint('${t.id}','${w.id}')" title="ערוך"><span class="ms">edit</span></button>
+            <button class="wp-rm" onclick="removeWaypoint('${t.id}','${w.id}')" title="מחק"><span class="ms">close</span></button>
+          </div>
         </div>
       </div>
       <div class="wp-actions">
@@ -1181,6 +1190,12 @@ function saveWaypoint(){
   }
 }
 
+function moveWaypoint(tripId,idx,dir){
+  const t=trips.find(x=>String(x.id)===String(tripId));if(!t)return;
+  const newIdx=idx+dir;if(newIdx<0||newIdx>=t.waypoints.length)return;
+  const tmp=t.waypoints[idx];t.waypoints[idx]=t.waypoints[newIdx];t.waypoints[newIdx]=tmp;
+  saveTrips();renderDetail(t);
+}
 function removeWaypoint(tripId,wpId){
   const t=trips.find(x=>String(x.id)===String(tripId));const i=t.waypoints.findIndex(x=>x.id===wpId);if(i<0)return;
   const name=t.waypoints[i].name;t.waypoints.splice(i,1);saveTrips();showToast(`"${name}" הוסר`);renderDetail(t);
