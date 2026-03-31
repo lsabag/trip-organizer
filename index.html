@@ -885,6 +885,7 @@ function activateInlineKey(){
 
 // ===================== MAP =====================
 function cleanupMap(){
+  if(directionsRenderer){directionsRenderer.setMap(null);directionsRenderer=null;}
   if(gmapsMap){gmapsMap=null;}
   if(watchId){navigator.geolocation.clearWatch(watchId);watchId=null;}
   userMarkerG=null;nextWpIndex=-1;
@@ -983,6 +984,7 @@ function initLeafletMap(t,el){
   } else { _initLeaflet(t,el); }
 }
 let leafletMapObj=null;
+let directionsRenderer=null;
 function _initLeaflet(t,el){
   if(leafletMapObj){leafletMapObj.remove();leafletMapObj=null;}
   const wps=t.waypoints.filter(w=>w.lat&&w.lng);
@@ -1040,10 +1042,31 @@ function updateNextWaypoint(lat,lng,t){
   const bar=document.getElementById('next-stop-bar'),txt=document.getElementById('next-stop-text');
   if(bar&&txt&&ni>=0){
     const w=wps[ni];
-    txt.textContent=`הנקודה הבאה: ${w.name}  •  ${minD<1?Math.round(minD*1000)+'מ׳':minD.toFixed(1)+'ק"מ'}`;
+    const distText=minD<1?Math.round(minD*1000)+'מ׳':minD.toFixed(1)+'ק"מ';
+    txt.textContent=`הנקודה הבאה: ${w.name}  •  ${distText}`;
     bar.classList.remove('hidden');
     document.querySelectorAll('.wp-card').forEach((el,i)=>el.classList.toggle('next-stop',i===ni));
     document.querySelectorAll('.wp-num').forEach((el,i)=>el.style.background=i===ni?'#0096b7':'#00b4d8');
+    // Draw route + get ETA via Directions API
+    if(gmapsMap&&window.google&&window.google.maps){
+      if(!directionsRenderer){
+        directionsRenderer=new google.maps.DirectionsRenderer({
+          map:gmapsMap,suppressMarkers:true,
+          polylineOptions:{strokeColor:'#2196F3',strokeOpacity:.7,strokeWeight:4}
+        });
+      }
+      const svc=new google.maps.DirectionsService();
+      svc.route({origin:{lat,lng},destination:{lat:w.lat,lng:w.lng},travelMode:google.maps.TravelMode.DRIVING},
+        (result,status)=>{
+          if(status==='OK'){
+            directionsRenderer.setDirections(result);
+            const leg=result.routes[0]?.legs[0];
+            if(leg){
+              txt.textContent=`הנקודה הבאה: ${w.name}  •  ${leg.distance.text}  •  ${leg.duration.text}`;
+            }
+          }
+        });
+    }
   }
 }
 
