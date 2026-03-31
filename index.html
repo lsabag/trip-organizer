@@ -150,7 +150,7 @@
     <div class="form-group">
       <label><span class="ms">image</span> תמונת רקע לטיול</label>
       <div style="display:flex;gap:.5rem;margin-bottom:.5rem;">
-        <input id="trip-image-url" type="url" dir="ltr" placeholder="או הדבק קישור לתמונה..." style="flex:1;padding:.4rem .7rem;border-radius:8px;border:1.5px solid #e0e0e0;font-size:.82rem;font-family:'Heebo',sans-serif;" oninput="if(this.value.trim()){selectedImage=this.value.trim();document.querySelectorAll('.img-picker-item').forEach(x=>x.classList.remove('selected'));updateCropPreview();}">
+        <input id="trip-image-url" type="url" dir="rtl" placeholder="הדבק קישור לתמונה" style="flex:1;padding:.4rem .7rem;border-radius:8px;border:1.5px solid #e0e0e0;font-size:.82rem;font-family:'Heebo',sans-serif;" oninput="this.dir=this.value?'ltr':'rtl';if(this.value.trim()){selectedImage=this.value.trim();document.querySelectorAll('.img-picker-item').forEach(x=>x.classList.remove('selected'));updateCropPreview();}">
       </div>
       <div id="crop-preview" style="width:100%;height:180px;border-radius:10px;overflow:hidden;margin-bottom:.5rem;background:#e8f0f5;display:none;">
         <img id="crop-preview-img" style="width:100%;height:100%;object-fit:cover;" src="">
