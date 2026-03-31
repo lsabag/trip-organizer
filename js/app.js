@@ -245,7 +245,6 @@ function renderDetail(t){
   const mapControlsHTML=`<div class="map-controls">
     <button class="map-ctrl-btn" onclick="locateMe()"><span class="ms">my_location</span> מיקום שלי</button>
     ${gmapsKey?`<button class="map-ctrl-btn" onclick="refreshRatings()"><span class="ms">star</span> טען ביקורות</button>`:''}
-    <button class="map-ctrl-btn" onclick="openModal('modal-api-key')">${gmapsKey?'<span class="ms">key</span> שנה מפתח':'<span class="ms">map</span> גוגל מאפס'}</button>
   </div>`;
 
   const headerImg=t.image||TRIP_IMAGES[0];
@@ -262,13 +261,11 @@ function renderDetail(t){
         <div style="font-size:.82rem;opacity:.9;margin-top:.2rem;"><span class="ms" style="font-size:.85rem;">calendar_today</span> ${fmtDate(t.date)} &nbsp;<span class="ms" style="font-size:.85rem;">schedule</span> ${t.time} &nbsp;<span class="ms" style="font-size:.85rem;">location_on</span> ${t.meeting}</div>
       </div>
     </div>
-    <div class="trip-header-card">
-      <div style="flex:1;">
-        ${t.desc?`<div class="trip-header-desc">${t.desc}</div>`:''}
-      </div>
-      <div style="display:flex;gap:.4rem;flex-shrink:0;">
-        <button class="share-btn" style="flex:1;white-space:nowrap;padding:.4rem .7rem;font-size:.8rem;" onclick="copyShareLink('${t.id}')"><span class="ms">share</span> שתף</button>
-        <button class="share-btn" style="flex:1;white-space:nowrap;padding:.4rem .7rem;font-size:.8rem;background:var(--teal-pale);color:var(--teal-dark);" onclick="editTrip('${t.id}')"><span class="ms">edit</span> ערוך</button>
+    <div class="trip-header-card" style="flex-direction:column;">
+      ${t.desc?`<div class="trip-header-desc">${t.desc}</div>`:''}
+      <div style="display:flex;gap:.4rem;">
+        <button class="share-btn" style="flex:1;padding:.45rem .8rem;font-size:.82rem;" onclick="copyShareLink('${t.id}')"><span class="ms">share</span> שתף</button>
+        <button class="share-btn" style="flex:1;padding:.45rem .8rem;font-size:.82rem;background:var(--teal-pale);color:var(--teal-dark);" onclick="editTrip('${t.id}')"><span class="ms">edit</span> ערוך</button>
       </div>
     </div>
     <div class="privacy-bar">
