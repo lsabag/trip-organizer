@@ -299,9 +299,7 @@ function renderDetail(t){
       <div class="section-title"><span class="ms">group</span> כל המשתתפים (${t.participants.length})</div>
       <div class="participants-list">${buildPaxHTML(t)}</div>
     </div>
-    <div style="text-align:center;padding:1rem 0;">
-      <button class="delete-trip-btn" onclick="deleteTrip('${t.id}')" style="margin:0 auto;"><span class="ms">delete</span> מחק טיול</button>
-    </div>`;
+    `;
 
   setTimeout(()=>initMap(t),100);
 }
@@ -554,6 +552,7 @@ function buildWaypointsHTML(t){
 
 function editWaypoint(tripId,wpId){
   const t=trips.find(x=>String(x.id)===String(tripId));if(!t)return;
+  if(!checkTripPassword(t))return;
   const w=t.waypoints.find(x=>x.id===wpId);if(!w)return;
   document.getElementById('wp-edit-id').value=wpId;
   document.getElementById('wp-name').value=w.name||'';
@@ -652,12 +651,16 @@ function saveWaypoint(){
 
 function moveWaypoint(tripId,idx,dir){
   const t=trips.find(x=>String(x.id)===String(tripId));if(!t)return;
+  if(!checkTripPassword(t))return;
   const newIdx=idx+dir;if(newIdx<0||newIdx>=t.waypoints.length)return;
   const tmp=t.waypoints[idx];t.waypoints[idx]=t.waypoints[newIdx];t.waypoints[newIdx]=tmp;
   saveTrips();renderDetail(t);
 }
 function removeWaypoint(tripId,wpId){
-  const t=trips.find(x=>String(x.id)===String(tripId));const i=t.waypoints.findIndex(x=>x.id===wpId);if(i<0)return;
+  const t=trips.find(x=>String(x.id)===String(tripId));if(!t)return;
+  if(!checkTripPassword(t))return;
+  const i=t.waypoints.findIndex(x=>x.id===wpId);if(i<0)return;
+  if(!confirm(`למחוק את "${t.waypoints[i].name}"?`))return;
   const name=t.waypoints[i].name;t.waypoints.splice(i,1);saveTrips();showToast(`"${name}" הוסר`);renderDetail(t);
 }
 
@@ -791,7 +794,7 @@ function buildCarsHTML(t,drivers,unassigned){
     assigned.forEach(()=>seatsH+=`<span class="seat taken"><span class="ms">person</span></span>`);
     for(let i=0;i<freeC;i++) seatsH+=`<span class="seat free"><span class="ms">event_seat</span></span>`;
     let paxH=assigned.map(p=>{
-      const wa=p.phone?`<a class="pax-contact-btn" href="https://wa.me/${waNum(p.phone)}" target="_blank" title="וואטסאפ"><span class="ms">chat</span></a>`:'';
+      const wa=p.phone?`<a class="pax-contact-btn" href="https://wa.me/${waNum(p.phone)}" target="_blank" title="וואטסאפ"><span class="ms">chat</span> WA</a>`:'';
       const call=p.phone?`<a class="pax-contact-btn pax-call-btn" href="tel:${p.phone}" title="חיוג"><span class="ms">phone</span></a>`:'';
       return`<div class="car-pax-row">
       <div class="pax-av" style="background:${avc(p.id)}">${ini(p.name)}</div>
@@ -887,12 +890,17 @@ function removePax(tid,pid){
 
 // ===================== ADD TRIP =====================
 let editingTripId=null;
+const unlockedTrips={};
+function checkTripPassword(t){
+  if(!t.password)return true;
+  if(unlockedTrips[t.id])return true;
+  const pw=prompt('הזן סיסמת עריכה:');
+  if(pw===t.password){unlockedTrips[t.id]=true;return true;}
+  showToast('סיסמה שגויה');return false;
+}
 function editTrip(id){
   const t=trips.find(x=>String(x.id)===String(id));if(!t)return;
-  if(t.password){
-    const pw=prompt('הזן סיסמת עריכה:');
-    if(pw!==t.password){showToast('סיסמה שגויה');return;}
-  }
+  if(!checkTripPassword(t))return;
   editingTripId=id;
   document.getElementById('trip-name').value=t.name||'';
   document.getElementById('trip-date').value=t.date||'';
@@ -914,6 +922,7 @@ function editTrip(id){
   // Update modal title for edit mode
   document.querySelector('#modal-add-trip .modal-title span:first-child').innerHTML='<span class="ms">edit</span> עריכת טיול';
   document.querySelector('#modal-add-trip .btn-primary').innerHTML='<span class="ms">save</span> שמור שינויים';
+  document.getElementById('trip-delete-row').style.display='block';
 }
 async function addTrip(){
   const name=document.getElementById('trip-name').value.trim();
@@ -975,18 +984,18 @@ function resetTripModal(){
   document.getElementById('crop-slider-row').style.display='none';
   document.querySelector('#modal-add-trip .modal-title span:first-child').innerHTML='<span class="ms">edit</span> פרסום טיול חדש';
   document.querySelector('#modal-add-trip .btn-primary').innerHTML='<span class="ms">send</span> פרסם טיול';
+  document.getElementById('trip-delete-row').style.display='none';
 }
 function toggleTripHidden(id){
   const t=trips.find(x=>String(x.id)===String(id));if(!t)return;
-  if(t.password){const pw=prompt('הזן סיסמת עריכה:');if(pw!==t.password){showToast('סיסמה שגויה');return;}}
+  if(!checkTripPassword(t))return;
   t.hidden=!t.hidden;saveTrips();
   showToast(t.hidden?'הטיול הוסתר — גלוי רק דרך קישור':'הטיול גלוי לכולם');
   renderDetail(t);
 }
 async function deleteTrip(id){
-  const t=trips.find(x=>String(x.id)===String(id));
-  if(t&&t.password){const pw=prompt('הזן סיסמת עריכה:');if(pw!==t.password){showToast('סיסמה שגויה');return;}}
   if(!confirm('בטוח למחוק את הטיול לצמיתות?'))return;
+  closeModal('modal-add-trip');
   try{await fetch(`${API}/trips/${id}`,{method:'DELETE',headers:{'X-Creator-Token':creatorToken}});}catch(e){}
   const idx=trips.findIndex(x=>String(x.id)===String(id));if(idx<0)return;
   trips.splice(idx,1);showList();showToast('הטיול נמחק');
