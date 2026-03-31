@@ -354,17 +354,13 @@ input:checked+.slider::before{transform:translateX(-21px);}
       </div>
     </div>
     <div class="search-bar">
-      <input type="text" placeholder="חפש טיול...">
-    </div>
-    <div class="header-user">
-      <span class="user-name">שלום!</span>
-      <div class="user-avatar"><i class="ri-user-3-fill"></i></div>
+      <input type="text" id="search-input" placeholder="חפש טיול..." oninput="filterTrips(this.value)">
     </div>
     <button class="hamburger" onclick="document.querySelector('.header-nav').classList.toggle('mobile-show')"><i class="ri-menu-line"></i></button>
   </div>
   <nav class="header-nav">
     <span class="nav-item active" onclick="showList()"><i class="ri-home-4-line"></i> דף הבית</span>
-    <span class="nav-item"><i class="ri-compass-3-line"></i> מצא טיול</span>
+    <span class="nav-item" onclick="focusSearch()"><i class="ri-compass-3-line"></i> מצא טיול</span>
     <span class="nav-item" onclick="openModal('modal-add-trip')"><i class="ri-add-circle-line"></i> פרסם טיול</span>
     <span class="nav-item" onclick="openModal('modal-api-key')"><i class="ri-map-2-line"></i> הגדרות מפה</span>
   </nav>
@@ -406,17 +402,13 @@ input:checked+.slider::before{transform:translateX(-21px);}
     <span class="bnav-icon"><i class="ri-home-4-fill"></i></span>
     <span class="bnav-label">דף הבית</span>
   </button>
-  <button class="bnav-item">
+  <button class="bnav-item" onclick="focusSearch()">
     <span class="bnav-icon"><i class="ri-search-line"></i></span>
     <span class="bnav-label">חיפוש</span>
   </button>
   <button class="bnav-item bnav-item-publish" onclick="openModal('modal-add-trip')">
     <span class="bnav-icon"><i class="ri-add-line"></i></span>
     <span class="bnav-label">פרסם</span>
-  </button>
-  <button class="bnav-item">
-    <span class="bnav-icon"><i class="ri-user-3-line"></i></span>
-    <span class="bnav-label">פרופיל</span>
   </button>
 </nav>
 
@@ -662,7 +654,7 @@ function renderList(){
           <div class="tc-pax-count"><i class="ri-group-line"></i> ${t.participants.length}</div>
         </div>
         <div class="tc-footer">
-          <button class="tc-join-btn"><i class="ri-user-add-line"></i> הצטרף</button>
+          <button class="tc-join-btn" onclick="event.stopPropagation();joinFromCard(${t.id})"><i class="ri-user-add-line"></i> הצטרף</button>
           <div style="display:flex;align-items:center;gap:.3rem;">
             ${paxNames?`<span class="tc-avatar-name">${paxNames}</span>`:''}
             <div class="tc-avatars">${paxAvatars}</div>
@@ -1235,6 +1227,28 @@ function haversine(a,b,c,d){
 function showToast(msg){
   const t=document.getElementById('toast');
   t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ===================== SEARCH =====================
+function filterTrips(q){
+  showList();
+  const term=q.trim().toLowerCase();
+  document.querySelectorAll('.trip-card').forEach(card=>{
+    const text=card.textContent.toLowerCase();
+    card.style.display=(!term||text.includes(term))?'':'none';
+  });
+}
+function focusSearch(){
+  showList();
+  const inp=document.getElementById('search-input');
+  if(inp){inp.focus();window.scrollTo({top:0,behavior:'smooth'});}
+}
+function joinFromCard(id){
+  showTrip(id);
+  setTimeout(()=>{
+    const el=document.querySelector('.join-section');
+    if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+  },350);
 }
 
 // ===================== INIT =====================
