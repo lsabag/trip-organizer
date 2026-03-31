@@ -1383,7 +1383,10 @@ function buildCarsHTML(t,drivers,unassigned){
   }).join('');
 }
 function buildPoolHTML(t,unassigned,drivers){
-  if(!unassigned.length)return`<div class="empty-state"><div class="ei"><span class="ms" style="font-size:2.3rem;color:var(--green)">done_all</span></div><p>כולם שובצו לרכב!</p></div>`;
+  if(!unassigned.length){
+    if(!drivers.length) return`<div class="empty-state"><div class="ei"><span class="ms" style="font-size:2.3rem;color:var(--gray)">no_transfer</span></div><p>אין ממתינים לשיבוץ</p></div>`;
+    return`<div class="empty-state"><div class="ei"><span class="ms" style="font-size:2.3rem;color:var(--green)">done_all</span></div><p>כולם שובצו לרכב!</p></div>`;
+  }
   const opts=drivers.map(d=>{const tk=t.participants.filter(p=>p.assignedTo===d.id).length;const fr=Math.max(0,parseInt(d.seats)-tk);return`<option value="${d.id}" ${fr===0?'disabled':''}>${d.name} – ${fr} מקומות</option>`;}).join('');
   return unassigned.map(p=>`<div class="pool-row">
     <div class="pax-av" style="background:${avc(p.id)}">${ini(p.name)}</div>
