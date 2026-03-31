@@ -520,7 +520,7 @@ const TRIP_IMAGES=[
   'https://images.unsplash.com/photo-1533240332313-0db49b459ad6?w=600&q=80',
   'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80'
 ];
-let gmapsKey=(()=>{try{return localStorage.getItem('tiyulim_gmaps_key')||'';}catch(e){return '';}})();
+let gmapsKey=(()=>{const built='__GMAPS_KEY__';if(built&&built!=='__GMAPS_KEY__')return built;try{return localStorage.getItem('tiyulim_gmaps_key')||'';}catch(e){return '';}})();
 let gmapsScriptLoaded=false;
 let gmapsMap=null;
 let userMarkerG=null;

@@ -14,6 +14,9 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - name: Inject Google Maps API key
+        run: |
+          sed -i "s|__GMAPS_KEY__|${{ secrets.GOOGLE_MAPS_API_KEY }}|g" index.html
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
