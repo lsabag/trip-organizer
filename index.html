@@ -34,7 +34,6 @@ a{text-decoration:none;color:inherit;}
   font-family:'Heebo',sans-serif;font-size:.85rem;background:rgba(255,255,255,.92);
   color:var(--text);outline:none;}
 .search-bar input::placeholder{color:var(--gray);}
-.search-bar::after{position:absolute;right:.75rem;top:50%;transform:translateY(-50%);font-size:.9rem;color:var(--gray);font-family:'remixicon';content:'\f0cd';}
 .header-user{display:flex;align-items:center;gap:.5rem;color:white;}
 .user-avatar{width:34px;height:34px;border-radius:50%;background:var(--orange);display:flex;
   align-items:center;justify-content:center;font-weight:800;font-size:.85rem;color:white;
@@ -248,6 +247,9 @@ input:checked+.slider::before{transform:translateX(-21px);}
 .wp-waze{background:#e8f0fb;color:#1a73e8;border-color:#aecbfa;}.wp-waze:hover{background:#1a73e8;color:white;}
 .wp-reviews{background:#fff8e1;color:#e65100;border-color:#ffe082;}.wp-reviews:hover{background:#e65100;color:white;}
 .wp-phone-btn{background:#e3f2fd;color:#1565c0;border-color:#90caf9;}.wp-phone-btn:hover{background:#1565c0;color:white;}
+.wp-edit{background:none;border:1.5px solid #bbdefb;color:#1565c0;border-radius:8px;
+  width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.85rem;transition:all .2s;}
+.wp-edit:hover{background:#1565c0;color:white;}
 .wp-rm{background:none;border:1.5px solid #ffcdd2;color:#c62828;border-radius:8px;
   padding:.28rem .55rem;font-size:.76rem;font-weight:700;font-family:'Heebo',sans-serif;cursor:pointer;margin-inline-start:auto;transition:all .2s;}
 .wp-rm:hover{background:#c62828;color:white;}
@@ -546,11 +548,11 @@ input:checked+.slider::before{transform:translateX(-21px);}
   </div>
 </div>
 
-<!-- ADD WAYPOINT MODAL -->
+<!-- ADD/EDIT WAYPOINT MODAL -->
 <div class="modal-overlay" id="modal-add-wp">
   <div class="modal">
     <div class="modal-title">
-      <span><span class="ms">add_location</span> הוסף נקודת טיול</span>
+      <span><span class="ms" id="wp-modal-icon">add_location</span> <span id="wp-modal-title">הוסף נקודת טיול</span></span>
       <button class="modal-close" onclick="closeModal('modal-add-wp')"><span class="ms">close</span></button>
     </div>
     <div class="form-group"><label>שם המקום *</label><input id="wp-name" type="text" placeholder="עין גדי, מפל דוד..."></div>
@@ -560,7 +562,10 @@ input:checked+.slider::before{transform:translateX(-21px);}
       <div class="form-group"><label>שעת הגעה משוערת</label><input id="wp-time" type="time"></div>
     </div>
     <div class="form-group"><label>הערות</label><textarea id="wp-notes" rows="2" placeholder="חנייה, כניסה, מה לדעת..."></textarea></div>
-    <div class="btn-row"><button class="btn btn-primary btn-full" onclick="saveWaypoint()">שמור נקודה</button></div>
+    <button class="btn btn-ghost btn-full" style="margin-bottom:.6rem;" onclick="fetchGoogleDetails()"><span class="ms">travel_explore</span> משוך פרטים מ-Google Maps</button>
+    <div id="wp-google-preview" style="display:none;background:#f8fafb;border-radius:10px;padding:.7rem;margin-bottom:.7rem;font-size:.82rem;color:var(--gray);"></div>
+    <div class="btn-row"><button class="btn btn-primary btn-full" onclick="saveWaypoint()"><span id="wp-save-label">שמור נקודה</span></button></div>
+    <input type="hidden" id="wp-edit-id" value="">
   </div>
 </div>
 
@@ -583,7 +588,7 @@ const TRIP_IMAGES=[
   'https://images.unsplash.com/photo-1502136969935-8d8eef54d77b?w=600&q=80'
 ];
 let selectedImage=TRIP_IMAGES[0];
-let gmapsKey=(()=>{const built='__GMAPS_KEY__';if(built&&built!=='__GMAPS_KEY__')return built;try{return localStorage.getItem('tiyulim_gmaps_key')||'';}catch(e){return '';}})();
+let gmapsKey=localStorage.getItem('tiyulim_gmaps_key')||'';
 let gmapsScriptLoaded=false;
 let gmapsMap=null;
 let userMarkerG=null;
@@ -1060,7 +1065,10 @@ function buildWaypointsHTML(t){
           ${w.notes?`<div class="wp-notes">${w.notes}</div>`:''}
           <div class="wp-rating-row" id="wpr-${w.id}">${ratingContent}</div>
         </div>
-        <button class="wp-rm" onclick="removeWaypoint('${t.id}','${w.id}')"><span class="ms">close</span></button>
+        <div style="display:flex;gap:.25rem;">
+          <button class="wp-edit" onclick="editWaypoint('${t.id}','${w.id}')" title="ערוך"><span class="ms">edit</span></button>
+          <button class="wp-rm" onclick="removeWaypoint('${t.id}','${w.id}')" title="מחק"><span class="ms">close</span></button>
+        </div>
       </div>
       <div class="wp-actions">
         <a class="wp-action-btn wp-nav" href="${navUrl}" target="_blank"><span class="ms">location_on</span> Google</a>
@@ -1072,19 +1080,105 @@ function buildWaypointsHTML(t){
   }).join('');
 }
 
+function editWaypoint(tripId,wpId){
+  const t=trips.find(x=>String(x.id)===String(tripId));if(!t)return;
+  const w=t.waypoints.find(x=>x.id===wpId);if(!w)return;
+  document.getElementById('wp-edit-id').value=wpId;
+  document.getElementById('wp-name').value=w.name||'';
+  document.getElementById('wp-address').value=w.address||'';
+  document.getElementById('wp-phone').value=w.phone||'';
+  document.getElementById('wp-time').value=w.time||'';
+  document.getElementById('wp-notes').value=w.notes||'';
+  document.getElementById('wp-modal-icon').textContent='edit_location';
+  document.getElementById('wp-modal-title').textContent='עריכת נקודת טיול';
+  document.getElementById('wp-save-label').textContent='עדכן נקודה';
+  document.getElementById('wp-google-preview').style.display='none';
+  openModal('modal-add-wp');
+}
+function resetWpModal(){
+  document.getElementById('wp-edit-id').value='';
+  ['wp-name','wp-address','wp-phone','wp-notes'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('wp-time').value='';
+  document.getElementById('wp-modal-icon').textContent='add_location';
+  document.getElementById('wp-modal-title').textContent='הוסף נקודת טיול';
+  document.getElementById('wp-save-label').textContent='שמור נקודה';
+  document.getElementById('wp-google-preview').style.display='none';
+}
+function fetchGoogleDetails(){
+  if(!gmapsScriptLoaded||!window.google||!window.google.maps||!window.google.maps.places){
+    showToast('Google Maps לא נטען — בדוק מפתח API');return;}
+  const q=(document.getElementById('wp-name').value.trim()||'')+' '+(document.getElementById('wp-address').value.trim()||'ישראל');
+  if(q.trim().length<2){showToast('נא להזין שם מקום');return;}
+  showToast('מחפש ב-Google Maps...');
+  const div=document.createElement('div');
+  const svc=new google.maps.places.PlacesService(div);
+  svc.findPlaceFromQuery({query:q,fields:['name','formatted_address','formatted_phone_number','geometry','rating','user_ratings_total','place_id']},
+    (results,status)=>{
+      if(status===google.maps.places.PlacesServiceStatus.OK&&results&&results[0]){
+        const p=results[0];
+        // If findPlace doesn't return phone, use getDetails
+        if(p.place_id){
+          svc.getDetails({placeId:p.place_id,fields:['name','formatted_address','formatted_phone_number','geometry','rating','user_ratings_total','opening_hours','website']},
+            (det,st2)=>{
+              if(st2===google.maps.places.PlacesServiceStatus.OK&&det) applyGoogleDetails(det);
+              else applyGoogleDetails(p);
+            });
+        } else applyGoogleDetails(p);
+      } else showToast('לא נמצא ב-Google Maps');
+    });
+}
+function applyGoogleDetails(p){
+  if(p.name) document.getElementById('wp-name').value=p.name;
+  if(p.formatted_address) document.getElementById('wp-address').value=p.formatted_address;
+  if(p.formatted_phone_number) document.getElementById('wp-phone').value=p.formatted_phone_number;
+  // Store in temp vars for saving
+  window._wpGoogleData={
+    lat:p.geometry?.location?.lat()||null,
+    lng:p.geometry?.location?.lng()||null,
+    rating:p.rating||null,
+    ratingsTotal:p.user_ratings_total||null,
+    placeId:p.place_id||null
+  };
+  const prev=document.getElementById('wp-google-preview');
+  let info=`<b>${p.name||''}</b>`;
+  if(p.rating) info+=` | ${starsHTML(p.rating)} ${p.rating} (${num(p.user_ratings_total)} ביקורות)`;
+  if(p.formatted_address) info+=`<br><span class="ms" style="font-size:.8rem;">location_on</span> ${p.formatted_address}`;
+  if(p.formatted_phone_number) info+=` | <span class="ms" style="font-size:.8rem;">phone</span> ${p.formatted_phone_number}`;
+  prev.innerHTML=info;prev.style.display='block';
+  showToast('פרטים נמשכו מ-Google Maps');
+}
 function saveWaypoint(){
   const name=document.getElementById('wp-name').value.trim();
   if(!name){showToast('נא להזין שם מקום');return;}
   const t=trips.find(x=>x.id===currentTripId);
-  const wp={id:'w'+(nextWpId++),name,address:document.getElementById('wp-address').value.trim(),
-    phone:document.getElementById('wp-phone').value.trim(),time:document.getElementById('wp-time').value,
-    notes:document.getElementById('wp-notes').value.trim(),lat:null,lng:null,rating:null,ratingsTotal:null,placeId:null};
-  t.waypoints.push(wp);saveTrips();
-  closeModal('modal-add-wp');
-  ['wp-name','wp-address','wp-phone','wp-notes'].forEach(i=>document.getElementById(i).value='');
-  document.getElementById('wp-time').value='';
-  geocodeWaypoint(wp,()=>{saveTrips();renderDetail(t);});
-  renderDetail(t);showToast(`"${name}" נוסף למסלול`);
+  const editId=document.getElementById('wp-edit-id').value;
+  const gd=window._wpGoogleData||{};
+
+  if(editId){
+    // Edit existing waypoint
+    const w=t.waypoints.find(x=>x.id===editId);if(!w)return;
+    w.name=name;
+    w.address=document.getElementById('wp-address').value.trim();
+    w.phone=document.getElementById('wp-phone').value.trim();
+    w.time=document.getElementById('wp-time').value;
+    w.notes=document.getElementById('wp-notes').value.trim();
+    if(gd.lat){w.lat=gd.lat;w.lng=gd.lng;}
+    if(gd.rating!==null&&gd.rating!==undefined){w.rating=gd.rating;w.ratingsTotal=gd.ratingsTotal;w.placeId=gd.placeId;}
+    saveTrips();closeModal('modal-add-wp');resetWpModal();window._wpGoogleData=null;
+    if(!w.lat) geocodeWaypoint(w,()=>{saveTrips();renderDetail(t);});
+    renderDetail(t);showToast(`"${name}" עודכן`);
+  } else {
+    // Add new waypoint
+    const wp={id:'w'+(nextWpId++),name,address:document.getElementById('wp-address').value.trim(),
+      phone:document.getElementById('wp-phone').value.trim(),time:document.getElementById('wp-time').value,
+      notes:document.getElementById('wp-notes').value.trim(),
+      lat:gd.lat||null,lng:gd.lng||null,
+      rating:gd.rating||null,ratingsTotal:gd.ratingsTotal||null,placeId:gd.placeId||null};
+    t.waypoints.push(wp);saveTrips();
+    closeModal('modal-add-wp');resetWpModal();window._wpGoogleData=null;
+    if(!wp.lat) geocodeWaypoint(wp,()=>{saveTrips();renderDetail(t);});
+    renderDetail(t);showToast(`"${name}" נוסף למסלול`);
+  }
 }
 
 function removeWaypoint(tripId,wpId){
@@ -1355,7 +1449,7 @@ function showList(){
 function openModal(id){
   document.getElementById(id).classList.add('open');
   if(id==='modal-add-trip'){renderImagePicker();setTimeout(()=>tryAttachAutocomplete('trip-meeting'),200);}
-  if(id==='modal-add-wp') setTimeout(()=>tryAttachAutocomplete('wp-address'),200);
+  if(id==='modal-add-wp'){if(!document.getElementById('wp-edit-id').value)resetWpModal();setTimeout(()=>tryAttachAutocomplete('wp-address'),200);}
 }
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 function tryAttachAutocomplete(inputId){
@@ -1484,6 +1578,12 @@ async function adminDeleteTrip(id){
 
 // ===================== INIT =====================
 (async function init(){
+  // Auto-load Google Maps API key from server config
+  if(!gmapsKey){
+    try{const r=await fetch(`${API}/config`);if(r.ok){const c=await r.json();
+      if(c.gmapsKey){gmapsKey=c.gmapsKey;localStorage.setItem('tiyulim_gmaps_key',c.gmapsKey);}
+    }}catch(e){}
+  }
   trips=await loadTripsFromAPI();
   syncIds();
   renderList();
