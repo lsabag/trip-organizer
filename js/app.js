@@ -266,9 +266,9 @@ function renderDetail(t){
       <div style="flex:1;">
         ${t.desc?`<div class="trip-header-desc">${t.desc}</div>`:''}
       </div>
-      <div style="display:flex;gap:.5rem;flex-shrink:0;flex-wrap:wrap;">
-        <button class="share-btn" onclick="copyShareLink('${t.id}')"><span class="ms">share</span> שתף</button>
-        <button class="share-btn" style="background:var(--teal-pale);color:var(--teal-dark);" onclick="editTrip('${t.id}')"><span class="ms">edit</span> ערוך</button>
+      <div style="display:flex;gap:.4rem;flex-shrink:0;">
+        <button class="share-btn" style="flex:1;white-space:nowrap;padding:.4rem .7rem;font-size:.8rem;" onclick="copyShareLink('${t.id}')"><span class="ms">share</span> שתף</button>
+        <button class="share-btn" style="flex:1;white-space:nowrap;padding:.4rem .7rem;font-size:.8rem;background:var(--teal-pale);color:var(--teal-dark);" onclick="editTrip('${t.id}')"><span class="ms">edit</span> ערוך</button>
       </div>
     </div>
     <div class="privacy-bar">
