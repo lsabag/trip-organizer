@@ -1111,7 +1111,7 @@ function fetchGoogleDetails(){
   showToast('מחפש ב-Google Maps...');
   const div=document.createElement('div');
   const svc=new google.maps.places.PlacesService(div);
-  svc.findPlaceFromQuery({query:q,fields:['name','formatted_address','formatted_phone_number','geometry','rating','user_ratings_total','place_id']},
+  svc.findPlaceFromQuery({query:q,fields:['name','formatted_address','geometry','rating','user_ratings_total','place_id']},
     (results,status)=>{
       if(status===google.maps.places.PlacesServiceStatus.OK&&results&&results[0]){
         const p=results[0];
