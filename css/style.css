@@ -353,7 +353,7 @@ input:checked+.slider::before{transform:translateX(-21px);}
   .hero-title{font-size:2rem;}
   .hero-sub{font-size:.9rem;}
   .form-row{grid-template-columns:1fr;}
-  .trip-header-card{flex-direction:column;}
+  .trip-header-card{flex-direction:row;flex-wrap:wrap;}
   .map-key-banner .key-input-row{flex-direction:column;}
   .trips-grid{grid-template-columns:1fr;}
 }
