@@ -265,7 +265,7 @@ input:checked+.slider::before{transform:translateX(-21px);}
 .pax-name2{font-weight:700;font-size:.84rem;}
 .pax-city2{font-size:.72rem;color:var(--gray);}
 .unassign-btn{background:none;border:none;cursor:pointer;color:#ccc;font-size:.82rem;padding:.18rem .38rem;border-radius:6px;}
-.pax-contact-btn{height:28px;border-radius:7px;padding:0 .5rem;background:#e8f5e9;color:#25d366;display:flex;align-items:center;justify-content:center;gap:.2rem;font-size:.75rem;font-weight:700;text-decoration:none;transition:all .2s;flex-shrink:0;font-family:'Heebo',sans-serif;}
+.pax-contact-btn{height:34px;border-radius:8px;padding:0 .7rem;background:#e8f5e9;color:#25d366;display:flex;align-items:center;justify-content:center;gap:.3rem;font-size:.8rem;font-weight:700;text-decoration:none;transition:all .2s;flex-shrink:0;font-family:'Heebo',sans-serif;}
 .pax-contact-btn:hover{background:#25d366;color:white;}
 .pax-call-btn{background:#e3f2fd;color:#1565c0;}.pax-call-btn:hover{background:#1565c0;color:white;}
 .unassign-btn:hover{background:var(--orange-light);color:var(--orange-dark);}
