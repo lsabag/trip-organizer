@@ -532,7 +532,15 @@ input:checked+.slider::before{transform:translateX(-21px);}
     <div class="form-group">
       <label><span class="ms">image</span> תמונת רקע לטיול</label>
       <div style="display:flex;gap:.5rem;margin-bottom:.5rem;">
-        <input id="trip-image-url" type="url" dir="ltr" placeholder="או הדבק קישור לתמונה..." style="flex:1;padding:.4rem .7rem;border-radius:8px;border:1.5px solid #e0e0e0;font-size:.82rem;font-family:'Heebo',sans-serif;" oninput="if(this.value.trim()){selectedImage=this.value.trim();document.querySelectorAll('.img-picker-item').forEach(x=>x.classList.remove('selected'));}">
+        <input id="trip-image-url" type="url" dir="ltr" placeholder="או הדבק קישור לתמונה..." style="flex:1;padding:.4rem .7rem;border-radius:8px;border:1.5px solid #e0e0e0;font-size:.82rem;font-family:'Heebo',sans-serif;" oninput="if(this.value.trim()){selectedImage=this.value.trim();document.querySelectorAll('.img-picker-item').forEach(x=>x.classList.remove('selected'));updateCropPreview();}">
+      </div>
+      <div id="crop-preview" style="width:100%;height:100px;border-radius:10px;overflow:hidden;margin-bottom:.5rem;background:#e8f0f5;display:none;">
+        <img id="crop-preview-img" style="width:100%;height:100%;object-fit:cover;" src="">
+      </div>
+      <div id="crop-slider-row" style="display:none;align-items:center;gap:.6rem;margin-bottom:.6rem;">
+        <span class="ms" style="font-size:.9rem;color:var(--gray);">crop</span>
+        <input id="crop-slider" type="range" min="0" max="100" value="50" style="flex:1;accent-color:var(--teal);" oninput="updateCropPosition(this.value)">
+        <span id="crop-val" style="font-size:.75rem;color:var(--gray);min-width:30px;">50%</span>
       </div>
       <div class="img-picker" id="img-picker"></div>
     </div>
@@ -589,6 +597,7 @@ const TRIP_IMAGES=[
   'https://images.unsplash.com/photo-1502136969935-8d8eef54d77b?w=600&q=80'
 ];
 let selectedImage=TRIP_IMAGES[0];
+let selectedCropY=50;
 let gmapsKey=localStorage.getItem('tiyulim_gmaps_key')||'';
 let gmapsScriptLoaded=false;
 let gmapsMap=null;
@@ -742,7 +751,7 @@ function renderList(){
     const paxNames=t.participants.slice(0,2).map(p=>p.name.split(' ')[0]).join(', ');
     return`<div class="trip-card" onclick="showTrip('${t.id}')">
       <div class="trip-card-img">
-        <img src="${img}" alt="${t.name}" loading="lazy">
+        <img src="${img}" alt="${t.name}" loading="lazy" style="object-position:center ${t.cropY!=null?t.cropY:50}%">
         <div class="location-badge"><span class="ms">location_on</span> ${t.name.split(' ').slice(-2).join(' ')}</div>
       </div>
       <div class="trip-card-body">
@@ -815,10 +824,11 @@ function renderDetail(t){
   </div>`;
 
   const headerImg=t.image||TRIP_IMAGES[0];
+  const cropPos=t.cropY!=null?t.cropY:50;
   document.getElementById('detail-content').innerHTML=`
     ${directNotice}
     <div style="position:relative;border-radius:var(--radius);overflow:hidden;margin-bottom:1rem;">
-      <img src="${headerImg}" style="width:100%;height:180px;object-fit:cover;display:block;" loading="lazy">
+      <img src="${headerImg}" style="width:100%;height:180px;object-fit:cover;object-position:center ${cropPos}%;display:block;" loading="lazy">
       <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.6) 0%,transparent 50%);"></div>
       <div style="position:absolute;bottom:0;left:0;right:0;padding:1rem 1.2rem;color:white;">
         <div style="font-size:1.4rem;font-weight:900;text-shadow:0 2px 8px rgba(0,0,0,.4);">${t.name}</div>
@@ -1434,8 +1444,12 @@ function editTrip(id){
   document.getElementById('trip-private').checked=!!t.hidden;
   document.getElementById('trip-image-url').value=t.image&&!TRIP_IMAGES.includes(t.image)?t.image:'';
   selectedImage=t.image||TRIP_IMAGES[0];
+  selectedCropY=t.cropY!=null?t.cropY:50;
+  document.getElementById('crop-slider').value=selectedCropY;
+  document.getElementById('crop-val').textContent=selectedCropY+'%';
   openModal('modal-add-trip');
   renderImagePicker();
+  updateCropPreview();
   // Update modal title for edit mode
   document.querySelector('#modal-add-trip .modal-title span:first-child').innerHTML='<span class="ms">edit</span> עריכת טיול';
   document.querySelector('#modal-add-trip .btn-primary').innerHTML='<span class="ms">save</span> שמור שינויים';
@@ -1455,7 +1469,7 @@ async function addTrip(){
     t.time=document.getElementById('trip-time').value;
     t.meeting=document.getElementById('trip-meeting').value.trim();
     t.desc=document.getElementById('trip-desc').value.trim();
-    t.image=finalImage;t.hidden=isPrivate;
+    t.image=finalImage;t.cropY=selectedCropY;t.hidden=isPrivate;
     currentTripId=t.id;saveTrips();
     closeModal('modal-add-trip');resetTripModal();
     renderDetail(t);showToast('הטיול עודכן');
@@ -1467,7 +1481,7 @@ async function addTrip(){
   const t={id:'t'+Math.random().toString(36).substr(2,9),name,date,time:document.getElementById('trip-time').value,
     meeting:document.getElementById('trip-meeting').value.trim(),
     desc:document.getElementById('trip-desc').value.trim(),
-    image:finalImage,status:'open',hidden:isPrivate,participants:[],waypoints:newWps};
+    image:finalImage,cropY:selectedCropY,status:'open',hidden:isPrivate,participants:[],waypoints:newWps};
   try{
     const r=await fetch(`${API}/trips`,{method:'POST',
       headers:{'Content-Type':'application/json','X-Creator-Token':creatorToken},
@@ -1487,7 +1501,11 @@ function resetTripModal(){
   document.getElementById('trip-private').checked=false;
   document.getElementById('trip-image-url').value='';
   document.getElementById('wp-editor-list').innerHTML='';wpEditorItems=[];
-  selectedImage=TRIP_IMAGES[0];renderImagePicker();
+  selectedImage=TRIP_IMAGES[0];selectedCropY=50;renderImagePicker();
+  document.getElementById('crop-slider').value=50;
+  document.getElementById('crop-val').textContent='50%';
+  document.getElementById('crop-preview').style.display='none';
+  document.getElementById('crop-slider-row').style.display='none';
   document.querySelector('#modal-add-trip .modal-title span:first-child').innerHTML='<span class="ms">edit</span> פרסום טיול חדש';
   document.querySelector('#modal-add-trip .btn-primary').innerHTML='<span class="ms">send</span> פרסם טיול';
 }
@@ -1517,6 +1535,25 @@ function setTripImage(el,url){
   selectedImage=url;
   document.querySelectorAll('.img-picker-item').forEach(x=>x.classList.remove('selected'));
   el.classList.add('selected');
+  document.getElementById('trip-image-url').value='';
+  updateCropPreview();
+}
+function updateCropPreview(){
+  const img=document.getElementById('crop-preview-img');
+  const wrap=document.getElementById('crop-preview');
+  const row=document.getElementById('crop-slider-row');
+  if(selectedImage){
+    img.src=selectedImage;
+    img.style.objectPosition=`center ${selectedCropY}%`;
+    wrap.style.display='block';
+    row.style.display='flex';
+  }else{wrap.style.display='none';row.style.display='none';}
+}
+function updateCropPosition(val){
+  selectedCropY=parseInt(val);
+  document.getElementById('crop-val').textContent=val+'%';
+  const img=document.getElementById('crop-preview-img');
+  if(img) img.style.objectPosition=`center ${val}%`;
 }
 
 // ===================== NAV =====================
@@ -1533,7 +1570,7 @@ function showList(){
 }
 function openModal(id){
   document.getElementById(id).classList.add('open');
-  if(id==='modal-add-trip'){if(!editingTripId)resetTripModal();renderImagePicker();setTimeout(()=>tryAttachAutocomplete('trip-meeting'),200);}
+  if(id==='modal-add-trip'){if(!editingTripId)resetTripModal();renderImagePicker();updateCropPreview();setTimeout(()=>tryAttachAutocomplete('trip-meeting'),200);}
   if(id==='modal-add-wp'){if(!document.getElementById('wp-edit-id').value)resetWpModal();setTimeout(()=>{tryAttachAutocomplete('wp-address');tryAttachWpAutocomplete();},200);}
 }
 function closeModal(id){document.getElementById(id).classList.remove('open');}
