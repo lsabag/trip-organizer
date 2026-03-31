@@ -556,8 +556,8 @@ input:checked+.slider::before{transform:translateX(-21px);}
       <span><span class="ms" id="wp-modal-icon">add_location</span> <span id="wp-modal-title">הוסף נקודת טיול</span></span>
       <button class="modal-close" onclick="closeModal('modal-add-wp')"><span class="ms">close</span></button>
     </div>
-    <div class="form-group"><label>שם המקום *</label><input id="wp-name" type="text" placeholder="עין גדי, מפל דוד..."></div>
-    <div class="form-group"><label>כתובת / שם לחיפוש</label><input id="wp-address" type="text" placeholder="Ein Gedi Nature Reserve Israel"></div>
+    <div class="form-group"><label>שם המקום *</label><input id="wp-name" type="text" placeholder="עין גדי, מפל דוד..." autocomplete="off"></div>
+    <div class="form-group"><label>כתובת / שם לחיפוש</label><input id="wp-address" type="text" placeholder="Ein Gedi Nature Reserve Israel" autocomplete="off"></div>
     <div class="form-row">
       <div class="form-group"><label>טלפון</label><input id="wp-phone" type="tel" placeholder="08-658xxxx"></div>
       <div class="form-group"><label>שעת הגעה משוערת</label><input id="wp-time" type="time"></div>
@@ -682,7 +682,7 @@ function loadGoogleMapsScript(key){
     window._gmapsReady=()=>{gmapsScriptLoaded=true;resolve();};
     const s=document.createElement('script');
     s.id='gmaps-script';
-    s.src=`https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places&language=he&loading=async&callback=_gmapsReady`;s.async=true;
+    s.src=`https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places,marker&language=he&loading=async&callback=_gmapsReady`;s.async=true;
     s.onerror=()=>{gmapsScriptLoaded=false;reject();};
     document.head.appendChild(s);
   });
@@ -904,20 +904,19 @@ function initGoogleMap(t,el){
   const center=wps.length?{lat:wps[0].lat,lng:wps[0].lng}:{lat:31.5,lng:34.9};
   const zoom=wps.length>1?10:14;
   gmapsMap=new google.maps.Map(el,{
-    center,zoom,mapTypeId:'roadmap',streetViewControl:false,fullscreenControl:true,
+    center,zoom,mapTypeId:'roadmap',mapId:'trip-organizer',streetViewControl:false,fullscreenControl:true,
     mapTypeControl:false,zoomControlOptions:{position:google.maps.ControlPosition.LEFT_BOTTOM}
   });
-  const placesService=new google.maps.places.PlacesService(gmapsMap);
   const bounds=new google.maps.LatLngBounds();
   wps.forEach((w,i)=>{
     const pos={lat:w.lat,lng:w.lng};bounds.extend(pos);
     const isNext=(i===nextWpIndex);
     const bgColor=isNext?'#0096b7':'#00b4d8';
-    const marker=new google.maps.Marker({
-      position:pos,map:gmapsMap,
-      label:{text:String(i+1),color:'white',fontWeight:'bold',fontSize:'13px'},
-      icon:{path:google.maps.SymbolPath.CIRCLE,scale:16,fillColor:bgColor,fillOpacity:1,strokeColor:'white',strokeWeight:2.5},
-      title:w.name,zIndex:100-i
+    const pin=document.createElement('div');
+    pin.style.cssText=`width:32px;height:32px;border-radius:50%;background:${bgColor};color:white;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:13px;border:2.5px solid white;box-shadow:0 2px 6px rgba(0,0,0,.3);font-family:Heebo,sans-serif;`;
+    pin.textContent=String(i+1);
+    const marker=new google.maps.marker.AdvancedMarkerElement({
+      position:pos,map:gmapsMap,content:pin,title:w.name,zIndex:100-i
     });
     const ratingHTML=w.rating?`<div style="margin-top:4px">${starsHTML(w.rating)} <b>${w.rating}</b> <span style="color:#888;font-size:.78rem">(${num(w.ratingsTotal)})</span></div>`:'';
     const gmapsLink=w.placeId?`https://www.google.com/maps/place/?q=place_id:${w.placeId}`:`https://www.google.com/maps/search/${encodeURIComponent(w.name+' '+w.address)}`;
@@ -931,8 +930,8 @@ function initGoogleMap(t,el){
         <a href="${gmapsLink}" target="_blank" style="background:#fff8e1;color:#e65100;padding:3px 8px;border-radius:6px;font-size:.78rem;font-weight:700;text-decoration:none">ביקורות</a>
       </div></div>`;
     const infoWindow=new google.maps.InfoWindow({content:infoContent});
-    marker.addListener('click',()=>infoWindow.open(gmapsMap,marker));
-    fetchPlaceRating(placesService,w,()=>updateWaypointCardRating(w));
+    marker.addEventListener('gmp-click',()=>infoWindow.open({map:gmapsMap,anchor:marker}));
+    fetchPlaceRating(w,()=>updateWaypointCardRating(w));
   });
   if(wps.length>=2){
     new google.maps.Polyline({
@@ -943,20 +942,21 @@ function initGoogleMap(t,el){
   if(wps.length>1) gmapsMap.fitBounds(bounds,{padding:50});
 }
 
-function fetchPlaceRating(svc,w,cb){
+async function fetchPlaceRating(w,cb){
   if(w.rating!==null){cb&&cb();return;}
   const q=(w.name||'')+(w.address?' '+w.address:' ישראל');
-  svc.findPlaceFromQuery({query:q,fields:['name','rating','user_ratings_total','place_id']},(results,status)=>{
-    if(status===google.maps.places.PlacesServiceStatus.OK&&results&&results[0]){
-      const r=results[0];w.rating=r.rating||null;w.ratingsTotal=r.user_ratings_total||null;w.placeId=r.place_id||null;cb&&cb();
+  try{
+    const {Place}=google.maps.places;
+    const {places}=await Place.searchByText({textQuery:q,fields:['rating','userRatingCount','id'],maxResultCount:1});
+    if(places&&places[0]){
+      const r=places[0];w.rating=r.rating||null;w.ratingsTotal=r.userRatingCount||null;w.placeId=r.id||null;cb&&cb();
     }
-  });
+  }catch(e){}
 }
 function refreshRatings(){
   if(!gmapsScriptLoaded||!window.google||!gmapsMap)return;
   const t=trips.find(x=>x.id===currentTripId);if(!t)return;
-  const svc=new google.maps.places.PlacesService(gmapsMap);
-  t.waypoints.forEach(w=>{w.rating=null;w.ratingsTotal=null;w.placeId=null;fetchPlaceRating(svc,w,()=>updateWaypointCardRating(w));});
+  t.waypoints.forEach(w=>{w.rating=null;w.ratingsTotal=null;w.placeId=null;fetchPlaceRating(w,()=>updateWaypointCardRating(w));});
   showToast('מרענן ביקורות...');
 }
 function updateWaypointCardRating(w){
@@ -1014,8 +1014,12 @@ function locateMe(){
 function placeUserMarker(lat,lng,t,pan){
   if(gmapsMap&&window.google){
     const pos={lat,lng};
-    if(userMarkerG){userMarkerG.setPosition(pos);}
-    else{userMarkerG=new google.maps.Marker({position:pos,map:gmapsMap,icon:{path:google.maps.SymbolPath.CIRCLE,scale:9,fillColor:'#2196F3',fillOpacity:1,strokeColor:'white',strokeWeight:2.5},title:'המיקום שלך',zIndex:200});}
+    if(userMarkerG){userMarkerG.position=pos;}
+    else{
+      const dot=document.createElement('div');
+      dot.style.cssText='width:14px;height:14px;background:#2196F3;border:2.5px solid white;border-radius:50%;box-shadow:0 0 0 4px rgba(33,150,243,.3);';
+      userMarkerG=new google.maps.marker.AdvancedMarkerElement({position:pos,map:gmapsMap,content:dot,title:'המיקום שלך',zIndex:200});
+    }
     if(pan) gmapsMap.setCenter(pos);
   } else if(leafletMapObj&&typeof L!=='undefined'){
     if(userMarkerG){userMarkerG.remove();}
@@ -1096,6 +1100,7 @@ function editWaypoint(tripId,wpId){
 }
 function resetWpModal(){
   document.getElementById('wp-edit-id').value='';
+  const wpNameEl=document.getElementById('wp-name');if(wpNameEl)wpNameEl._wpAcAttached=false;
   ['wp-name','wp-address','wp-phone','wp-notes'].forEach(i=>document.getElementById(i).value='');
   document.getElementById('wp-time').value='';
   document.getElementById('wp-modal-icon').textContent='add_location';
@@ -1103,40 +1108,36 @@ function resetWpModal(){
   document.getElementById('wp-save-label').textContent='שמור נקודה';
   document.getElementById('wp-google-preview').style.display='none';
 }
-function fetchGoogleDetails(){
+async function fetchGoogleDetails(){
   if(!gmapsScriptLoaded||!window.google||!window.google.maps||!window.google.maps.places){
     showToast('Google Maps לא נטען — בדוק מפתח API');return;}
   const q=(document.getElementById('wp-name').value.trim()||'')+' '+(document.getElementById('wp-address').value.trim()||'ישראל');
   if(q.trim().length<2){showToast('נא להזין שם מקום');return;}
   showToast('מחפש ב-Google Maps...');
-  const div=document.createElement('div');
-  const svc=new google.maps.places.PlacesService(div);
-  svc.findPlaceFromQuery({query:q,fields:['name','formatted_address','geometry','rating','user_ratings_total','place_id']},
-    (results,status)=>{
-      if(status===google.maps.places.PlacesServiceStatus.OK&&results&&results[0]){
-        const p=results[0];
-        // If findPlace doesn't return phone, use getDetails
-        if(p.place_id){
-          svc.getDetails({placeId:p.place_id,fields:['name','formatted_address','formatted_phone_number','geometry','rating','user_ratings_total','opening_hours','website']},
-            (det,st2)=>{
-              if(st2===google.maps.places.PlacesServiceStatus.OK&&det) applyGoogleDetails(det);
-              else applyGoogleDetails(p);
-            });
-        } else applyGoogleDetails(p);
-      } else showToast('לא נמצא ב-Google Maps');
-    });
+  try{
+    const {Place}=google.maps.places;
+    const {places}=await Place.searchByText({textQuery:q,
+      fields:['displayName','formattedAddress','location','rating','userRatingCount','id'],maxResultCount:1});
+    if(places&&places[0]){
+      const p=places[0];
+      if(p.id){
+        const det=new Place({id:p.id});
+        await det.fetchFields({fields:['displayName','formattedAddress','nationalPhoneNumber','location','rating','userRatingCount','websiteURI']});
+        applyGoogleDetails(det);
+      } else applyGoogleDetails(p);
+    } else showToast('לא נמצא ב-Google Maps');
+  }catch(e){showToast('שגיאה בחיפוש');}
 }
 function applyGoogleDetails(p){
-  if(p.name) document.getElementById('wp-name').value=p.name;
-  if(p.formatted_address) document.getElementById('wp-address').value=p.formatted_address;
-  if(p.formatted_phone_number) document.getElementById('wp-phone').value=p.formatted_phone_number;
-  // Store in temp vars for saving
+  if(p.displayName) document.getElementById('wp-name').value=p.displayName;
+  if(p.formattedAddress) document.getElementById('wp-address').value=p.formattedAddress;
+  if(p.nationalPhoneNumber) document.getElementById('wp-phone').value=p.nationalPhoneNumber;
   window._wpGoogleData={
-    lat:p.geometry?.location?.lat()||null,
-    lng:p.geometry?.location?.lng()||null,
+    lat:p.location?.lat()||null,
+    lng:p.location?.lng()||null,
     rating:p.rating||null,
-    ratingsTotal:p.user_ratings_total||null,
-    placeId:p.place_id||null
+    ratingsTotal:p.userRatingCount||null,
+    placeId:p.id||null
   };
   const prev=document.getElementById('wp-google-preview');
   let info=`<b>${p.name||''}</b>`;
@@ -1448,9 +1449,30 @@ function showList(){
 function openModal(id){
   document.getElementById(id).classList.add('open');
   if(id==='modal-add-trip'){renderImagePicker();setTimeout(()=>tryAttachAutocomplete('trip-meeting'),200);}
-  if(id==='modal-add-wp'){if(!document.getElementById('wp-edit-id').value)resetWpModal();setTimeout(()=>tryAttachAutocomplete('wp-address'),200);}
+  if(id==='modal-add-wp'){if(!document.getElementById('wp-edit-id').value)resetWpModal();setTimeout(()=>{tryAttachAutocomplete('wp-address');tryAttachWpAutocomplete();},200);}
 }
 function closeModal(id){document.getElementById(id).classList.remove('open');}
+function tryAttachWpAutocomplete(){
+  if(!gmapsScriptLoaded||!window.google||!window.google.maps||!window.google.maps.places)return;
+  const input=document.getElementById('wp-name');if(!input||input._wpAcAttached)return;
+  input._wpAcAttached=true;
+  const ac=new google.maps.places.Autocomplete(input,{componentRestrictions:{country:'il'},fields:['name','formatted_address','geometry','place_id']});
+  ac.addListener('place_changed',async()=>{
+    const raw=ac.getPlace();if(!raw||!raw.place_id)return;
+    // Use new Place API to get full details
+    try{
+      const {Place}=google.maps.places;
+      const det=new Place({id:raw.place_id});
+      await det.fetchFields({fields:['displayName','formattedAddress','nationalPhoneNumber','location','rating','userRatingCount','websiteURI']});
+      applyGoogleDetails(det);
+    }catch(e){
+      // Fallback: use what Autocomplete returned
+      if(raw.formatted_address) document.getElementById('wp-address').value=raw.formatted_address;
+      window._wpGoogleData={lat:raw.geometry?.location?.lat()||null,lng:raw.geometry?.location?.lng()||null,
+        rating:null,ratingsTotal:null,placeId:raw.place_id||null};
+    }
+  });
+}
 function tryAttachAutocomplete(inputId){
   if(!gmapsScriptLoaded||!window.google||!window.google.maps||!window.google.maps.places)return;
   const input=document.getElementById(inputId);if(!input||input._acAttached)return;
