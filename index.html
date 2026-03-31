@@ -460,7 +460,7 @@ input:checked+.slider::before{transform:translateX(-21px);}
       <h2 style="margin-bottom:.5rem;color:var(--dark);">ניהול טיולים</h2>
       <p style="margin-bottom:1.2rem;color:var(--gray);font-size:.9rem;">הזן קוד אדמין לצפייה בכל הטיולים</p>
       <form onsubmit="event.preventDefault();adminLogin();">
-        <input type="password" id="admin-token-input" placeholder="Admin Token" dir="ltr"
+        <input type="password" id="admin-token-input" placeholder="Admin Token" dir="ltr" autocomplete="off"
           style="width:100%;padding:.65rem 1rem;border-radius:10px;border:2px solid #eef2f5;font-family:'Heebo',sans-serif;font-size:.95rem;margin-bottom:.8rem;outline:none;">
         <button class="btn btn-primary btn-full" type="submit"><span class="ms">login</span> כניסה</button>
       </form>
@@ -682,7 +682,7 @@ function loadGoogleMapsScript(key){
     window._gmapsReady=()=>{gmapsScriptLoaded=true;resolve();};
     const s=document.createElement('script');
     s.id='gmaps-script';
-    s.src=`https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places&language=he&callback=_gmapsReady`;s.async=true;
+    s.src=`https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places&language=he&loading=async&callback=_gmapsReady`;s.async=true;
     s.onerror=()=>{gmapsScriptLoaded=false;reject();};
     document.head.appendChild(s);
   });
