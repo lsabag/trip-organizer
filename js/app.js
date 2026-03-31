@@ -15,6 +15,7 @@ const TRIP_IMAGES=[
 ];
 let selectedImage=TRIP_IMAGES[0];
 let selectedCropY=50;
+let selectedZoom=100;
 let gmapsKey=localStorage.getItem('tiyulim_gmaps_key')||'';
 let gmapsScriptLoaded=false;
 let gmapsMap=null;
@@ -152,7 +153,13 @@ window.addEventListener('hashchange',initRouter);
 function copyShareLink(tripId){
   const base=location.href.split('#')[0].replace(/\/$/,'');
   const url=base+'/share/'+tripId;
-  navigator.clipboard.writeText(url).then(()=>showToast('הקישור הועתק! שתפו עם חברים')).catch(()=>prompt('העתיקו:',url));
+  const t=trips.find(x=>String(x.id)===String(tripId));
+  const title=t?t.name:'טיול';
+  if(navigator.share){
+    navigator.share({title,text:`הצטרפו לטיול: ${title}`,url}).catch(()=>{});
+  }else{
+    navigator.clipboard.writeText(url).then(()=>showToast('הקישור הועתק!')).catch(()=>prompt('העתיקו:',url));
+  }
 }
 
 // ===================== LIST =====================
@@ -169,7 +176,7 @@ function renderList(){
     const paxNames=t.participants.slice(0,2).map(p=>p.name.split(' ')[0]).join(', ');
     return`<div class="trip-card" onclick="showTrip('${t.id}')">
       <div class="trip-card-img">
-        <img src="${img}" alt="${t.name}" loading="lazy" style="object-position:center ${t.cropY!=null?t.cropY:50}%">
+        <img src="${img}" alt="${t.name}" loading="lazy" style="object-position:center ${t.cropY!=null?t.cropY:50}%;${t.zoom>100?`transform:scale(${t.zoom/100});transform-origin:center ${t.cropY||50}%`:''}">
         <div class="location-badge"><span class="ms">location_on</span> ${t.name.split(' ').slice(-2).join(' ')}</div>
       </div>
       <div class="trip-card-body">
@@ -243,10 +250,12 @@ function renderDetail(t){
 
   const headerImg=t.image||TRIP_IMAGES[0];
   const cropPos=t.cropY!=null?t.cropY:50;
+  const zoomVal=t.zoom!=null?t.zoom:100;
+  const zoomStyle=zoomVal>100?`transform:scale(${zoomVal/100});transform-origin:center ${cropPos}%;`:'';
   document.getElementById('detail-content').innerHTML=`
     ${directNotice}
     <div style="position:relative;border-radius:var(--radius);overflow:hidden;margin-bottom:1rem;">
-      <img src="${headerImg}" style="width:100%;height:180px;object-fit:cover;object-position:center ${cropPos}%;display:block;" loading="lazy">
+      <img src="${headerImg}" style="width:100%;height:180px;object-fit:cover;object-position:center ${cropPos}%;display:block;${zoomStyle}" loading="lazy">
       <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.6) 0%,transparent 50%);"></div>
       <div style="position:absolute;bottom:0;left:0;right:0;padding:1rem 1.2rem;color:white;">
         <div style="font-size:1.4rem;font-weight:900;text-shadow:0 2px 8px rgba(0,0,0,.4);">${t.name}</div>
@@ -257,9 +266,9 @@ function renderDetail(t){
       <div style="flex:1;">
         ${t.desc?`<div class="trip-header-desc">${t.desc}</div>`:''}
       </div>
-      <div style="display:flex;flex-direction:column;gap:.5rem;flex-shrink:0">
-        <button class="share-btn" onclick="copyShareLink('${t.id}')"><span class="ms">share</span> שתף קישור</button>
-        <button class="share-btn" style="background:var(--teal-pale);color:var(--teal-dark);" onclick="editTrip('${t.id}')"><span class="ms">edit</span> ערוך טיול</button>
+      <div style="display:flex;gap:.5rem;flex-shrink:0;flex-wrap:wrap;">
+        <button class="share-btn" onclick="copyShareLink('${t.id}')"><span class="ms">share</span> שתף</button>
+        <button class="share-btn" style="background:var(--teal-pale);color:var(--teal-dark);" onclick="editTrip('${t.id}')"><span class="ms">edit</span> ערוך</button>
       </div>
     </div>
     <div class="privacy-bar">
@@ -870,8 +879,11 @@ function editTrip(id){
   document.getElementById('trip-image-url').value=t.image&&!TRIP_IMAGES.includes(t.image)?t.image:'';
   selectedImage=t.image||TRIP_IMAGES[0];
   selectedCropY=t.cropY!=null?t.cropY:50;
+  selectedZoom=t.zoom!=null?t.zoom:100;
   document.getElementById('crop-slider').value=selectedCropY;
   document.getElementById('crop-val').textContent=selectedCropY+'%';
+  document.getElementById('zoom-slider').value=selectedZoom;
+  document.getElementById('zoom-val').textContent=selectedZoom+'%';
   openModal('modal-add-trip');
   renderImagePicker();
   updateCropPreview();
@@ -896,7 +908,7 @@ async function addTrip(){
     t.time=document.getElementById('trip-time').value;
     t.meeting=document.getElementById('trip-meeting').value.trim();
     t.desc=document.getElementById('trip-desc').value.trim();
-    t.image=finalImage;t.cropY=selectedCropY;t.hidden=isPrivate;
+    t.image=finalImage;t.cropY=selectedCropY;t.zoom=selectedZoom;t.hidden=isPrivate;
     currentTripId=t.id;saveTrips();
     closeModal('modal-add-trip');resetTripModal();
     renderDetail(t);showToast('הטיול עודכן');
@@ -909,7 +921,7 @@ async function addTrip(){
   const t={id:'t'+Math.random().toString(36).substr(2,9),name,date,time:document.getElementById('trip-time').value,
     meeting:document.getElementById('trip-meeting').value.trim(),
     desc:document.getElementById('trip-desc').value.trim(),
-    image:finalImage,cropY:selectedCropY,password:tripPw,status:'open',hidden:isPrivate,participants:[],waypoints:newWps};
+    image:finalImage,cropY:selectedCropY,zoom:selectedZoom,password:tripPw,status:'open',hidden:isPrivate,participants:[],waypoints:newWps};
   try{
     const r=await fetch(`${API}/trips`,{method:'POST',
       headers:{'Content-Type':'application/json','X-Creator-Token':creatorToken},
@@ -930,8 +942,10 @@ function resetTripModal(){
   document.getElementById('trip-password').value='';
   document.getElementById('trip-image-url').value='';
   document.getElementById('wp-editor-list').innerHTML='';wpEditorItems=[];
-  selectedImage=TRIP_IMAGES[0];selectedCropY=50;renderImagePicker();
+  selectedImage=TRIP_IMAGES[0];selectedCropY=50;selectedZoom=100;renderImagePicker();
   document.getElementById('crop-slider').value=50;
+  document.getElementById('zoom-slider').value=100;
+  document.getElementById('zoom-val').textContent='100%';
   document.getElementById('crop-val').textContent='50%';
   document.getElementById('crop-preview').style.display='none';
   document.getElementById('crop-slider-row').style.display='none';
@@ -976,16 +990,33 @@ function updateCropPreview(){
   const row=document.getElementById('crop-slider-row');
   if(selectedImage){
     img.src=selectedImage;
-    img.style.objectPosition=`center ${selectedCropY}%`;
+    applyCropPreviewStyle();
     wrap.style.display='block';
-    row.style.display='flex';
+    row.style.display='block';
   }else{wrap.style.display='none';row.style.display='none';}
 }
 function updateCropPosition(val){
   selectedCropY=parseInt(val);
   document.getElementById('crop-val').textContent=val+'%';
+  applyCropPreviewStyle();
+}
+function updateZoom(val){
+  selectedZoom=parseInt(val);
+  document.getElementById('zoom-val').textContent=val+'%';
+  applyCropPreviewStyle();
+}
+function applyCropPreviewStyle(){
   const img=document.getElementById('crop-preview-img');
-  if(img) img.style.objectPosition=`center ${val}%`;
+  if(!img)return;
+  if(selectedZoom>100){
+    img.style.objectFit='none';
+    img.style.objectPosition=`center ${selectedCropY}%`;
+    img.style.transform=`scale(${selectedZoom/100})`;
+  }else{
+    img.style.objectFit='cover';
+    img.style.objectPosition=`center ${selectedCropY}%`;
+    img.style.transform='none';
+  }
 }
 
 // ===================== NAV =====================

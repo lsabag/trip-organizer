@@ -152,13 +152,20 @@
       <div style="display:flex;gap:.5rem;margin-bottom:.5rem;">
         <input id="trip-image-url" type="url" dir="ltr" placeholder="או הדבק קישור לתמונה..." style="flex:1;padding:.4rem .7rem;border-radius:8px;border:1.5px solid #e0e0e0;font-size:.82rem;font-family:'Heebo',sans-serif;" oninput="if(this.value.trim()){selectedImage=this.value.trim();document.querySelectorAll('.img-picker-item').forEach(x=>x.classList.remove('selected'));updateCropPreview();}">
       </div>
-      <div id="crop-preview" style="width:100%;height:100px;border-radius:10px;overflow:hidden;margin-bottom:.5rem;background:#e8f0f5;display:none;">
+      <div id="crop-preview" style="width:100%;height:180px;border-radius:10px;overflow:hidden;margin-bottom:.5rem;background:#e8f0f5;display:none;">
         <img id="crop-preview-img" style="width:100%;height:100%;object-fit:cover;" src="">
       </div>
-      <div id="crop-slider-row" style="display:none;align-items:center;gap:.6rem;margin-bottom:.6rem;">
-        <span class="ms" style="font-size:.9rem;color:var(--gray);">crop</span>
-        <input id="crop-slider" type="range" min="0" max="100" value="50" style="flex:1;accent-color:var(--teal);" oninput="updateCropPosition(this.value)">
-        <span id="crop-val" style="font-size:.75rem;color:var(--gray);min-width:30px;">50%</span>
+      <div id="crop-slider-row" style="display:none;gap:.5rem;margin-bottom:.6rem;">
+        <div style="display:flex;align-items:center;gap:.5rem;">
+          <span class="ms" style="font-size:.9rem;color:var(--gray);">crop</span>
+          <input id="crop-slider" type="range" min="0" max="100" value="50" style="flex:1;accent-color:var(--teal);" oninput="updateCropPosition(this.value)">
+          <span id="crop-val" style="font-size:.75rem;color:var(--gray);min-width:30px;">50%</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:.5rem;">
+          <span class="ms" style="font-size:.9rem;color:var(--gray);">zoom_in</span>
+          <input id="zoom-slider" type="range" min="100" max="250" value="100" style="flex:1;accent-color:var(--orange);" oninput="updateZoom(this.value)">
+          <span id="zoom-val" style="font-size:.75rem;color:var(--gray);min-width:35px;">100%</span>
+        </div>
       </div>
       <div class="img-picker" id="img-picker"></div>
     </div>
