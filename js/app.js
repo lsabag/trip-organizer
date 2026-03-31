@@ -244,7 +244,6 @@ function renderDetail(t){
 
   const mapControlsHTML=`<div class="map-controls">
     <button class="map-ctrl-btn" onclick="locateMe()"><span class="ms">my_location</span> מיקום שלי</button>
-    ${gmapsKey?`<button class="map-ctrl-btn" onclick="refreshRatings()"><span class="ms">star</span> טען ביקורות</button>`:''}
   </div>`;
 
   const headerImg=t.image||TRIP_IMAGES[0];
