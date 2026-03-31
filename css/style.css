@@ -164,8 +164,8 @@ input:checked+.slider::before{transform:translateX(-21px);}
   border-radius:8px;margin-bottom:1.2rem;transition:background .2s;}
 .back-btn:hover{background:var(--teal-pale);}
 .trip-header-card{background:linear-gradient(135deg,var(--teal),var(--teal-dark));color:white;
-  border-radius:var(--radius);padding:1.3rem 1.7rem;margin-bottom:1.2rem;
-  display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;}
+  border-radius:var(--radius);padding:1.2rem 1.4rem;margin-bottom:1.2rem;
+  display:flex;flex-direction:column;gap:.7rem;}
 .trip-header-title{font-size:1.65rem;font-weight:900;margin-bottom:.22rem;}
 .trip-header-meta{font-size:.86rem;opacity:.85;}
 .trip-header-desc{font-size:.88rem;margin-top:.38rem;opacity:.88;}
@@ -296,7 +296,13 @@ input:checked+.slider::before{transform:translateX(-21px);}
 .join-section input:focus,.join-section select:focus,.join-section textarea:focus{border-color:rgba(255,255,255,.7);}
 .join-section select option{background:var(--teal-dark);}.join-section .toggle-label{color:white;}
 .join-section .inset-box{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);}
-.js-title{font-size:.98rem;font-weight:800;color:white;border-bottom:1.5px solid rgba(255,255,255,.2);padding-bottom:.55rem;margin-bottom:.95rem;}
+.js-title{font-size:.98rem;font-weight:800;color:white;border-bottom:1.5px solid rgba(255,255,255,.2);padding-bottom:.55rem;margin-bottom:.7rem;}
+.join-steps{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:1rem;}
+.join-step{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.2);color:rgba(255,255,255,.6);
+  display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800;transition:all .25s;}
+.join-step.active{background:white;color:var(--teal-dark);box-shadow:0 2px 8px rgba(0,0,0,.15);}
+.join-step.done{background:rgba(255,255,255,.5);color:var(--teal-dark);}
+.join-step-line{width:30px;height:2px;background:rgba(255,255,255,.25);}
 .empty-state{text-align:center;padding:1.8rem;color:var(--gray);}
 .empty-state .ei{font-size:2.3rem;margin-bottom:.5rem;}
 .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--dark);color:white;
@@ -353,7 +359,6 @@ input:checked+.slider::before{transform:translateX(-21px);}
   .hero-title{font-size:2rem;}
   .hero-sub{font-size:.9rem;}
   .form-row{grid-template-columns:1fr;}
-  .trip-header-card{flex-direction:row;flex-wrap:wrap;}
   .map-key-banner .key-input-row{flex-direction:column;}
   .trips-grid{grid-template-columns:1fr;}
 }

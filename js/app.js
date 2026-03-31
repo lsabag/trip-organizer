@@ -260,7 +260,7 @@ function renderDetail(t){
         <div style="font-size:.82rem;opacity:.9;margin-top:.2rem;"><span class="ms" style="font-size:.85rem;">calendar_today</span> ${fmtDate(t.date)} &nbsp;<span class="ms" style="font-size:.85rem;">schedule</span> ${t.time} &nbsp;<span class="ms" style="font-size:.85rem;">location_on</span> ${t.meeting}</div>
       </div>
     </div>
-    <div class="trip-header-card" style="flex-direction:column;">
+    <div class="trip-header-card">
       ${t.desc?`<div class="trip-header-desc">${t.desc}</div>`:''}
       <div style="display:flex;gap:.4rem;">
         <button class="share-btn" style="flex:1;padding:.45rem .8rem;font-size:.82rem;" onclick="copyShareLink('${t.id}')"><span class="ms">share</span> שתף</button>
@@ -703,32 +703,63 @@ function collectWpEditorItems(){
 function buildJoinHTML(){
   return`<div class="join-section">
     <div class="js-title"><span class="ms">person_add</span> הצטרפות לטיול</div>
-    <div class="form-row">
+    <div class="join-steps">
+      <span class="join-step active" id="jstep-1">1</span>
+      <span class="join-step-line"></span>
+      <span class="join-step" id="jstep-2">2</span>
+      <span class="join-step-line"></span>
+      <span class="join-step" id="jstep-3">3</span>
+    </div>
+    <div id="join-step-1">
       <div class="form-group"><label>שם מלא</label><input id="j-name" type="text" placeholder="השם שלך"></div>
       <div class="form-group"><label>טלפון</label><input id="j-phone" type="tel" placeholder="050-..."></div>
+      <div class="form-group"><label><span class="ms">location_on</span> עיר מגורים</label><input id="j-city" type="text" placeholder="מאיפה אתה?"></div>
+      <button class="btn btn-primary btn-full" onclick="joinNext(2)"><span class="ms">arrow_back</span> המשך</button>
     </div>
-    <div class="form-group"><label><span class="ms">location_on</span> עיר מגורים</label><input id="j-city" type="text" placeholder="מאיפה אתה?"></div>
-    <div class="toggle-row">
-      <label class="toggle"><input type="checkbox" id="j-has-car" onchange="toggleJoinCar()"><span class="slider"></span></label>
-      <span class="toggle-label"><span class="ms">directions_car</span> אני מגיע/ה עם רכב</span>
-    </div>
-    <div id="j-car-fields" class="inset-box" style="display:none;">
-      <div class="form-group"><label>מקומות פנויים (מלבדך)</label><input id="j-seats" type="number" min="1" max="8" value="3"></div>
-      <div class="form-row">
-        <div class="form-group"><label>יוצא מ־</label><input id="j-car-from" type="text"></div>
-        <div class="form-group"><label>חוזר ל־</label><input id="j-car-to" type="text"></div>
-      </div>
-      <div class="form-group" style="margin-bottom:0"><label>הערות לגבי הנסיעה</label><textarea id="j-car-notes" rows="2"></textarea></div>
-    </div>
-    <div id="j-no-car-sec">
+    <div id="join-step-2" style="display:none;">
       <div class="toggle-row">
-        <label class="toggle"><input type="checkbox" id="j-need-ride"><span class="slider"></span></label>
-        <span class="toggle-label"><span class="ms">volunteer_activism</span> אני מחפש/ת הסעה</span>
+        <label class="toggle"><input type="checkbox" id="j-has-car" onchange="toggleJoinCar()"><span class="slider"></span></label>
+        <span class="toggle-label"><span class="ms">directions_car</span> אני מגיע/ה עם רכב</span>
+      </div>
+      <div id="j-car-fields" class="inset-box" style="display:none;">
+        <div class="form-group"><label>מקומות פנויים (מלבדך)</label><input id="j-seats" type="number" min="1" max="8" value="3"></div>
+        <div class="form-row">
+          <div class="form-group"><label>יוצא מ־</label><input id="j-car-from" type="text"></div>
+          <div class="form-group"><label>חוזר ל־</label><input id="j-car-to" type="text"></div>
+        </div>
+        <div class="form-group" style="margin-bottom:0"><label>הערות לגבי הנסיעה</label><textarea id="j-car-notes" rows="2"></textarea></div>
+      </div>
+      <div id="j-no-car-sec">
+        <div class="toggle-row">
+          <label class="toggle"><input type="checkbox" id="j-need-ride"><span class="slider"></span></label>
+          <span class="toggle-label"><span class="ms">volunteer_activism</span> אני מחפש/ת הסעה</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:.5rem;margin-top:.8rem;">
+        <button class="btn btn-ghost" style="flex:1;" onclick="joinNext(1)"><span class="ms">arrow_forward</span> חזרה</button>
+        <button class="btn btn-primary" style="flex:1;" onclick="joinNext(3)"><span class="ms">arrow_back</span> המשך</button>
       </div>
     </div>
-    <div class="form-group"><label>הערות</label><textarea id="j-notes" rows="2" placeholder="אלרגיות, בקשות..."></textarea></div>
-    <button class="btn btn-clay btn-full" onclick="joinTrip()">אני בפנים!</button>
+    <div id="join-step-3" style="display:none;">
+      <div class="form-group"><label>הערות</label><textarea id="j-notes" rows="2" placeholder="אלרגיות, בקשות מיוחדות..."></textarea></div>
+      <div style="display:flex;gap:.5rem;">
+        <button class="btn btn-ghost" style="flex:1;" onclick="joinNext(2)"><span class="ms">arrow_forward</span> חזרה</button>
+        <button class="btn btn-clay" style="flex:1;" onclick="joinTrip()"><span class="ms">check</span> אני בפנים!</button>
+      </div>
+    </div>
   </div>`;
+}
+function joinNext(step){
+  if(step===2){
+    const name=document.getElementById('j-name').value.trim();
+    const phone=document.getElementById('j-phone').value.trim();
+    const city=document.getElementById('j-city').value.trim();
+    if(!name||!phone||!city){showToast('נא למלא שם, טלפון ועיר');return;}
+  }
+  for(let i=1;i<=3;i++){
+    document.getElementById('join-step-'+i).style.display=i===step?'block':'none';
+    document.getElementById('jstep-'+i).className='join-step'+(i===step?' active':'')+(i<step?' done':'');
+  }
 }
 function toggleJoinCar(){
   const on=document.getElementById('j-has-car').checked;
