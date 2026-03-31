@@ -247,6 +247,7 @@ input:checked+.slider::before{transform:translateX(-21px);}
 .wp-action-btn{display:flex;align-items:center;gap:.3rem;padding:.28rem .65rem;border-radius:8px;
   font-family:'Heebo',sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;border:1.5px solid;text-decoration:none;transition:all .2s;}
 .wp-nav{background:#e8f5e9;color:#1b5e20;border-color:#a5d6a7;}.wp-nav:hover{background:#1b5e20;color:white;}
+.wp-waze{background:#e8f0fb;color:#1a73e8;border-color:#aecbfa;}.wp-waze:hover{background:#1a73e8;color:white;}
 .wp-reviews{background:#fff8e1;color:#e65100;border-color:#ffe082;}.wp-reviews:hover{background:#e65100;color:white;}
 .wp-phone-btn{background:#e3f2fd;color:#1565c0;border-color:#90caf9;}.wp-phone-btn:hover{background:#1565c0;color:white;}
 .wp-rm{background:none;border:1.5px solid #ffcdd2;color:#c62828;border-radius:8px;
@@ -275,7 +276,10 @@ input:checked+.slider::before{transform:translateX(-21px);}
 .pax-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:800;flex-shrink:0;}
 .pax-name2{font-weight:700;font-size:.84rem;}
 .pax-city2{font-size:.72rem;color:var(--gray);}
-.unassign-btn{background:none;border:none;cursor:pointer;color:#ccc;font-size:.82rem;padding:.18rem .38rem;border-radius:6px;margin-inline-start:auto;}
+.unassign-btn{background:none;border:none;cursor:pointer;color:#ccc;font-size:.82rem;padding:.18rem .38rem;border-radius:6px;}
+.pax-contact-btn{width:28px;height:28px;border-radius:7px;background:#e8f5e9;color:#25d366;display:flex;align-items:center;justify-content:center;font-size:.92rem;text-decoration:none;transition:all .2s;flex-shrink:0;}
+.pax-contact-btn:hover{background:#25d366;color:white;}
+.pax-call-btn{background:#e3f2fd;color:#1565c0;}.pax-call-btn:hover{background:#1565c0;color:white;}
 .unassign-btn:hover{background:var(--orange-light);color:var(--orange-dark);}
 .add-btn{background:none;border:1.5px solid var(--teal);color:var(--teal);border-radius:7px;padding:.2rem .5rem;
   font-size:.74rem;font-weight:700;font-family:'Heebo',sans-serif;cursor:pointer;transition:all .2s;white-space:nowrap;}
@@ -311,19 +315,23 @@ input:checked+.slider::before{transform:translateX(-21px);}
   padding:.65rem 1.3rem;border-radius:11px;font-weight:700;font-size:.88rem;box-shadow:0 8px 26px rgba(0,0,0,.22);
   z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;max-width:90vw;text-align:center;}
 .toast.show{opacity:1;}
-/* ADMIN */
-.admin-toggle-btn{background:none;border:none;cursor:pointer;font-family:'Heebo',sans-serif;font-size:.85rem;border-radius:20px;}
-.admin-toggle-btn.admin-active{background:rgba(255,255,255,.95);color:var(--orange-dark)!important;font-weight:700;}
-.admin-card-bar{display:flex;gap:.5rem;padding:.6rem .8rem;background:#fff8f0;border-top:1.5px solid var(--orange-light);}
-.admin-card-btn{display:flex;align-items:center;gap:.3rem;padding:.3rem .75rem;border-radius:8px;border:1.5px solid var(--orange-light);background:white;color:var(--orange-dark);font-family:'Heebo',sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;transition:all .2s;}
-.admin-card-btn:hover{background:var(--orange);color:white;border-color:var(--orange);}
-.admin-card-btn-del{border-color:#ffcdd2;color:#c62828;}
-.admin-card-btn-del:hover{background:#c62828;border-color:#c62828;color:white;}
-.trip-card-hidden{opacity:.65;}
-.trip-card-hidden .trip-card-img::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(0,0,0,.06) 0px,rgba(0,0,0,.06) 4px,transparent 4px,transparent 10px);}
-.hidden-badge{position:absolute;top:.6rem;left:.6rem;background:rgba(0,0,0,.65);color:white;border-radius:8px;padding:.2rem .55rem;font-size:.72rem;font-weight:700;display:flex;align-items:center;gap:.25rem;}
+.privacy-bar{display:flex;align-items:center;justify-content:space-between;background:#f8fafb;border:1.5px solid #eef2f5;padding:.6rem 1rem;border-radius:var(--radius);margin-bottom:1.2rem;box-shadow:var(--card-shadow);}
+.privacy-toggle-btn{display:flex;align-items:center;gap:.4rem;padding:.3rem .8rem;border-radius:8px;border:1.5px solid #d0d7de;background:white;color:var(--gray);font-family:'Heebo',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .2s;}
+.privacy-toggle-btn.is-private{background:#fff3e0;border-color:var(--orange-light);color:var(--orange-dark);}
+.privacy-toggle-btn:hover{border-color:var(--teal);color:var(--teal);}
+.delete-trip-btn{display:flex;align-items:center;gap:.4rem;padding:.3rem .8rem;border-radius:8px;border:1.5px solid #ffcdd2;background:white;color:#c62828;font-family:'Heebo',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .2s;}
+.delete-trip-btn:hover{background:#c62828;color:white;border-color:#c62828;}
 .direct-link-notice{background:var(--teal-pale);border-radius:12px;padding:.7rem 1rem;margin-bottom:1.2rem;
   font-size:.84rem;color:var(--teal-dark);font-weight:600;display:flex;align-items:center;gap:.5rem;}
+
+/* ===== IMAGE PICKER ===== */
+.img-picker{display:grid;grid-template-columns:repeat(4,1fr);gap:.45rem;margin-bottom:.65rem;}
+.img-picker-item{height:58px;border-radius:8px;overflow:hidden;cursor:pointer;border:2.5px solid transparent;transition:all .2s;}
+.img-picker-item img{width:100%;height:100%;object-fit:cover;transition:transform .25s;}
+.img-picker-item:hover img{transform:scale(1.08);}
+.img-picker-item.selected{border-color:var(--teal);box-shadow:0 0 0 2px rgba(0,180,216,.35);}
+/* Google autocomplete fix for RTL */
+.pac-container{direction:ltr;font-family:'Heebo',sans-serif;}
 
 /* ===== RESPONSIVE ===== */
 @media(min-width:769px){
@@ -374,7 +382,6 @@ input:checked+.slider::before{transform:translateX(-21px);}
     <span class="nav-item" onclick="focusSearch()"><i class="ri-compass-3-line"></i> מצא טיול</span>
     <span class="nav-item" onclick="openModal('modal-add-trip')"><i class="ri-add-circle-line"></i> פרסם טיול</span>
     <span class="nav-item" onclick="openModal('modal-api-key')"><i class="ri-map-2-line"></i> הגדרות מפה</span>
-    <button id="admin-toggle-btn" class="nav-item admin-toggle-btn" onclick="toggleAdminMode()" title="כניסה למצב ניהול"><i class="ri-settings-3-line"></i></button>
   </nav>
 </header>
 
@@ -472,25 +479,19 @@ input:checked+.slider::before{transform:translateX(-21px);}
     <div class="form-group"><label>נקודת מפגש ראשית</label><input id="trip-meeting" type="text" placeholder="איפה מתכנסים?"></div>
     <div class="form-group"><label>תיאור הטיול</label><textarea id="trip-desc" placeholder="מה מחכה לנו? רמת קושי, ציוד נדרש..."></textarea></div>
     <div class="form-group">
-      <label>אמוג'י לטיול</label>
-      <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
-        <span style="font-size:1.45rem;cursor:pointer;transition:transform .15s;" onclick="setEmoji(this)">🏔️</span>
-        <span style="font-size:1.45rem;cursor:pointer;transition:transform .15s;" onclick="setEmoji(this)">🌊</span>
-        <span style="font-size:1.45rem;cursor:pointer;transition:transform .15s;" onclick="setEmoji(this)">🏜️</span>
-        <span style="font-size:1.45rem;cursor:pointer;transition:transform .15s;" onclick="setEmoji(this)">🌲</span>
-        <span style="font-size:1.45rem;cursor:pointer;transition:transform .15s;" onclick="setEmoji(this)">🦅</span>
-        <span style="font-size:1.45rem;cursor:pointer;transition:transform .15s;" onclick="setEmoji(this)">🌸</span>
-        <span style="font-size:1.45rem;cursor:pointer;transition:transform .15s;" onclick="setEmoji(this)">🏕️</span>
-        <span style="font-size:1.45rem;cursor:pointer;transition:transform .15s;" onclick="setEmoji(this)">🌅</span>
-      </div>
-      <input id="trip-emoji" type="hidden" value="🏔️">
+      <label><i class="ri-image-line"></i> תמונת רקע לטיול</label>
+      <div class="img-picker" id="img-picker"></div>
     </div>
     <div style="border-top:2px solid #eef2f5;padding-top:.9rem;margin-top:.5rem;">
       <div style="font-size:.96rem;font-weight:800;color:var(--dark);margin-bottom:.7rem;">📍 נקודות הטיול (אופציונלי)</div>
       <div id="wp-editor-list"></div>
       <button class="btn btn-ghost btn-sm" onclick="addWpEditorItem()">+ הוסף נקודה</button>
     </div>
-    <div class="btn-row"><button class="btn btn-primary btn-full" onclick="addTrip()">🚀 פרסם טיול</button></div>
+    <div class="toggle-row" style="margin-top:.9rem;padding-top:.9rem;border-top:2px solid #eef2f5;">
+      <label class="toggle"><input type="checkbox" id="trip-private"><span class="slider"></span></label>
+      <span class="toggle-label"><i class="ri-eye-off-line"></i> טיול פרטי — גלוי רק דרך קישור ישיר</span>
+    </div>
+    <div class="btn-row"><button class="btn btn-primary btn-full" onclick="addTrip()"><i class="ri-send-plane-line"></i> פרסם טיול</button></div>
   </div>
 </div>
 
@@ -522,8 +523,15 @@ const TRIP_IMAGES=[
   'https://images.unsplash.com/photo-1501555088652-021faa106b9b?w=600&q=80',
   'https://images.unsplash.com/photo-1551632811-561732d1e306?w=600&q=80',
   'https://images.unsplash.com/photo-1533240332313-0db49b459ad6?w=600&q=80',
-  'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80'
+  'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80',
+  'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&q=80',
+  'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=600&q=80',
+  'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=600&q=80',
+  'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=600&q=80',
+  'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80',
+  'https://images.unsplash.com/photo-1502136969935-8d8eef54d77b?w=600&q=80'
 ];
+let selectedImage=TRIP_IMAGES[0];
 let gmapsKey=(()=>{const built='__GMAPS_KEY__';if(built&&built!=='__GMAPS_KEY__')return built;try{return localStorage.getItem('tiyulim_gmaps_key')||'';}catch(e){return '';}})();
 let gmapsScriptLoaded=false;
 let gmapsMap=null;
@@ -533,12 +541,12 @@ let nextWpIndex=-1;
 let currentTripId=null;
 let isDirectLink=false;
 let wpEditorItems=[];
-let nextTripId=2,nextPaxId=100,nextWpId=10,selectedEmoji='🏔️';
+let nextPaxId=100,nextWpId=10,selectedEmoji='🏔️';
 
 const DEFAULT_TRIPS=[{
-  id:1,name:"שמורת עין גדי",date:"2025-04-18",time:"07:30",
+  id:'t1',name:"שמורת עין גדי",date:"2025-04-18",time:"07:30",
   meeting:"צומת מחלף גהה",desc:"נחל דוד ועין גדי. כובע ומים חובה! רמת קושי: קלה-בינונית.",
-  emoji:"🌊",status:"open",
+  emoji:"",image:TRIP_IMAGES[3],status:"open",
   waypoints:[
     {id:'w1',name:"כניסת הפארק – עין גדי",address:"Ein Gedi Nature Reserve, Israel",phone:"08-6584285",time:"09:00",notes:"חנייה חינמית. יש לרכוש כרטיסים בכניסה.",lat:31.4627,lng:35.3827,rating:null,ratingsTotal:null,placeId:null},
     {id:'w2',name:"מפל דוד",address:"David Waterfall Ein Gedi",phone:"",time:"10:00",notes:"עליה של כ-30 דק' מהכניסה.",lat:31.4656,lng:35.3889,rating:null,ratingsTotal:null,placeId:null},
@@ -568,14 +576,12 @@ function saveTrips(){
   try{localStorage.setItem('tiyulim_data',JSON.stringify(trips));}catch(e){}
 }
 function syncIds(){
-  let maxTid=0,maxPid=0,maxWid=0;
+  let maxPid=0,maxWid=0;
   trips.forEach(t=>{
-    const tid=parseInt(String(t.id).replace(/\D/g,''))||0;
-    if(tid>=maxTid) maxTid=tid;
     t.waypoints.forEach(w=>{const wid=parseInt(String(w.id).replace(/\D/g,''))||0;if(wid>=maxWid)maxWid=wid;});
     t.participants.forEach(p=>{const pid=parseInt(String(p.id).replace(/\D/g,''))||0;if(pid>=maxPid)maxPid=pid;});
   });
-  nextTripId=maxTid+1;nextPaxId=maxPid+1;nextWpId=maxWid+1;
+  nextPaxId=maxPid+1;nextWpId=maxWid+1;
 }
 let trips=loadTrips();
 syncIds();
@@ -618,14 +624,14 @@ function loadGoogleMapsScript(key){
 
 // ===================== ROUTING =====================
 function initRouter(){
-  const m=location.hash.match(/^#trip-(\d+)$/);
+  const m=location.hash.match(/^#trip-([a-zA-Z0-9]+)$/);
   if(m){
-    const id=parseInt(m[1]);
-    const t=trips.find(x=>x.id===id);
+    const id=m[1];
+    const t=trips.find(x=>String(x.id)===id);
     if(t){
       isDirectLink=true;
       document.getElementById('back-to-list-btn').style.display='none';
-      showTrip(id);
+      showTrip(t.id);
     }else showList();
   }else showList();
 }
@@ -636,45 +642,23 @@ function copyShareLink(tripId){
   navigator.clipboard.writeText(url).then(()=>showToast('🔗 הקישור הועתק! שתפו עם חברים')).catch(()=>prompt('העתיקו:',url));
 }
 
-// ===================== ADMIN MODE =====================
-let adminMode=false;
-function toggleAdminMode(){
-  adminMode=!adminMode;
-  const btn=document.getElementById('admin-toggle-btn');
-  btn.classList.toggle('admin-active',adminMode);
-  btn.title=adminMode?'יציאה ממצב ניהול':'כניסה למצב ניהול';
-  showToast(adminMode?'🔧 מצב ניהול פעיל':'👁️ מצב צפייה רגיל');
-  renderList();
-}
-
 // ===================== LIST =====================
 function renderList(){
   document.getElementById('hero-section').style.display='';
   const g=document.getElementById('trips-grid');
-  const visibleTrips=trips.filter(t=>adminMode||!t.hidden);
+  const visibleTrips=trips.filter(t=>!t.hidden);
   let h=visibleTrips.map((t,idx)=>{
     const drivers=t.participants.filter(p=>p.hasCar);
     const fs=drivers.reduce((s,d)=>{const tk=t.participants.filter(p=>p.assignedTo===d.id).length;return s+Math.max(0,parseInt(d.seats)-tk);},0);
-    const img=TRIP_IMAGES[idx%TRIP_IMAGES.length];
+    const img=t.image||TRIP_IMAGES[idx%TRIP_IMAGES.length];
     const paxAvatars=t.participants.slice(0,3).map((p,i)=>
       `<div class="tc-avatar-mini" style="background:${AVC[i%8]}">${ini(p.name)}</div>`).join('');
     const paxNames=t.participants.slice(0,2).map(p=>p.name.split(' ')[0]).join(', ');
-    const hiddenBadge=t.hidden?`<div class="hidden-badge"><i class="ri-eye-off-line"></i> מוסתר</div>`:'';
-    const adminBar=adminMode?`
-      <div class="admin-card-bar" onclick="event.stopPropagation()">
-        <button class="admin-card-btn" onclick="toggleTripHidden(${t.id})" title="${t.hidden?'הצג':'הסתר'} טיול">
-          <i class="ri-${t.hidden?'eye':'eye-off'}-line"></i> ${t.hidden?'הצג':'הסתר'}
-        </button>
-        <button class="admin-card-btn admin-card-btn-del" onclick="deleteTrip(${t.id})" title="מחק טיול">
-          <i class="ri-delete-bin-line"></i> מחק
-        </button>
-      </div>`:'';
-    return`<div class="trip-card${t.hidden?' trip-card-hidden':''}" onclick="showTrip(${t.id})">
+    return`<div class="trip-card" onclick="showTrip('${t.id}')">
       <div class="trip-card-img">
         <img src="${img}" alt="${t.name}" loading="lazy">
         <div class="location-badge"><i class="ri-map-pin-2-fill"></i> ${t.name.split(' ').slice(-2).join(' ')}</div>
-        <div class="emoji-overlay">${t.emoji}</div>
-        ${hiddenBadge}
+        <div class="emoji-overlay">${t.emoji||''}</div>
       </div>
       <div class="trip-card-body">
         <div class="tc-title">${t.name}</div>
@@ -689,34 +673,17 @@ function renderList(){
           <div class="tc-pax-count"><i class="ri-group-line"></i> ${t.participants.length}</div>
         </div>
         <div class="tc-footer">
-          <button class="tc-join-btn" onclick="event.stopPropagation();joinFromCard(${t.id})"><i class="ri-user-add-line"></i> הצטרף</button>
+          <button class="tc-join-btn" onclick="event.stopPropagation();joinFromCard('${t.id}')"><i class="ri-user-add-line"></i> הצטרף</button>
           <div style="display:flex;align-items:center;gap:.3rem;">
             ${paxNames?`<span class="tc-avatar-name">${paxNames}</span>`:''}
             <div class="tc-avatars">${paxAvatars}</div>
           </div>
         </div>
-        ${adminBar}
       </div>
     </div>`;
   }).join('');
-  if(adminMode) h+=`<div class="add-trip-card" onclick="openModal('modal-add-trip')"><div class="plus"><i class="ri-add-line"></i></div><div>פרסם טיול חדש</div></div>`;
+  h+=`<div class="add-trip-card" onclick="openModal('modal-add-trip')"><div class="plus"><i class="ri-add-line"></i></div><div>פרסם טיול חדש</div></div>`;
   g.innerHTML=h;
-}
-
-function toggleTripHidden(id){
-  const t=trips.find(x=>x.id===id);if(!t)return;
-  t.hidden=!t.hidden;
-  saveTrips();
-  showToast(t.hidden?`<i class="ri-eye-off-line"></i> "${t.name}" הוסתר`:`<i class="ri-eye-line"></i> "${t.name}" גלוי עכשיו`);
-  renderList();
-}
-function deleteTrip(id){
-  const t=trips.find(x=>x.id===id);if(!t)return;
-  if(!confirm(`למחוק את "${t.name}"?\nהמשתתפים וכל הנתונים יימחקו לצמיתות.`))return;
-  trips=trips.filter(x=>x.id!==id);
-  saveTrips();
-  showToast(`🗑️ "${t.name}" נמחק`);
-  renderList();
 }
 
 // ===================== DETAIL =====================
@@ -726,7 +693,7 @@ function showTrip(id){
   if(!isDirectLink) document.getElementById('back-to-list-btn').style.display='flex';
   document.getElementById('hero-section').style.display='none';
   cleanupMap();
-  renderDetail(trips.find(x=>x.id===id));
+  renderDetail(trips.find(x=>String(x.id)===String(id)));
   document.getElementById('view-list').classList.remove('active');
   document.getElementById('view-detail').classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
@@ -770,10 +737,12 @@ function renderDetail(t){
         ${t.desc?`<div class="trip-header-desc">${t.desc}</div>`:''}
       </div>
       <div style="display:flex;flex-direction:column;gap:.5rem;flex-shrink:0">
-        <button class="share-btn" onclick="copyShareLink(${t.id})"><i class="ri-share-line"></i> שתף קישור</button>
-        ${adminMode?`<button class="share-btn" style="${t.hidden?'background:rgba(246,166,35,.3)':''}" onclick="toggleTripHidden(${t.id})"><i class="ri-${t.hidden?'eye':'eye-off'}-line"></i> ${t.hidden?'הצג':'הסתר'}</button>
-        <button class="share-btn" style="background:rgba(198,40,40,.25)" onclick="deleteTrip(${t.id})"><i class="ri-delete-bin-line"></i> מחק</button>`:''}
+        <button class="share-btn" onclick="copyShareLink('${t.id}')"><i class="ri-share-line"></i> שתף קישור</button>
       </div>
+    </div>
+    <div class="privacy-bar">
+      <button class="privacy-toggle-btn${t.hidden?' is-private':''}" onclick="toggleTripHidden('${t.id}')"><i class="ri-${t.hidden?'eye-off':'eye'}-line"></i> ${t.hidden?'🔒 טיול פרטי':'👁️ ציבורי — גלוי לכולם'}</button>
+      <button class="delete-trip-btn" onclick="deleteTrip('${t.id}')"><i class="ri-delete-bin-line"></i> מחק טיול</button>
     </div>
     ${sumH}
     <div class="section-card">
@@ -994,6 +963,7 @@ function buildWaypointsHTML(t){
     const hasCoords=w.lat&&w.lng;
     const navTarget=hasCoords?`${w.lat},${w.lng}`:encodeURIComponent(w.address||w.name+' ישראל');
     const navUrl=`https://www.google.com/maps/dir/?api=1&destination=${navTarget}`;
+    const wazeUrl=hasCoords?`https://waze.com/ul?ll=${w.lat},${w.lng}&navigate=yes`:`https://waze.com/ul?q=${encodeURIComponent(w.address||w.name+' ישראל')}`;
     const reviewUrl=w.placeId?`https://www.google.com/maps/place/?q=place_id:${w.placeId}`:`https://www.google.com/maps/search/${encodeURIComponent((w.name||'')+' '+(w.address||''))}`;
     const ratingContent=w.rating?
       `<span class="wp-stars">${starsHTML(w.rating)}</span>
@@ -1010,11 +980,12 @@ function buildWaypointsHTML(t){
           ${w.notes?`<div class="wp-notes">${w.notes}</div>`:''}
           <div class="wp-rating-row" id="wpr-${w.id}">${ratingContent}</div>
         </div>
-        <button class="wp-rm" onclick="removeWaypoint(${t.id},'${w.id}')"><i class="ri-close-line"></i></button>
+        <button class="wp-rm" onclick="removeWaypoint('${t.id}','${w.id}')"><i class="ri-close-line"></i></button>
       </div>
       <div class="wp-actions">
-        <a class="wp-action-btn wp-nav" href="${navUrl}" target="_blank"><i class="ri-compass-3-line"></i> נווט</a>
-        <a class="wp-action-btn wp-reviews" id="wpa-reviews-${w.id}" href="${reviewUrl}" target="_blank"><i class="ri-star-line"></i> ביקורות גוגל</a>
+        <a class="wp-action-btn wp-nav" href="${navUrl}" target="_blank"><i class="ri-map-pin-2-line"></i> Google</a>
+        <a class="wp-action-btn wp-waze" href="${wazeUrl}" target="_blank"><i class="ri-navigation-fill"></i> Waze</a>
+        <a class="wp-action-btn wp-reviews" id="wpa-reviews-${w.id}" href="${reviewUrl}" target="_blank"><i class="ri-star-line"></i> ביקורות</a>
         ${w.phone?`<a class="wp-action-btn wp-phone-btn" href="tel:${w.phone}"><i class="ri-phone-line"></i> ${w.phone}</a>`:''}
       </div>
     </div>`;
@@ -1037,7 +1008,7 @@ function saveWaypoint(){
 }
 
 function removeWaypoint(tripId,wpId){
-  const t=trips.find(x=>x.id==tripId);const i=t.waypoints.findIndex(x=>x.id===wpId);if(i<0)return;
+  const t=trips.find(x=>String(x.id)===String(tripId));const i=t.waypoints.findIndex(x=>x.id===wpId);if(i<0)return;
   const name=t.waypoints[i].name;t.waypoints.splice(i,1);saveTrips();showToast(`🗑️ "${name}" הוסר`);renderDetail(t);
 }
 
@@ -1060,11 +1031,12 @@ function addWpEditorItem(){
     <button class="wp-editor-remove" onclick="removeWpEditorItem('${id}')">✕</button>
     <div class="form-group" style="margin-bottom:.45rem"><input type="text" placeholder="שם המקום *" class="wpe-name" data-id="${id}"></div>
     <div class="form-row">
-      <div class="form-group" style="margin-bottom:.45rem"><input type="text" placeholder="כתובת לחיפוש" class="wpe-addr" data-id="${id}"></div>
+      <div class="form-group" style="margin-bottom:.45rem"><input type="text" placeholder="כתובת לחיפוש" class="wpe-addr" id="wpe-addr-${id}" data-id="${id}"></div>
       <div class="form-group" style="margin-bottom:.45rem"><input type="tel" placeholder="טלפון" class="wpe-phone" data-id="${id}"></div>
     </div>
     <div class="form-group" style="margin-bottom:0"><textarea placeholder="הערות" rows="1" class="wpe-notes" data-id="${id}" style="min-height:38px"></textarea></div>`;
   list.appendChild(div);
+  setTimeout(()=>tryAttachAutocomplete('wpe-addr-'+id),100);
 }
 function removeWpEditorItem(id){wpEditorItems=wpEditorItems.filter(x=>x.id!==id);const el=document.getElementById(id);if(el)el.remove();}
 function collectWpEditorItems(){
@@ -1131,6 +1103,8 @@ function joinTrip(){
   saveTrips();showToast(`✅ ${name} נרשם/ה לטיול!`);renderDetail(t);
 }
 
+function waNum(p){return'972'+String(p||'').replace(/[-\s+]/g,'').replace(/^0/,'');}
+
 // ===================== CARS =====================
 function buildCarsHTML(t,drivers,unassigned){
   if(!drivers.length)return`<div class="empty-state"><div class="ei"><i class="ri-car-line" style="font-size:2.3rem"></i></div><p>אין רכבים עדיין</p></div>`;
@@ -1140,10 +1114,13 @@ function buildCarsHTML(t,drivers,unassigned){
     let seatsH=`<span class="seats-lbl">מקומות:</span><span class="seat driver-seat"><i class="ri-user-3-fill"></i></span>`;
     assigned.forEach(()=>seatsH+=`<span class="seat taken"><i class="ri-user-3-fill"></i></span>`);
     for(let i=0;i<freeC;i++) seatsH+=`<span class="seat free"><i class="ri-armchair-line"></i></span>`;
-    let paxH=assigned.map(p=>`<div class="car-pax-row">
+    let paxH=assigned.map(p=>{
+      const wa=p.phone?`<a class="pax-contact-btn" href="https://wa.me/${waNum(p.phone)}" target="_blank" title="וואטסאפ"><i class="ri-whatsapp-line"></i></a>`:'';
+      const call=p.phone?`<a class="pax-contact-btn pax-call-btn" href="tel:${p.phone}" title="חיוג"><i class="ri-phone-line"></i></a>`:'';
+      return`<div class="car-pax-row">
       <div class="pax-av" style="background:${avc(p.id)}">${ini(p.name)}</div>
       <div style="flex:1"><div class="pax-name2">${p.name}</div><div class="pax-city2"><i class="ri-map-pin-2-line"></i> ${p.city}</div></div>
-      <button class="unassign-btn" onclick="unassignPax('${t.id}','${p.id}')"><i class="ri-close-line"></i></button></div>`).join('');
+      ${wa}${call}<button class="unassign-btn" onclick="unassignPax('${t.id}','${p.id}')"><i class="ri-close-line"></i></button></div>`;}).join('');
     let sugH='';
     if(freeC>0&&unassigned.length>0){
       sugH=unassigned.map(p=>`<div class="suggest-row">
@@ -1160,7 +1137,13 @@ function buildCarsHTML(t,drivers,unassigned){
           ${d.carNotes?`<div class="car-driver-meta"><i class="ri-chat-1-line"></i> ${d.carNotes}</div>`:''}
           <div class="seats-row">${seatsH}</div>
         </div>
-        <div style="font-size:.76rem;color:var(--gray)"><i class="ri-phone-line"></i> ${d.phone}</div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.3rem;">
+          ${d.phone?`<div style="font-size:.73rem;color:var(--gray)"><i class="ri-phone-line"></i> ${d.phone}</div>`:''}
+          <div style="display:flex;gap:.3rem;">
+            ${d.phone?`<a class="pax-contact-btn" href="https://wa.me/${waNum(d.phone)}" target="_blank" title="וואטסאפ לנהג"><i class="ri-whatsapp-line"></i></a>`:''}
+            ${d.phone?`<a class="pax-contact-btn pax-call-btn" href="tel:${d.phone}" title="חיוג לנהג"><i class="ri-phone-line"></i></a>`:''}
+          </div>
+        </div>
       </div>
       <div class="car-passengers">${!paxH&&!sugH?`<div class="car-empty">אין נוסעים משובצים</div>`:''}${paxH}${sugH}</div>
     </div>`;
@@ -1193,14 +1176,14 @@ function buildPaxHTML(t){
           ${!p.hasCar&&!p.needRide?`<span class="tag tag-solo"><i class="ri-walk-line"></i> לבד</span>`:''}
         </div>
       </div>
-      <button class="rm-btn" onclick="removePax(${t.id},'${p.id}')"><i class="ri-close-line"></i></button>
+      <button class="rm-btn" onclick="removePax('${t.id}','${p.id}')"><i class="ri-close-line"></i></button>
     </div>`;
   }).join('');
 }
 
 // ===================== ASSIGN =====================
 function assignPax(tid,pid,did){
-  const t=trips.find(x=>x.id==tid),d=t.participants.find(x=>x.id===did);
+  const t=trips.find(x=>String(x.id)===String(tid)),d=t.participants.find(x=>x.id===did);
   const tk=t.participants.filter(p=>p.assignedTo===did).length;
   if(tk>=parseInt(d.seats)){showToast('❌ הרכב מלא!');return;}
   const p=t.participants.find(x=>x.id===pid);p.assignedTo=did;
@@ -1211,11 +1194,11 @@ function assignFromSelect(tid,pid){
   assignPax(tid,pid,sel.value);
 }
 function unassignPax(tid,pid){
-  const t=trips.find(x=>x.id==tid),p=t.participants.find(x=>x.id===pid);
+  const t=trips.find(x=>String(x.id)===String(tid)),p=t.participants.find(x=>x.id===pid);
   p.assignedTo=null;saveTrips();showToast(`↩️ ${p.name} הוסר`);renderDetail(t);
 }
 function removePax(tid,pid){
-  const t=trips.find(x=>x.id==tid),idx=t.participants.findIndex(x=>x.id===pid);if(idx<0)return;
+  const t=trips.find(x=>String(x.id)===String(tid)),idx=t.participants.findIndex(x=>x.id===pid);if(idx<0)return;
   t.participants.forEach(p=>{if(p.assignedTo===pid)p.assignedTo=null;});
   const name=t.participants[idx].name;t.participants.splice(idx,1);
   saveTrips();showToast(`🗑️ ${name} הוסר`);renderDetail(t);
@@ -1227,22 +1210,40 @@ function addTrip(){
   const date=document.getElementById('trip-date').value;
   if(!name||!date){showToast('⚠️ נא למלא שם ותאריך');return;}
   const newWps=collectWpEditorItems();
-  const t={id:nextTripId++,name,date,time:document.getElementById('trip-time').value,
+  const isPrivate=document.getElementById('trip-private').checked;
+  const t={id:'t'+Math.random().toString(36).substr(2,9),name,date,time:document.getElementById('trip-time').value,
     meeting:document.getElementById('trip-meeting').value.trim(),
     desc:document.getElementById('trip-desc').value.trim(),
-    emoji:selectedEmoji,status:'open',participants:[],waypoints:newWps};
+    emoji:'',image:selectedImage,status:'open',hidden:isPrivate,participants:[],waypoints:newWps};
   trips.push(t);
   newWps.forEach(w=>geocodeWaypoint(w,()=>saveTrips()));saveTrips();
   closeModal('modal-add-trip');
   ['trip-name','trip-date','trip-meeting','trip-desc'].forEach(i=>document.getElementById(i).value='');
   document.getElementById('trip-time').value='08:00';
+  document.getElementById('trip-private').checked=false;
   document.getElementById('wp-editor-list').innerHTML='';wpEditorItems=[];
-  renderList();showToast('🎉 הטיול פורסם!');
+  selectedImage=TRIP_IMAGES[0];renderImagePicker();
+  showTrip(t.id);showToast(isPrivate?'🔒 טיול פרטי נוצר! שתפו קישור ישיר':'🎉 הטיול פורסם!');
 }
-function setEmoji(el){
-  selectedEmoji=el.textContent;
-  document.querySelectorAll('[onclick="setEmoji(this)"]').forEach(s=>s.style.transform='scale(1)');
-  el.style.transform='scale(1.45)';
+function toggleTripHidden(id){
+  const t=trips.find(x=>String(x.id)===String(id));if(!t)return;
+  t.hidden=!t.hidden;saveTrips();
+  showToast(t.hidden?'🔒 הטיול הוסתר — גלוי רק דרך קישור':'👁️ הטיול גלוי לכולם');
+  renderDetail(t);
+}
+function deleteTrip(id){
+  if(!confirm('בטוח למחוק את הטיול לצמיתות?'))return;
+  const idx=trips.findIndex(x=>String(x.id)===String(id));if(idx<0)return;
+  trips.splice(idx,1);saveTrips();showList();showToast('🗑️ הטיול נמחק');
+}
+function renderImagePicker(){
+  const el=document.getElementById('img-picker');if(!el)return;
+  el.innerHTML=TRIP_IMAGES.map((url,i)=>`<div class="img-picker-item${url===selectedImage?' selected':''}" onclick="setTripImage(this,'${url}')"><img src="${url}" loading="lazy"></div>`).join('');
+}
+function setTripImage(el,url){
+  selectedImage=url;
+  document.querySelectorAll('.img-picker-item').forEach(x=>x.classList.remove('selected'));
+  el.classList.add('selected');
 }
 
 // ===================== NAV =====================
@@ -1256,8 +1257,19 @@ function showList(){
   document.getElementById('hero-section').style.display='';
   renderList();
 }
-function openModal(id){document.getElementById(id).classList.add('open');}
+function openModal(id){
+  document.getElementById(id).classList.add('open');
+  if(id==='modal-add-trip'){renderImagePicker();setTimeout(()=>tryAttachAutocomplete('trip-meeting'),200);}
+  if(id==='modal-add-wp') setTimeout(()=>tryAttachAutocomplete('wp-address'),200);
+}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
+function tryAttachAutocomplete(inputId){
+  if(!gmapsScriptLoaded||!window.google||!window.google.maps||!window.google.maps.places)return;
+  const input=document.getElementById(inputId);if(!input||input._acAttached)return;
+  input._acAttached=true;
+  const ac=new google.maps.places.Autocomplete(input,{componentRestrictions:{country:'il'},fields:['name','geometry','formatted_address']});
+  ac.addListener('place_changed',()=>{const p=ac.getPlace();if(p&&p.formatted_address)input.value=p.formatted_address;});
+}
 document.querySelectorAll('.modal-overlay').forEach(m=>{
   m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');});
 });
