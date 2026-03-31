@@ -1,0 +1,8 @@
+name = "trip-organizer"
+compatibility_date = "2024-12-01"
+pages_build_output_dir = "."
+
+[[d1_databases]]
+binding = "DB"
+database_name = "trip-organizer-db"
+database_id = "194b9e32-c321-4d36-9fc9-073cc48a4f0e"
