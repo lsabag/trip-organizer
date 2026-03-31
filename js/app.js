@@ -251,7 +251,7 @@ function renderDetail(t){
   const zoomVal=t.zoom!=null?t.zoom:100;
   const zoomStyle=zoomVal>100?`transform:scale(${zoomVal/100});transform-origin:center ${cropPos}%;`:'';
   document.getElementById('detail-content').innerHTML=`
-    ${directNotice}
+    ${directNotice?`<div class="direct-link-notice" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;"><span><span class="ms">link</span> צפייה דרך קישור ישיר</span><button class="privacy-toggle-btn${t.hidden?' is-private':''}" onclick="toggleTripHidden('${t.id}')" style="margin:0;"><span class="ms">${t.hidden?'visibility_off':'visibility'}</span> ${t.hidden?'פרטי':'ציבורי'}</button></div>`:`<div class="privacy-bar"><button class="privacy-toggle-btn${t.hidden?' is-private':''}" onclick="toggleTripHidden('${t.id}')"><span class="ms">${t.hidden?'visibility_off':'visibility'}</span> ${t.hidden?'טיול פרטי':'ציבורי — גלוי לכולם'}</button></div>`}
     <div style="position:relative;border-radius:var(--radius);overflow:hidden;margin-bottom:1rem;">
       <img src="${headerImg}" style="width:100%;height:180px;object-fit:cover;object-position:center ${cropPos}%;display:block;${zoomStyle}" loading="lazy">
       <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.6) 0%,transparent 50%);"></div>
@@ -266,10 +266,6 @@ function renderDetail(t){
         <button class="share-btn" style="flex:1;padding:.45rem .8rem;font-size:.82rem;" onclick="copyShareLink('${t.id}')"><span class="ms">share</span> שתף</button>
         <button class="share-btn" style="flex:1;padding:.45rem .8rem;font-size:.82rem;background:var(--teal-pale);color:var(--teal-dark);" onclick="editTrip('${t.id}')"><span class="ms">edit</span> ערוך</button>
       </div>
-    </div>
-    <div class="privacy-bar">
-      <button class="privacy-toggle-btn${t.hidden?' is-private':''}" onclick="toggleTripHidden('${t.id}')"><span class="ms">${t.hidden?'visibility_off':'visibility'}</span> ${t.hidden?'טיול פרטי':'ציבורי — גלוי לכולם'}</button>
-      <button class="delete-trip-btn" onclick="deleteTrip('${t.id}')"><span class="ms">delete</span> מחק טיול</button>
     </div>
     ${sumH}
     <div class="section-card">
@@ -302,6 +298,9 @@ function renderDetail(t){
     <div class="section-card">
       <div class="section-title"><span class="ms">group</span> כל המשתתפים (${t.participants.length})</div>
       <div class="participants-list">${buildPaxHTML(t)}</div>
+    </div>
+    <div style="text-align:center;padding:1rem 0;">
+      <button class="delete-trip-btn" onclick="deleteTrip('${t.id}')" style="margin:0 auto;"><span class="ms">delete</span> מחק טיול</button>
     </div>`;
 
   setTimeout(()=>initMap(t),100);
@@ -707,8 +706,6 @@ function buildJoinHTML(){
       <span class="join-step active" id="jstep-1">1</span>
       <span class="join-step-line"></span>
       <span class="join-step" id="jstep-2">2</span>
-      <span class="join-step-line"></span>
-      <span class="join-step" id="jstep-3">3</span>
     </div>
     <div id="join-step-1">
       <div class="form-group"><label>שם מלא</label><input id="j-name" type="text" placeholder="השם שלך"></div>
@@ -735,15 +732,9 @@ function buildJoinHTML(){
           <span class="toggle-label"><span class="ms">volunteer_activism</span> אני מחפש/ת הסעה</span>
         </div>
       </div>
-      <div style="display:flex;gap:.5rem;margin-top:.8rem;">
-        <button class="btn btn-ghost" style="flex:1;" onclick="joinNext(1)"><span class="ms">arrow_forward</span> חזרה</button>
-        <button class="btn btn-primary" style="flex:1;" onclick="joinNext(3)"><span class="ms">arrow_back</span> המשך</button>
-      </div>
-    </div>
-    <div id="join-step-3" style="display:none;">
-      <div class="form-group"><label>הערות</label><textarea id="j-notes" rows="2" placeholder="אלרגיות, בקשות מיוחדות..."></textarea></div>
+      <div class="form-group" style="margin-top:.6rem;"><label>הערות (אופציונלי)</label><textarea id="j-notes" rows="2" placeholder="אלרגיות, בקשות מיוחדות..."></textarea></div>
       <div style="display:flex;gap:.5rem;">
-        <button class="btn btn-ghost" style="flex:1;" onclick="joinNext(2)"><span class="ms">arrow_forward</span> חזרה</button>
+        <button class="btn btn-ghost" style="flex:1;" onclick="joinNext(1)"><span class="ms">arrow_forward</span> חזרה</button>
         <button class="btn btn-clay" style="flex:1;" onclick="joinTrip()"><span class="ms">check</span> אני בפנים!</button>
       </div>
     </div>
@@ -756,10 +747,14 @@ function joinNext(step){
     const city=document.getElementById('j-city').value.trim();
     if(!name||!phone||!city){showToast('נא למלא שם, טלפון ועיר');return;}
   }
-  for(let i=1;i<=3;i++){
+  for(let i=1;i<=2;i++){
     document.getElementById('join-step-'+i).style.display=i===step?'block':'none';
     document.getElementById('jstep-'+i).className='join-step'+(i===step?' active':'')+(i<step?' done':'');
   }
+  setTimeout(()=>{
+    const sec=document.querySelector('.join-section');
+    if(sec) sec.scrollIntoView({behavior:'smooth',block:'start'});
+  },100);
 }
 function toggleJoinCar(){
   const on=document.getElementById('j-has-car').checked;
@@ -832,6 +827,8 @@ function buildCarsHTML(t,drivers,unassigned){
 }
 function buildPoolHTML(t,unassigned,drivers){
   if(!unassigned.length){
+    const nonDrivers=t.participants.filter(p=>!p.hasCar);
+    if(!nonDrivers.length) return`<div class="empty-state"><div class="ei"><span class="ms" style="font-size:2.3rem;color:var(--gray)">group</span></div><p>אין נוסעים — רק נהגים</p></div>`;
     if(!drivers.length) return`<div class="empty-state"><div class="ei"><span class="ms" style="font-size:2.3rem;color:var(--gray)">no_transfer</span></div><p>אין ממתינים לשיבוץ</p></div>`;
     return`<div class="empty-state"><div class="ei"><span class="ms" style="font-size:2.3rem;color:var(--green)">done_all</span></div><p>כולם שובצו לרכב!</p></div>`;
   }
