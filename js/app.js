@@ -208,7 +208,6 @@ function renderDetail(t){
   const drivers=t.participants.filter(p=>p.hasCar);
   const unassigned=t.participants.filter(p=>!p.hasCar&&p.needRide&&!p.assignedTo);
   const fs=drivers.reduce((s,d)=>{const tk=t.participants.filter(p=>p.assignedTo===d.id).length;return s+Math.max(0,parseInt(d.seats)-tk);},0);
-  const directNotice=isDirectLink?`<div class="direct-link-notice"><span class="ms">link</span> אתה צופה בטיול זה דרך קישור ישיר</div>`:'';
   const sumH=`<div class="summary-bar">
     <div class="summary-item"><div class="summary-icon teal"><span class="ms">group</span></div><div class="summary-val">${t.participants.length}</div><div class="summary-lbl">נרשמו</div></div>
     <div class="summary-item"><div class="summary-icon orange"><span class="ms">directions_car</span></div><div class="summary-val">${drivers.length}</div><div class="summary-lbl">רכבים</div></div>
@@ -236,11 +235,10 @@ function renderDetail(t){
   const zoomVal=t.zoom!=null?t.zoom:100;
   const zoomStyle=zoomVal>100?`transform:scale(${zoomVal/100});transform-origin:center ${cropPos}%;`:'';
   document.getElementById('detail-content').innerHTML=`
-    ${directNotice?`<div class="direct-link-notice" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;"><span><span class="ms">link</span> צפייה דרך קישור ישיר</span><button class="privacy-toggle-btn${t.hidden?' is-private':''}" onclick="toggleTripHidden('${t.id}')" style="margin:0;"><span class="ms">${t.hidden?'visibility_off':'visibility'}</span> ${t.hidden?'פרטי':'ציבורי'}</button></div>`:`<div class="privacy-bar"><button class="privacy-toggle-btn${t.hidden?' is-private':''}" onclick="toggleTripHidden('${t.id}')"><span class="ms">${t.hidden?'visibility_off':'visibility'}</span> ${t.hidden?'טיול פרטי':'ציבורי — גלוי לכולם'}</button></div>`}
     <div class="trip-hero">
       <img src="${headerImg}" style="object-position:center ${cropPos}%;${zoomStyle}" loading="lazy" alt="${esc(t.name)}">
       <div class="trip-hero-overlay"></div>
-      <div class="trip-hero-badge"><span class="ms" style="font-size:.85rem">${t.hidden?'visibility_off':'visibility'}</span> ${t.hidden?'פרטי':'ציבורי'}</div>
+      <div class="trip-hero-badge" onclick="toggleTripHidden('${t.id}')" style="cursor:pointer;" title="לחץ לשינוי"><span class="ms" style="font-size:.85rem">${t.hidden?'visibility_off':'visibility'}</span> ${t.hidden?'פרטי':'ציבורי'}${isDirectLink?' | קישור ישיר':''}</div>
       <div class="trip-hero-content">
         <div class="trip-hero-title">${esc(t.name)}</div>
         <div class="trip-hero-meta">
