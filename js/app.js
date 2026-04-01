@@ -867,8 +867,14 @@ function removePax(tid,pid){
 let editingTripId=null;
 const unlockedTrips={};
 function checkTripPassword(t){
-  if(!t.password)return true;
   if(unlockedTrips[t.id])return true;
+  if(!t.password){
+    const pw=prompt('טיול זה עדיין ללא סיסמה.\nהגדר סיסמת עריכה (4-8 תווים):');
+    if(!pw||pw.length<4){showToast('נדרשת סיסמה של 4-8 תווים');return false;}
+    t.password=pw;saveTrips();
+    unlockedTrips[t.id]=true;
+    showToast('סיסמה הוגדרה');return true;
+  }
   const pw=prompt('הזן סיסמת עריכה:');
   if(pw===t.password){unlockedTrips[t.id]=true;return true;}
   showToast('סיסמה שגויה');return false;
