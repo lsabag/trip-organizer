@@ -10,7 +10,7 @@ function initCreatorToken(): string {
   if (typeof window === 'undefined') return '';
   let token = localStorage.getItem('tiyulim_creator') || '';
   if (!token) {
-    token = 'ct_' + Math.random().toString(36).substr(2, 12);
+    token = 'ct_' + crypto.randomUUID().replace(/-/g, '');
     localStorage.setItem('tiyulim_creator', token);
   }
   return token;
