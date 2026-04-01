@@ -146,8 +146,7 @@ function initRouter(){
 window.addEventListener('hashchange',initRouter);
 
 function copyShareLink(tripId){
-  const base=location.href.split('#')[0].replace(/\/$/,'');
-  const url=base+'/share/'+tripId;
+  const url=location.origin+'/share/'+tripId;
   const t=trips.find(x=>String(x.id)===String(tripId));
   const title=t?t.name:'טיול';
   const isMobile=/Android|iPhone|iPad/i.test(navigator.userAgent);
