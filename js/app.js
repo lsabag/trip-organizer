@@ -734,7 +734,7 @@ function buildJoinHTML(){
       <div class="form-group"><label>שם מלא</label><input id="j-name" type="text" placeholder="השם שלך"></div>
       <div class="form-group"><label>טלפון</label><input id="j-phone" type="tel" placeholder="050-..."></div>
       <div class="form-group"><label><span class="ms">location_on</span> עיר מגורים</label><input id="j-city" type="text" placeholder="מאיפה אתה?"></div>
-      <button class="btn btn-primary btn-full" onclick="joinNext(2)"><span class="ms">arrow_back</span> המשך</button>
+      <button class="btn btn-primary btn-full" onclick="joinNext(2)"><span class="ms ms-flip">arrow_back</span> המשך</button>
     </div>
     <div id="join-step-2" style="display:none;">
       <div class="toggle-row">
@@ -757,7 +757,7 @@ function buildJoinHTML(){
       </div>
       <div class="form-group" style="margin-top:.6rem;"><label>הערות (אופציונלי)</label><textarea id="j-notes" rows="2" placeholder="אלרגיות, בקשות מיוחדות..."></textarea></div>
       <div style="display:flex;gap:.5rem;">
-        <button class="btn btn-ghost" style="flex:1;" onclick="joinNext(1)"><span class="ms">arrow_forward</span> חזרה</button>
+        <button class="btn btn-ghost" style="flex:1;" onclick="joinNext(1)"><span class="ms ms-flip">arrow_forward</span> חזרה</button>
         <button class="btn btn-clay" style="flex:1;" onclick="joinTrip()"><span class="ms">check</span> אני בפנים!</button>
       </div>
     </div>
@@ -1232,7 +1232,7 @@ function renderAdminTrips(all){
     <span style="font-weight:700;color:var(--dark);">כל הטיולים</span>
     <div style="display:flex;gap:.5rem;">
       <button class="btn btn-ghost btn-sm" onclick="loadAdminTrips()"><span class="ms">refresh</span> רענן</button>
-      <button class="btn btn-ghost btn-sm" onclick="showList()"><span class="ms">arrow_forward</span> חזרה</button>
+      <button class="btn btn-ghost btn-sm" onclick="showList()"><span class="ms ms-flip">arrow_forward</span> חזרה</button>
     </div>
   </div>`;
   h+=all.map(t=>`<div style="background:white;border-radius:12px;padding:.8rem 1rem;margin-bottom:.65rem;box-shadow:var(--card-shadow);display:flex;align-items:center;gap:.8rem;">
