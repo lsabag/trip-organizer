@@ -462,17 +462,15 @@
       </div>
 
       <!-- Password -->
-      {#if !isEdit}
-        <div class="form-group">
-          <label>סיסמת עריכה * (4-8 תווים)</label>
-          <input
-            type="password"
-            bind:value={password}
-            placeholder="סיסמה לעריכת הטיול"
-            maxlength="8"
-          />
-        </div>
-      {/if}
+      <div class="form-group">
+        <label>{isEdit ? 'שינוי סיסמה (השאר ריק לשמירת הקיימת)' : 'סיסמת עריכה * (4-8 תווים)'}</label>
+        <input
+          type="password"
+          bind:value={password}
+          placeholder={isEdit ? 'סיסמה חדשה (אופציונלי)' : 'סיסמה לעריכת הטיול'}
+          maxlength="8"
+        />
+      </div>
 
       <!-- Private toggle -->
       <div class="toggle-row">
