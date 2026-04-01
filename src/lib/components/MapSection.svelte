@@ -61,28 +61,22 @@
     }
   });
 
-  /* ====== Google Maps Script Loading ====== */
-  function loadGoogleMapsScript(key: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-      if (get(gmapsLoaded) && window.google?.maps) {
+  /* ====== Wait for Google Maps (loaded by layout) ====== */
+  function waitForGoogleMaps(): Promise<void> {
+    return new Promise((resolve) => {
+      if (get(gmapsLoaded) && (window as any).google?.maps) {
         resolve();
         return;
       }
-      const old = document.getElementById('gmaps-script');
-      if (old) old.remove();
-      (window as any)._gmapsReady = () => {
-        gmapsLoaded.set(true);
-        resolve();
-      };
-      const s = document.createElement('script');
-      s.id = 'gmaps-script';
-      s.src = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places,marker&language=he&loading=async&callback=_gmapsReady`;
-      s.async = true;
-      s.onerror = () => {
-        gmapsLoaded.set(false);
-        reject(new Error('Failed to load Google Maps'));
-      };
-      document.head.appendChild(s);
+      // Wait for layout to finish loading the script
+      const unsub = gmapsLoaded.subscribe((loaded) => {
+        if (loaded && (window as any).google?.maps) {
+          unsub();
+          resolve();
+        }
+      });
+      // Timeout after 10s — fall back to Leaflet
+      setTimeout(() => { unsub(); resolve(); }, 10000);
     });
   }
 
@@ -91,10 +85,12 @@
     const key = get(gmapsKey);
     if (key && get(gmapsLoaded) && window.google?.maps) {
       initGoogleMap();
-    } else if (key && !get(gmapsLoaded)) {
-      loadGoogleMapsScript(key)
-        .then(() => initGoogleMap())
-        .catch(() => initLeafletMap());
+    } else if (key) {
+      waitForGoogleMaps()
+        .then(() => {
+          if ((window as any).google?.maps) initGoogleMap();
+          else initLeafletMap();
+        });
     } else {
       initLeafletMap();
     }
