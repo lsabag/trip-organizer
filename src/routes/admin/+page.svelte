@@ -91,18 +91,20 @@
     <div style="max-width:400px;margin:3rem auto;text-align:center;">
       <div style="font-size:2.5rem;margin-bottom:1rem;"><span class="ms">admin_panel_settings</span></div>
       <h2 class="section-heading" style="text-align:center;margin-bottom:1.5rem;">ניהול טיולים</h2>
-      <div class="form-group">
-        <label>טוקן מנהל</label>
-        <input
-          type="password"
-          bind:value={tokenInput}
-          placeholder="הזן טוקן מנהל..."
-          onkeydown={(e) => { if (e.key === 'Enter') handleLogin(); }}
-        />
-      </div>
-      <button class="btn btn-primary btn-full" onclick={handleLogin} disabled={loading}>
-        {#if loading}טוען...{:else}<span class="ms">login</span> כניסה{/if}
-      </button>
+      <form onsubmit={(e) => { e.preventDefault(); handleLogin(); }}>
+        <div class="form-group">
+          <label>טוקן מנהל</label>
+          <input
+            type="password"
+            bind:value={tokenInput}
+            placeholder="הזן טוקן מנהל..."
+            autocomplete="off"
+          />
+        </div>
+        <button class="btn btn-primary btn-full" type="submit" disabled={loading}>
+          {#if loading}טוען...{:else}<span class="ms">login</span> כניסה{/if}
+        </button>
+      </form>
       <button class="btn btn-ghost" style="margin-top:.8rem;" onclick={goBack}>
         <span class="ms">arrow_forward</span> חזרה
       </button>

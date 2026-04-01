@@ -128,7 +128,7 @@
     </div>
     <div class="waypoints-list">
       {#if trip.waypoints.length}
-        {#each trip.waypoints as wp, i (wp.id)}
+        {#each trip.waypoints as wp, i (wp.id + '-' + i)}
           <WaypointCard
             waypoint={wp}
             tripId={trip.id}
