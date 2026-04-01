@@ -688,14 +688,34 @@ function addWpEditorItem(){
   setTimeout(()=>tryAttachAutocomplete('wpe-addr-'+id),100);
 }
 function removeWpEditorItem(id){wpEditorItems=wpEditorItems.filter(x=>x.id!==id);const el=document.getElementById(id);if(el)el.remove();}
+function loadWpEditorFromTrip(waypoints){
+  document.getElementById('wp-editor-list').innerHTML='';wpEditorItems=[];
+  waypoints.forEach(w=>{
+    addWpEditorItem();
+    const item=wpEditorItems[wpEditorItems.length-1];
+    const el=document.getElementById(item.id);if(!el)return;
+    const nameInput=el.querySelector('.wpe-name');if(nameInput)nameInput.value=w.name||'';
+    const addrInput=el.querySelector('.wpe-addr');if(addrInput)addrInput.value=w.address||'';
+    const phoneInput=el.querySelector('.wpe-phone');if(phoneInput)phoneInput.value=w.phone||'';
+    const notesInput=el.querySelector('.wpe-notes');if(notesInput)notesInput.value=w.notes||'';
+    // Store existing waypoint data for preserving lat/lng/rating
+    item.existingData=w;
+  });
+}
 function collectWpEditorItems(){
-  return wpEditorItems.map(({id})=>({
-    id:'w'+(nextWpId++),name:document.querySelector(`.wpe-name[data-id="${id}"]`)?.value.trim()||'',
-    address:document.querySelector(`.wpe-addr[data-id="${id}"]`)?.value.trim()||'',
-    phone:document.querySelector(`.wpe-phone[data-id="${id}"]`)?.value.trim()||'',
-    notes:document.querySelector(`.wpe-notes[data-id="${id}"]`)?.value.trim()||'',
-    time:'',lat:null,lng:null,rating:null,ratingsTotal:null,placeId:null
-  })).filter(w=>w.name);
+  return wpEditorItems.map(item=>{
+    const {id,existingData}=item;
+    const ed=existingData||{};
+    return{
+      id:ed.id||('w'+(nextWpId++)),
+      name:document.querySelector(`.wpe-name[data-id="${id}"]`)?.value.trim()||'',
+      address:document.querySelector(`.wpe-addr[data-id="${id}"]`)?.value.trim()||'',
+      phone:document.querySelector(`.wpe-phone[data-id="${id}"]`)?.value.trim()||'',
+      notes:document.querySelector(`.wpe-notes[data-id="${id}"]`)?.value.trim()||'',
+      time:ed.time||'',lat:ed.lat||null,lng:ed.lng||null,
+      rating:ed.rating||null,ratingsTotal:ed.ratingsTotal||null,placeId:ed.placeId||null
+    };
+  }).filter(w=>w.name);
 }
 
 // ===================== JOIN =====================
@@ -927,6 +947,7 @@ async function editTrip(id){
   document.getElementById('zoom-slider').value=selectedZoom;
   document.getElementById('zoom-val').textContent=selectedZoom+'%';
   openModal('modal-add-trip');
+  loadWpEditorFromTrip(t.waypoints||[]);
   renderImagePicker();
   updateCropPreview();
   // Update modal title for edit mode
@@ -952,6 +973,7 @@ async function addTrip(){
     t.meeting=document.getElementById('trip-meeting').value.trim();
     t.desc=document.getElementById('trip-desc').value.trim();
     t.image=finalImage;t.cropY=selectedCropY;t.zoom=selectedZoom;t.hidden=isPrivate;
+    t.waypoints=collectWpEditorItems();
     currentTripId=t.id;saveTrips();
     closeModal('modal-add-trip');resetTripModal();
     renderDetail(t);showToast('הטיול עודכן');
