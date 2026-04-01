@@ -147,7 +147,8 @@ function copyShareLink(tripId){
   const url=base+'/share/'+tripId;
   const t=trips.find(x=>String(x.id)===String(tripId));
   const title=t?t.name:'טיול';
-  if(navigator.share){
+  const isMobile=/Android|iPhone|iPad/i.test(navigator.userAgent);
+  if(isMobile&&navigator.share){
     navigator.share({title,text:`הצטרפו לטיול: ${title}`,url}).catch(()=>{});
   }else{
     navigator.clipboard.writeText(url).then(()=>showToast('הקישור הועתק!')).catch(()=>prompt('העתיקו:',url));
