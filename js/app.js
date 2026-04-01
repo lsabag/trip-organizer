@@ -389,8 +389,8 @@ function updateWaypointCardRating(w){
   const el=document.getElementById('wpr-'+w.id);if(!el)return;
   if(w.rating){
     el.innerHTML=`<span class="wp-stars">${starsHTML(w.rating)}</span>
-      <span class="wp-rating-num">${w.rating.toFixed(1)}</span>
-      <span class="wp-rating-count">(${num(w.ratingsTotal)} ביקורות)</span>`;
+      <b style="font-size:.85rem;">${w.rating.toFixed(1)}</b>
+      <span class="wp-rating-count">(${num(w.ratingsTotal)})</span>`;
     const link=document.getElementById('wpa-reviews-'+w.id);
     if(link&&w.placeId) link.href=`https://www.google.com/maps/place/?q=place_id:${w.placeId}`;
   } else {
@@ -512,8 +512,8 @@ function buildWaypointsHTML(t){
     const reviewUrl=w.placeId?`https://www.google.com/maps/place/?q=place_id:${w.placeId}`:`https://www.google.com/maps/search/${encodeURIComponent((w.name||'')+' '+(w.address||''))}`;
     const ratingContent=w.rating?
       `<span class="wp-stars">${starsHTML(w.rating)}</span>
-       <span class="wp-rating-num">${w.rating.toFixed(1)}</span>
-       <span class="wp-rating-count">(${num(w.ratingsTotal)} ביקורות)</span>`:
+       <b style="font-size:.85rem;">${w.rating.toFixed(1)}</b>
+       <span class="wp-rating-count">(${num(w.ratingsTotal)})</span>`:
       (gmapsKey?`<span class="wp-rating-loading">טוען ביקורות...</span>`:'<span class="wp-rating-loading">הפעל גוגל מאפס לביקורות</span>');
     return`<div class="wp-card" id="wpc-${w.id}" style="animation-delay:${i*0.05}s;">
       <div class="wp-top">
