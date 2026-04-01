@@ -13,22 +13,12 @@ async function hashPw(pw) {
   return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-function maskPhone(p) { return p ? p.replace(/^(.{3}).*(.{2})$/, '$1-***-$2') : ''; }
-
-function tripRow(t, showFullPhones = false) {
+function tripRow(t) {
   const { password, ...rest } = t;
-  const participants = JSON.parse(t.participants || '[]').map(p => {
-    if (showFullPhones) return p;
-    return { ...p, phone: maskPhone(p.phone) };
-  });
-  const waypoints = JSON.parse(t.waypoints || '[]').map(w => {
-    if (showFullPhones) return w;
-    return { ...w, phone: maskPhone(w.phone) };
-  });
   return {
     ...rest,
-    participants,
-    waypoints,
+    participants: JSON.parse(t.participants || '[]'),
+    waypoints: JSON.parse(t.waypoints || '[]'),
     hidden: !!t.hidden,
     hasPassword: !!(password && password.length > 0),
     desc: t.description,
@@ -47,8 +37,7 @@ export async function onRequestGet(context) {
   if (!trip) {
     return Response.json({ error: 'Not found' }, { status: 404, headers: CORS });
   }
-  const showFull = await verifyAccess(context, trip);
-  return Response.json(tripRow(trip, showFull), { headers: CORS });
+  return Response.json(tripRow(trip), { headers: CORS });
 }
 
 // Helper: check password or admin

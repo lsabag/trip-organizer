@@ -923,7 +923,7 @@ async function checkTripPassword(t){
       const r=await fetch(`${API}/trips/${t.id}`,{method:'PATCH',
         headers:{'Content-Type':'application/json'},body:JSON.stringify({setPassword:pw})});
       const d=await r.json();
-      if(d.valid){t.hasPassword=true;unlockedTrips[t.id]=pw;await reloadTripWithFullData(t);showToast('סיסמה הוגדרה');return true;}
+      if(d.valid){t.hasPassword=true;unlockedTrips[t.id]=pw;showToast('סיסמה הוגדרה');return true;}
     }catch(e){}
     showToast('שגיאה');return false;
   }
@@ -933,7 +933,7 @@ async function checkTripPassword(t){
     const r=await fetch(`${API}/trips/${t.id}`,{method:'PATCH',
       headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pw})});
     const d=await r.json();
-    if(d.valid){unlockedTrips[t.id]=pw;await reloadTripWithFullData(t);return true;}
+    if(d.valid){unlockedTrips[t.id]=pw;return true;}
   }catch(e){}
   showToast('סיסמה שגויה');return false;
 }
