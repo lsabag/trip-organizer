@@ -5,11 +5,13 @@ const CORS = {
 };
 
 function tripRow(t) {
+  const { password, ...rest } = t;
   return {
-    ...t,
+    ...rest,
     participants: JSON.parse(t.participants || '[]'),
     waypoints: JSON.parse(t.waypoints || '[]'),
     hidden: !!t.hidden,
+    hasPassword: !!password,
     desc: t.description,
   };
 }
@@ -54,8 +56,8 @@ export async function onRequestPost(context) {
   const id = 't' + Math.random().toString(36).substr(2, 9);
 
   await DB.prepare(`
-    INSERT INTO trips (id, name, date, time, meeting, description, image, hidden, status, creator_token, participants, waypoints)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO trips (id, name, date, time, meeting, description, image, hidden, status, creator_token, participants, waypoints, password)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).bind(
     id,
     body.name,
@@ -68,7 +70,8 @@ export async function onRequestPost(context) {
     'open',
     creatorToken,
     JSON.stringify(body.participants || []),
-    JSON.stringify(body.waypoints || [])
+    JSON.stringify(body.waypoints || []),
+    body.password || ''
   ).run();
 
   return Response.json({ id, success: true }, { status: 201, headers: CORS });

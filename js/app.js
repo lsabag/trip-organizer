@@ -42,9 +42,11 @@ async function loadTripsFromAPI(){
 function saveTrips(){
   if(currentTripId){
     const t=trips.find(x=>String(x.id)===String(currentTripId));
-    if(t) fetch(`${API}/trips/${t.id}`,{method:'PUT',
-      headers:{'Content-Type':'application/json','X-Creator-Token':creatorToken},
-      body:JSON.stringify(t)}).catch(()=>{});
+    if(t){
+      const hdrs={'Content-Type':'application/json','X-Creator-Token':creatorToken};
+      if(unlockedTrips[t.id]) hdrs['X-Trip-Password']=unlockedTrips[t.id];
+      fetch(`${API}/trips/${t.id}`,{method:'PUT',headers:hdrs,body:JSON.stringify(t)}).catch(()=>{});
+    }
   }
 }
 function syncIds(){
@@ -528,9 +530,9 @@ function buildWaypointsHTML(t){
   }).join('');
 }
 
-function editWaypoint(tripId,wpId){
+async function editWaypoint(tripId,wpId){
   const t=trips.find(x=>String(x.id)===String(tripId));if(!t)return;
-  if(!checkTripPassword(t))return;
+  if(!await checkTripPassword(t))return;
   const w=t.waypoints.find(x=>x.id===wpId);if(!w)return;
   document.getElementById('wp-edit-id').value=wpId;
   document.getElementById('wp-name').value=w.name||'';
@@ -627,16 +629,16 @@ function saveWaypoint(){
   }
 }
 
-function moveWaypoint(tripId,idx,dir){
+async function moveWaypoint(tripId,idx,dir){
   const t=trips.find(x=>String(x.id)===String(tripId));if(!t)return;
-  if(!checkTripPassword(t))return;
+  if(!await checkTripPassword(t))return;
   const newIdx=idx+dir;if(newIdx<0||newIdx>=t.waypoints.length)return;
   const tmp=t.waypoints[idx];t.waypoints[idx]=t.waypoints[newIdx];t.waypoints[newIdx]=tmp;
   saveTrips();renderDetail(t);
 }
-function removeWaypoint(tripId,wpId){
+async function removeWaypoint(tripId,wpId){
   const t=trips.find(x=>String(x.id)===String(tripId));if(!t)return;
-  if(!checkTripPassword(t))return;
+  if(!await checkTripPassword(t))return;
   const i=t.waypoints.findIndex(x=>x.id===wpId);if(i<0)return;
   if(!confirm(`למחוק את "${t.waypoints[i].name}"?`))return;
   const name=t.waypoints[i].name;t.waypoints.splice(i,1);saveTrips();showToast(`"${name}" הוסר`);renderDetail(t);
@@ -866,22 +868,32 @@ function removePax(tid,pid){
 // ===================== ADD TRIP =====================
 let editingTripId=null;
 const unlockedTrips={};
-function checkTripPassword(t){
+async function checkTripPassword(t){
   if(unlockedTrips[t.id])return true;
-  if(!t.password){
+  if(!t.hasPassword){
     const pw=prompt('טיול זה עדיין ללא סיסמה.\nהגדר סיסמת עריכה (4-8 תווים):');
     if(!pw||pw.length<4){showToast('נדרשת סיסמה של 4-8 תווים');return false;}
-    t.password=pw;saveTrips();
-    unlockedTrips[t.id]=true;
-    showToast('סיסמה הוגדרה');return true;
+    try{
+      const r=await fetch(`${API}/trips/${t.id}`,{method:'PATCH',
+        headers:{'Content-Type':'application/json'},body:JSON.stringify({setPassword:pw})});
+      const d=await r.json();
+      if(d.valid){t.hasPassword=true;unlockedTrips[t.id]=pw;showToast('סיסמה הוגדרה');return true;}
+    }catch(e){}
+    showToast('שגיאה');return false;
   }
   const pw=prompt('הזן סיסמת עריכה:');
-  if(pw===t.password){unlockedTrips[t.id]=true;return true;}
+  if(!pw){return false;}
+  try{
+    const r=await fetch(`${API}/trips/${t.id}`,{method:'PATCH',
+      headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pw})});
+    const d=await r.json();
+    if(d.valid){unlockedTrips[t.id]=pw;return true;}
+  }catch(e){}
   showToast('סיסמה שגויה');return false;
 }
-function editTrip(id){
+async function editTrip(id){
   const t=trips.find(x=>String(x.id)===String(id));if(!t)return;
-  if(!checkTripPassword(t))return;
+  if(!await checkTripPassword(t))return;
   editingTripId=id;
   document.getElementById('trip-name').value=t.name||'';
   document.getElementById('trip-date').value=t.date||'';
@@ -918,7 +930,7 @@ async function addTrip(){
     // EDIT existing trip
     const t=trips.find(x=>String(x.id)===String(editingTripId));if(!t)return;
     t.name=name;t.date=date;
-    if(tripPw) t.password=tripPw;
+    if(tripPw) t.hasPassword=true;
     t.time=document.getElementById('trip-time').value;
     t.meeting=document.getElementById('trip-meeting').value.trim();
     t.desc=document.getElementById('trip-desc').value.trim();
@@ -935,13 +947,14 @@ async function addTrip(){
   const t={id:'t'+Math.random().toString(36).substr(2,9),name,date,time:document.getElementById('trip-time').value,
     meeting:document.getElementById('trip-meeting').value.trim(),
     desc:document.getElementById('trip-desc').value.trim(),
-    image:finalImage,cropY:selectedCropY,zoom:selectedZoom,password:tripPw,status:'open',hidden:isPrivate,participants:[],waypoints:newWps};
+    image:finalImage,cropY:selectedCropY,zoom:selectedZoom,status:'open',hidden:isPrivate,participants:[],waypoints:newWps};
   try{
+    const postBody={...t,password:tripPw};
     const r=await fetch(`${API}/trips`,{method:'POST',
       headers:{'Content-Type':'application/json','X-Creator-Token':creatorToken},
-      body:JSON.stringify(t)});
+      body:JSON.stringify(postBody)});
     const d=await r.json();
-    if(d.id) t.id=d.id;
+    if(d.id){t.id=d.id;t.hasPassword=!!tripPw;unlockedTrips[t.id]=tripPw;}
   }catch(e){}
   trips.push(t);
   newWps.forEach(w=>geocodeWaypoint(w,()=>{currentTripId=t.id;saveTrips();}));
@@ -967,9 +980,9 @@ function resetTripModal(){
   document.querySelector('#modal-add-trip .btn-primary').innerHTML='<span class="ms">send</span> פרסם טיול';
   document.getElementById('trip-delete-row').style.display='none';
 }
-function toggleTripHidden(id){
+async function toggleTripHidden(id){
   const t=trips.find(x=>String(x.id)===String(id));if(!t)return;
-  if(!checkTripPassword(t))return;
+  if(!await checkTripPassword(t))return;
   t.hidden=!t.hidden;saveTrips();
   showToast(t.hidden?'הטיול הוסתר — גלוי רק דרך קישור':'הטיול גלוי לכולם');
   renderDetail(t);
@@ -977,7 +990,9 @@ function toggleTripHidden(id){
 async function deleteTrip(id){
   if(!confirm('בטוח למחוק את הטיול לצמיתות?'))return;
   closeModal('modal-add-trip');
-  try{await fetch(`${API}/trips/${id}`,{method:'DELETE',headers:{'X-Creator-Token':creatorToken}});}catch(e){}
+  const hdrs={'X-Creator-Token':creatorToken};
+  if(unlockedTrips[id]) hdrs['X-Trip-Password']=unlockedTrips[id];
+  try{await fetch(`${API}/trips/${id}`,{method:'DELETE',headers:hdrs});}catch(e){}
   const idx=trips.findIndex(x=>String(x.id)===String(id));if(idx<0)return;
   trips.splice(idx,1);showList();showToast('הטיול נמחק');
 }
