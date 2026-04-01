@@ -120,7 +120,10 @@ function closeDrawer(){
 // ===================== ROUTING =====================
 function initRouter(){
   if(location.hash==='#admin'){showAdmin();return;}
-  const m=location.hash.match(/^#trip-([a-zA-Z0-9]+)$/);
+  // Check /share/ID path first
+  const pathMatch=location.pathname.match(/\/share\/([a-zA-Z0-9-]+)$/);
+  const hashMatch=location.hash.match(/^#trip-([a-zA-Z0-9-]+)$/);
+  const m=pathMatch||hashMatch;
   if(m){
     const id=m[1];
     let t=trips.find(x=>String(x.id)===id);
@@ -201,7 +204,7 @@ function renderList(){
 // ===================== DETAIL =====================
 function showTrip(id){
   currentTripId=id;
-  location.hash='trip-'+id;
+  history.replaceState(null,'','/share/'+id);
   if(!isDirectLink) document.getElementById('back-to-list-btn').style.display='flex';
   document.getElementById('hero-section').style.display='none';
   cleanupMap();
@@ -1092,7 +1095,7 @@ function applyCropPreviewStyle(){
 function showList(){
   cleanupMap();
   if(leafletMapObj){leafletMapObj.remove();leafletMapObj=null;}
-  location.hash='';isDirectLink=false;
+  history.replaceState(null,'','/');isDirectLink=false;
   document.getElementById('back-to-list-btn').style.display='none';
   document.getElementById('view-detail').classList.remove('active');
   document.getElementById('view-admin').classList.remove('active');
