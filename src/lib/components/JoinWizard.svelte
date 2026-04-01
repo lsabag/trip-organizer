@@ -24,8 +24,8 @@
 
   function goToStep(s: number) {
     if (s === 2) {
-      if (!name.trim() || !phone.trim() || !city.trim()) {
-        showToast('נא למלא שם, טלפון ועיר');
+      if (!name.trim() || !city.trim()) {
+        showToast('נא למלא שם ועיר');
         return;
       }
     }
@@ -33,11 +33,11 @@
   }
 
   async function joinTrip() {
-    if (!name.trim() || !phone.trim() || !city.trim()) {
-      showToast('נא למלא שם, טלפון ועיר');
+    if (!name.trim() || !city.trim()) {
+      showToast('נא למלא שם ועיר');
       return;
     }
-    if (trip.participants.find((p) => p.phone === phone.trim())) {
+    if (phone.trim() && trip.participants.find((p) => p.phone === phone.trim())) {
       showToast('כבר נרשמת!');
       return;
     }
