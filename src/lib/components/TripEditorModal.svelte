@@ -77,12 +77,18 @@
     return unsub;
   });
 
+  // Track gmapsLoaded reactively
+  let mapsReady = $state(false);
+  $effect(() => {
+    const unsub = gmapsLoaded.subscribe(v => { mapsReady = v; });
+    return unsub;
+  });
+
   // Attach Google Places Autocomplete to meeting field
   let meetingAcAttached = false;
   $effect(() => {
-    if (open && browser && !meetingAcAttached) {
-      const gLoaded = get(gmapsLoaded);
-      if (gLoaded && (window as any).google?.maps?.places) {
+    if (open && browser && !meetingAcAttached && mapsReady) {
+      if ((window as any).google?.maps?.places) {
         setTimeout(() => {
           const input = document.getElementById('trip-meeting-input') as HTMLInputElement;
           if (!input) return;

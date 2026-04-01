@@ -81,12 +81,18 @@
 
   let autocompleteAttached = false;
   let nameInputEl: HTMLInputElement | null = null;
+  let mapsReady = $state(false);
 
-  // Attach Google Places Autocomplete when modal opens
+  // Track gmapsLoaded store reactively
   $effect(() => {
-    if (open && browser && !autocompleteAttached) {
-      const gLoaded = get(gmapsLoaded);
-      if (gLoaded && (window as any).google?.maps?.places) {
+    const unsub = gmapsLoaded.subscribe(v => { mapsReady = v; });
+    return unsub;
+  });
+
+  // Attach Google Places Autocomplete when modal opens AND maps loaded
+  $effect(() => {
+    if (open && browser && !autocompleteAttached && mapsReady) {
+      if ((window as any).google?.maps?.places) {
         setTimeout(() => {
           const input = document.getElementById('wp-name-input') as HTMLInputElement;
           if (!input) return;
