@@ -276,8 +276,8 @@ input:checked+.slider::before{transform:translateX(-21px);}
 .map-btn:hover{background:var(--teal);color:white;}
 
 /* ===== WAYPOINTS (NO colored side borders, rounded num with gradient) ===== */
-.waypoints-list{display:flex;flex-direction:column;gap:.35rem;}
-.wp-card{background:white;border-radius:16px;padding:.85rem 1rem;margin-bottom:.45rem;
+.waypoints-list{display:flex;flex-direction:column;gap:.2rem;}
+.wp-card{background:white;border-radius:16px;padding:.85rem 1rem;margin-bottom:0;
   box-shadow:var(--card-shadow);transition:all .25s;animation:fadeUp .4s ease both;}
 .wp-card:hover{box-shadow:var(--card-hover);transform:translateY(-2px);}
 .wp-card.next-stop{border:2px solid var(--teal);box-shadow:0 0 0 3px rgba(0,180,216,.15);}
