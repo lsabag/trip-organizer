@@ -1265,7 +1265,7 @@ async function adminDeleteTrip(id){
 // Scroll reveal
 const scrollObserver=new IntersectionObserver((entries)=>{
   entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');scrollObserver.unobserve(e.target);}});
-},{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
+},{threshold:0.15,rootMargin:'0px 0px -60px 0px'});
 function observeElements(){
   document.querySelectorAll('.scroll-reveal:not(.visible)').forEach(el=>scrollObserver.observe(el));
 }

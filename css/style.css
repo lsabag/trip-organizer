@@ -501,7 +501,7 @@ input:checked+.slider::before{transform:translateX(-21px);}
 
 /* ===== ANIMATIONS ===== */
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-.scroll-reveal{opacity:0;transform:translateY(20px);transition:opacity .45s ease,transform .45s ease;}
+.scroll-reveal{opacity:0;transform:translateY(24px);transition:opacity .55s ease-out,transform .55s ease-out;}
 .scroll-reveal.visible{opacity:1;transform:translateY(0);}
 
 /* ===== RESPONSIVE ===== */
