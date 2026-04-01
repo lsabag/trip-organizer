@@ -1,3 +1,4 @@
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 const AVC=['#a8d5ba','#f9d8a8','#b0d4e8','#f5b8b8','#d4b8f5','#c8e6c9','#ffe0b2','#b2dfdb'];
 const TRIP_IMAGES=[
   'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=600&q=80',
@@ -46,6 +47,17 @@ function saveTrips(){
       const hdrs={'Content-Type':'application/json','X-Creator-Token':creatorToken};
       if(unlockedTrips[t.id]) hdrs['X-Trip-Password']=unlockedTrips[t.id];
       fetch(`${API}/trips/${t.id}`,{method:'PUT',headers:hdrs,body:JSON.stringify(t)}).catch(()=>{});
+    }
+  }
+}
+// Public save — only participants (join, assign, unassign)
+function saveParticipants(){
+  if(currentTripId){
+    const t=trips.find(x=>String(x.id)===String(currentTripId));
+    if(t){
+      fetch(`${API}/trips/${t.id}`,{method:'PUT',
+        headers:{'Content-Type':'application/json','X-Creator-Token':creatorToken},
+        body:JSON.stringify(t)}).catch(()=>{});
     }
   }
 }
@@ -156,13 +168,13 @@ function renderList(){
     const paxNames=t.participants.slice(0,2).map(p=>p.name.split(' ')[0]).join(', ');
     return`<div class="trip-card" onclick="showTrip('${t.id}')">
       <div class="trip-card-img">
-        <img src="${img}" alt="${t.name}" loading="lazy" style="object-position:center ${t.cropY!=null?t.cropY:50}%;${t.zoom>100?`transform:scale(${t.zoom/100});transform-origin:center ${t.cropY||50}%`:''}">
-        <div class="location-badge"><span class="ms">location_on</span> ${t.name.split(' ').slice(-2).join(' ')}</div>
+        <img src="${img}" alt="${esc(t.name)}" loading="lazy" style="object-position:center ${t.cropY!=null?t.cropY:50}%;${t.zoom>100?`transform:scale(${t.zoom/100});transform-origin:center ${t.cropY||50}%`:''}">
+        <div class="location-badge"><span class="ms">location_on</span> ${esc(t.name.split(' ').slice(-2).join(' '))}</div>
       </div>
       <div class="trip-card-body">
-        <div class="tc-title">${t.name}</div>
+        <div class="tc-title">${esc(t.name)}</div>
         <div class="tc-meta"><span class="ms">calendar_today</span> ${fmtDate(t.date)} &nbsp;|&nbsp; <span class="ms">schedule</span> ${t.time}</div>
-        <div class="tc-meta"><span class="ms">location_on</span> ${t.meeting}</div>
+        <div class="tc-meta"><span class="ms">location_on</span> ${esc(t.meeting)}</div>
         <div class="tc-divider"></div>
         <div class="tc-carpool">
           <div class="tc-carpool-status">
@@ -236,12 +248,12 @@ function renderDetail(t){
       <img src="${headerImg}" style="width:100%;height:180px;object-fit:cover;object-position:center ${cropPos}%;display:block;${zoomStyle}" loading="lazy">
       <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.6) 0%,transparent 50%);"></div>
       <div style="position:absolute;bottom:0;left:0;right:0;padding:1rem 1.2rem;color:white;">
-        <div style="font-size:1.4rem;font-weight:900;text-shadow:0 2px 8px rgba(0,0,0,.4);">${t.name}</div>
-        <div style="font-size:.82rem;opacity:.9;margin-top:.2rem;"><span class="ms" style="font-size:.85rem;">calendar_today</span> ${fmtDate(t.date)} &nbsp;<span class="ms" style="font-size:.85rem;">schedule</span> ${t.time} &nbsp;<span class="ms" style="font-size:.85rem;">location_on</span> ${t.meeting}</div>
+        <div style="font-size:1.4rem;font-weight:900;text-shadow:0 2px 8px rgba(0,0,0,.4);">${esc(t.name)}</div>
+        <div style="font-size:.82rem;opacity:.9;margin-top:.2rem;"><span class="ms" style="font-size:.85rem;">calendar_today</span> ${fmtDate(t.date)} &nbsp;<span class="ms" style="font-size:.85rem;">schedule</span> ${t.time} &nbsp;<span class="ms" style="font-size:.85rem;">location_on</span> ${esc(t.meeting)}</div>
       </div>
     </div>
     <div class="trip-header-card">
-      ${t.desc?`<div class="trip-header-desc">${t.desc}</div>`:''}
+      ${t.desc?`<div class="trip-header-desc">${esc(t.desc)}</div>`:''}
       <div style="display:flex;gap:.4rem;">
         <button class="share-btn" style="flex:1;padding:.45rem .8rem;font-size:.82rem;" onclick="copyShareLink('${t.id}')"><span class="ms">share</span> שתף</button>
         <button class="share-btn" style="flex:1;padding:.45rem .8rem;font-size:.82rem;background:var(--teal-pale);color:var(--teal-dark);" onclick="editTrip('${t.id}')"><span class="ms">edit</span> ערוך</button>
@@ -340,10 +352,10 @@ function initGoogleMap(t,el){
     const ratingHTML=w.rating?`<div style="margin-top:4px">${starsHTML(w.rating)} <b>${w.rating}</b> <span style="color:#888;font-size:.78rem">(${num(w.ratingsTotal)})</span></div>`:'';
     const gmapsLink=w.placeId?`https://www.google.com/maps/place/?q=place_id:${w.placeId}`:`https://www.google.com/maps/search/${encodeURIComponent(w.name+' '+w.address)}`;
     const infoContent=`<div style="font-family:Heebo,sans-serif;direction:rtl;min-width:200px;padding:4px;">
-      <b style="font-size:.95rem;color:#1a2332">${w.name}</b>${ratingHTML}
+      <b style="font-size:.95rem;color:#1a2332">${esc(w.name)}</b>${ratingHTML}
       ${w.time?`<div style="font-size:.8rem;color:#888;margin-top:2px">${w.time}</div>`:''}
-      ${w.notes?`<div style="font-size:.8rem;color:#555;margin-top:3px;font-style:italic">${w.notes}</div>`:''}
-      ${w.phone?`<div style="margin-top:6px"><a href="tel:${w.phone}" style="color:#0096b7;font-size:.82rem;font-weight:700">${w.phone}</a></div>`:''}
+      ${w.notes?`<div style="font-size:.8rem;color:#555;margin-top:3px;font-style:italic">${esc(w.notes)}</div>`:''}
+      ${w.phone?`<div style="margin-top:6px"><a href="tel:${esc(w.phone)}" style="color:#0096b7;font-size:.82rem;font-weight:700">${esc(w.phone)}</a></div>`:''}
       <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">
         <a href="https://www.google.com/maps/dir/?api=1&destination=${w.lat},${w.lng}" target="_blank" style="background:#e8f5e9;color:#1b5e20;padding:3px 8px;border-radius:6px;font-size:.78rem;font-weight:700;text-decoration:none">נווט</a>
         <a href="${gmapsLink}" target="_blank" style="background:#fff8e1;color:#e65100;padding:3px 8px;border-radius:6px;font-size:.78rem;font-weight:700;text-decoration:none">ביקורות</a>
@@ -411,7 +423,7 @@ function _initLeaflet(t,el){
       html:`<div style="background:${i===nextWpIndex?'#0096b7':'#00b4d8'};color:white;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;border:2px solid white;box-shadow:0 2px 8px rgba(0,0,0,.3)">${i+1}</div>`,
       iconSize:[30,30],iconAnchor:[15,15]});
     L.marker([w.lat,w.lng],{icon}).addTo(leafletMapObj)
-      .bindPopup(`<b style="direction:rtl">${w.name}</b>${w.phone?`<br>${w.phone}`:''}`);
+      .bindPopup(`<b style="direction:rtl">${esc(w.name)}</b>${w.phone?`<br>${esc(w.phone)}`:''}`);
   });
   if(wps.length>=2){
     L.polyline(wps.map(w=>[w.lat,w.lng]),{color:'#00b4d8',weight:3,dashArray:'8,6'}).addTo(leafletMapObj);
@@ -458,7 +470,7 @@ function updateNextWaypoint(lat,lng,t){
   if(bar&&txt&&ni>=0){
     const w=wps[ni];
     const distText=minD<1?Math.round(minD*1000)+'מ׳':minD.toFixed(1)+'ק"מ';
-    txt.textContent=`הנקודה הבאה: ${w.name}  •  ${distText}`;
+    txt.textContent=`הנקודה הבאה: ${esc(w.name)}  •  ${distText}`;
     bar.classList.remove('hidden');
     document.querySelectorAll('.wp-card').forEach((el,i)=>el.classList.toggle('next-stop',i===ni));
     document.querySelectorAll('.wp-num').forEach((el,i)=>el.style.background=i===ni?'#0096b7':'#00b4d8');
@@ -477,7 +489,7 @@ function updateNextWaypoint(lat,lng,t){
             directionsRenderer.setDirections(result);
             const leg=result.routes[0]?.legs[0];
             if(leg){
-              txt.textContent=`הנקודה הבאה: ${w.name}  •  ${leg.distance.text}  •  ${leg.duration.text}`;
+              txt.textContent=`הנקודה הבאה: ${esc(w.name)}  •  ${leg.distance.text}  •  ${leg.duration.text}`;
             }
           }
         });
@@ -503,10 +515,10 @@ function buildWaypointsHTML(t){
       <div class="wp-card-header">
         <div class="wp-num" id="wpn-${w.id}">${i+1}</div>
         <div class="wp-info">
-          <div class="wp-name">${w.name}</div>
-          ${w.address?`<div class="wp-address"><span class="ms">location_on</span> ${w.address}</div>`:''}
+          <div class="wp-name">${esc(w.name)}</div>
+          ${w.address?`<div class="wp-address"><span class="ms">location_on</span> ${esc(w.address)}</div>`:''}
           ${w.time?`<div class="wp-time-badge"><span class="ms">schedule</span> ${w.time}</div>`:''}
-          ${w.notes?`<div class="wp-notes">${w.notes}</div>`:''}
+          ${w.notes?`<div class="wp-notes">${esc(w.notes)}</div>`:''}
           <div class="wp-rating-row" id="wpr-${w.id}">${ratingContent}</div>
         </div>
         <div style="display:flex;flex-direction:column;gap:.2rem;align-items:center;">
@@ -524,7 +536,7 @@ function buildWaypointsHTML(t){
         <a class="wp-action-btn wp-nav" href="${navUrl}" target="_blank"><span class="ms">location_on</span> Google</a>
         <a class="wp-action-btn wp-waze" href="${wazeUrl}" target="_blank"><span class="ms">navigation</span> Waze</a>
         <a class="wp-action-btn wp-reviews" id="wpa-reviews-${w.id}" href="${reviewUrl}" target="_blank"><span class="ms">star</span> ביקורות</a>
-        ${w.phone?`<a class="wp-action-btn wp-phone-btn" href="tel:${w.phone}"><span class="ms">phone</span> ${w.phone}</a>`:''}
+        ${w.phone?`<a class="wp-action-btn wp-phone-btn" href="tel:${esc(w.phone)}"><span class="ms">phone</span> ${esc(w.phone)}</a>`:''}
       </div>
     </div>`;
   }).join('');
@@ -588,7 +600,7 @@ function applyGoogleDetails(p){
     placeId:p.id||null
   };
   const prev=document.getElementById('wp-google-preview');
-  let info=`<b>${p.name||''}</b>`;
+  let info=`<b>${esc(p.name||'')}</b>`;
   if(p.rating) info+=` | ${starsHTML(p.rating)} ${p.rating} (${num(p.user_ratings_total)} ביקורות)`;
   if(p.formatted_address) info+=`<br><span class="ms" style="font-size:.8rem;">location_on</span> ${p.formatted_address}`;
   if(p.formatted_phone_number) info+=` | <span class="ms" style="font-size:.8rem;">phone</span> ${p.formatted_phone_number}`;
@@ -759,7 +771,7 @@ function joinTrip(){
     carTo:hasCar?document.getElementById('j-car-to').value.trim():'',
     carNotes:hasCar?document.getElementById('j-car-notes').value.trim():'',
     needRide,assignedTo:null,notes:document.getElementById('j-notes').value.trim()});
-  saveTrips();showToast(`${name} נרשם/ה לטיול!`);renderDetail(t);
+  saveParticipants();showToast(`${name} נרשם/ה לטיול!`);renderDetail(t);
 }
 
 function waNum(p){return'972'+String(p||'').replace(/[-\s+]/g,'').replace(/^0/,'');}
@@ -775,29 +787,29 @@ function buildCarsHTML(t,drivers,unassigned){
     for(let i=0;i<freeC;i++) seatsH+=`<span class="seat free"><span class="ms">event_seat</span></span>`;
     let paxH=assigned.map(p=>{
       const wa=p.phone?`<a class="pax-contact-btn" href="https://wa.me/${waNum(p.phone)}" target="_blank" title="וואטסאפ"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492a.5.5 0 00.611.611l4.458-1.495A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-2.387 0-4.592-.838-6.313-2.236l-.44-.363-3.09 1.036 1.036-3.09-.363-.44A9.956 9.956 0 012 12C2 6.486 6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"/></svg> WA</a>`:'';
-      const call=p.phone?`<a class="pax-contact-btn pax-call-btn" href="tel:${p.phone}" title="חיוג"><span class="ms">phone</span></a>`:'';
+      const call=p.phone?`<a class="pax-contact-btn pax-call-btn" href="tel:${esc(p.phone)}" title="חיוג"><span class="ms">phone</span></a>`:'';
       return`<div class="car-pax-row">
       <div class="pax-av" style="background:${avc(p.id)}">${ini(p.name)}</div>
-      <div style="flex:1"><div class="pax-name2">${p.name}</div><div class="pax-city2"><span class="ms">location_on</span> ${p.city}</div></div>
+      <div style="flex:1"><div class="pax-name2">${esc(p.name)}</div><div class="pax-city2"><span class="ms">location_on</span> ${esc(p.city)}</div></div>
       ${wa}${call}<button class="unassign-btn" onclick="unassignPax('${t.id}','${p.id}')"><span class="ms">close</span></button></div>`;}).join('');
     let sugH='';
     if(freeC>0&&unassigned.length>0){
       sugH=unassigned.map(p=>`<div class="suggest-row">
-        <div class="pax-av" style="background:#e8f5e9;font-size:.68rem;font-weight:700;color:#2ecc71">${p.city.slice(0,3)}</div>
-        <div style="flex:1"><div class="pax-name2" style="color:var(--gray)">${p.name}</div><div class="pax-city2"><span class="ms">location_on</span> ${p.city}</div></div>
+        <div class="pax-av" style="background:#e8f5e9;font-size:.68rem;font-weight:700;color:#2ecc71">${esc(p.city.slice(0,3))}</div>
+        <div style="flex:1"><div class="pax-name2" style="color:var(--gray)">${esc(p.name)}</div><div class="pax-city2"><span class="ms">location_on</span> ${esc(p.city)}</div></div>
         <button class="add-btn" onclick="assignPax('${t.id}','${p.id}','${d.id}')"><span class="ms">add</span> שבץ</button></div>`).join('');
     }
     return`<div class="car-block">
       <div class="car-block-header">
         <div style="font-size:1.5rem;color:var(--orange)"><span class="ms">directions_car</span></div>
         <div style="flex:1">
-          <div class="car-driver-name">${d.name}</div>
-          <div class="car-driver-meta"><span class="ms">home</span> ${d.city} &nbsp;|&nbsp; ${d.carFrom||'?'} → ${d.carTo||d.carFrom||'?'}</div>
-          ${d.carNotes?`<div class="car-driver-meta"><span class="ms">chat_bubble</span> ${d.carNotes}</div>`:''}
+          <div class="car-driver-name">${esc(d.name)}</div>
+          <div class="car-driver-meta"><span class="ms">home</span> ${esc(d.city)} &nbsp;|&nbsp; ${esc(d.carFrom||'?')} → ${esc(d.carTo||d.carFrom||'?')}</div>
+          ${d.carNotes?`<div class="car-driver-meta"><span class="ms">chat_bubble</span> ${esc(d.carNotes)}</div>`:''}
         </div>
         <div style="display:flex;align-items:center;gap:.3rem;flex-shrink:0;">
           ${d.phone?`<a class="pax-contact-btn" href="https://wa.me/${waNum(d.phone)}" target="_blank" title="וואטסאפ לנהג"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492a.5.5 0 00.611.611l4.458-1.495A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-2.387 0-4.592-.838-6.313-2.236l-.44-.363-3.09 1.036 1.036-3.09-.363-.44A9.956 9.956 0 012 12C2 6.486 6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"/></svg></a>`:''}
-          ${d.phone?`<a class="pax-contact-btn pax-call-btn" href="tel:${d.phone}" title="חיוג לנהג"><span class="ms">phone</span></a>`:''}
+          ${d.phone?`<a class="pax-contact-btn pax-call-btn" href="tel:${esc(d.phone)}" title="חיוג לנהג"><span class="ms">phone</span></a>`:''}
         </div>
       </div>
       <div class="seats-row">${seatsH}</div>
@@ -812,10 +824,10 @@ function buildPoolHTML(t,unassigned,drivers){
     if(!drivers.length) return`<div class="empty-state"><div class="ei"><span class="ms" style="font-size:2.3rem;color:var(--gray)">no_transfer</span></div><p>אין ממתינים לשיבוץ</p></div>`;
     return`<div class="empty-state"><div class="ei"><span class="ms" style="font-size:2.3rem;color:var(--green)">done_all</span></div><p>כולם שובצו לרכב!</p></div>`;
   }
-  const opts=drivers.map(d=>{const tk=t.participants.filter(p=>p.assignedTo===d.id).length;const fr=Math.max(0,parseInt(d.seats)-tk);return`<option value="${d.id}" ${fr===0?'disabled':''}>${d.name} – ${fr} מקומות</option>`;}).join('');
+  const opts=drivers.map(d=>{const tk=t.participants.filter(p=>p.assignedTo===d.id).length;const fr=Math.max(0,parseInt(d.seats)-tk);return`<option value="${d.id}" ${fr===0?'disabled':''}>${esc(d.name)} – ${fr} מקומות</option>`;}).join('');
   return unassigned.map(p=>`<div class="pool-row">
     <div class="pax-av" style="background:${avc(p.id)}">${ini(p.name)}</div>
-    <div class="pool-info"><div class="pool-name">${p.name}</div><div class="pool-city"><span class="ms">location_on</span> ${p.city} &nbsp;<span class="ms">phone</span> ${p.phone}</div></div>
+    <div class="pool-info"><div class="pool-name">${esc(p.name)}</div><div class="pool-city"><span class="ms">location_on</span> ${esc(p.city)} &nbsp;<span class="ms">phone</span> ${esc(p.phone)}</div></div>
     ${drivers.length?`<select class="assign-select" id="sel-${p.id}"><option value="">בחר רכב...</option>${opts}</select>
     <button class="assign-btn" onclick="assignFromSelect('${t.id}','${p.id}')">שבץ</button>`:`<span style="font-size:.76rem;color:var(--gray)">אין רכבים</span>`}
   </div>`).join('');
@@ -827,11 +839,11 @@ function buildPaxHTML(t){
     return`<div class="pax-row">
       <div class="pav" style="background:${AVC[i%8]}">${ini(p.name)}</div>
       <div style="flex:1">
-        <div class="p-name">${p.name}</div>
-        <div class="p-meta"><span class="ms">location_on</span> ${p.city} &nbsp;<span class="ms">phone</span> ${p.phone}</div>
-        ${p.notes?`<div class="p-meta"><span class="ms">chat_bubble</span> ${p.notes}</div>`:''}
+        <div class="p-name">${esc(p.name)}</div>
+        <div class="p-meta"><span class="ms">location_on</span> ${esc(p.city)} &nbsp;<span class="ms">phone</span> ${esc(p.phone)}</div>
+        ${p.notes?`<div class="p-meta"><span class="ms">chat_bubble</span> ${esc(p.notes)}</div>`:''}
         <div class="p-tags">
-          ${p.hasCar?`<span class="tag tag-car"><span class="ms">directions_car</span> נוהג | ${p.carFrom||p.city} | ${p.seats} מקומות</span>`:''}
+          ${p.hasCar?`<span class="tag tag-car"><span class="ms">directions_car</span> נוהג | ${esc(p.carFrom||p.city)} | ${p.seats} מקומות</span>`:''}
           ${!p.hasCar&&p.needRide&&!p.assignedTo?`<span class="tag tag-ride"><span class="ms">volunteer_activism</span> ממתין</span>`:''}
           ${!p.hasCar&&p.needRide&&p.assignedTo?`<span class="tag tag-assigned"><span class="ms">check</span> ברכב של ${dr?dr.name:'?'}</span>`:''}
           ${!p.hasCar&&!p.needRide?`<span class="tag tag-solo"><span class="ms">directions_walk</span> לבד</span>`:''}
@@ -848,7 +860,7 @@ function assignPax(tid,pid,did){
   const tk=t.participants.filter(p=>p.assignedTo===did).length;
   if(tk>=parseInt(d.seats)){showToast('הרכב מלא!');return;}
   const p=t.participants.find(x=>x.id===pid);p.assignedTo=did;
-  saveTrips();showToast(`${p.name} → רכב של ${d.name}`);renderDetail(t);
+  saveParticipants();showToast(`${esc(p.name)} → רכב של ${esc(d.name)}`);renderDetail(t);
 }
 function assignFromSelect(tid,pid){
   const sel=document.getElementById('sel-'+pid);if(!sel||!sel.value){showToast('בחר רכב');return;}
@@ -856,13 +868,13 @@ function assignFromSelect(tid,pid){
 }
 function unassignPax(tid,pid){
   const t=trips.find(x=>String(x.id)===String(tid)),p=t.participants.find(x=>x.id===pid);
-  p.assignedTo=null;saveTrips();showToast(`${p.name} הוסר`);renderDetail(t);
+  p.assignedTo=null;saveParticipants();showToast(`${esc(p.name)} הוסר`);renderDetail(t);
 }
 function removePax(tid,pid){
   const t=trips.find(x=>String(x.id)===String(tid)),idx=t.participants.findIndex(x=>x.id===pid);if(idx<0)return;
   t.participants.forEach(p=>{if(p.assignedTo===pid)p.assignedTo=null;});
   const name=t.participants[idx].name;t.participants.splice(idx,1);
-  saveTrips();showToast(`${name} הוסר`);renderDetail(t);
+  saveParticipants();showToast(`${name} הוסר`);renderDetail(t);
 }
 
 // ===================== ADD TRIP =====================
@@ -1193,7 +1205,7 @@ function renderAdminTrips(all){
     </div>
     <div style="flex:1;min-width:0;">
       <div style="font-weight:700;font-size:.9rem;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-        ${t.name} ${t.hidden?'<span style="background:#fff3e0;color:var(--orange-dark);font-size:.68rem;padding:.1rem .4rem;border-radius:4px;font-weight:600;">פרטי</span>':''}
+        ${esc(t.name)} ${t.hidden?'<span style="background:#fff3e0;color:var(--orange-dark);font-size:.68rem;padding:.1rem .4rem;border-radius:4px;font-weight:600;">פרטי</span>':''}
       </div>
       <div style="font-size:.75rem;color:var(--gray);">${t.date||'—'} | ${t.participants.length} משתתפים | ${t.waypoints.length} נקודות</div>
     </div>

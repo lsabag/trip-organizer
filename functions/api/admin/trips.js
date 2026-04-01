@@ -1,5 +1,5 @@
 const CORS = {
-  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Origin': 'https://trip.nextli.co.il',
   'Access-Control-Allow-Methods': 'GET, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, X-Admin-Token',
 };
@@ -21,13 +21,17 @@ export async function onRequestGet(context) {
     'SELECT * FROM trips ORDER BY created_at DESC'
   ).all();
 
-  const trips = results.map(t => ({
-    ...t,
-    participants: JSON.parse(t.participants || '[]'),
-    waypoints: JSON.parse(t.waypoints || '[]'),
-    hidden: !!t.hidden,
-    desc: t.description,
-  }));
+  const trips = results.map(t => {
+    const { password, ...rest } = t;
+    return {
+      ...rest,
+      participants: JSON.parse(t.participants || '[]'),
+      waypoints: JSON.parse(t.waypoints || '[]'),
+      hidden: !!t.hidden,
+      hasPassword: !!(password && password.length > 0),
+      desc: t.description,
+    };
+  });
 
   return Response.json(trips, { headers: CORS });
 }
