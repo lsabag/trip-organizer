@@ -103,8 +103,11 @@
 
   <!-- Waypoints Section -->
   <div class="sec scroll-reveal" style="animation-delay:.15s;">
-    <div class="sec-title">
+    <div class="sec-title" style="justify-content:space-between;">
       <span><span class="ms">location_on</span> נקודות הטיול ({trip.waypoints.length})</span>
+      <button class="map-btn" onclick={addWaypoint}>
+        <span class="ms" style="font-size:.85rem">add</span> הוסף נקודה
+      </button>
     </div>
     <div class="waypoints-list">
       {#if trip.waypoints.length}
@@ -123,9 +126,6 @@
         </div>
       {/if}
     </div>
-    <button class="map-btn" style="margin-top:.6rem;" onclick={addWaypoint}>
-      <span class="ms" style="font-size:.85rem">add</span> הוסף נקודה
-    </button>
   </div>
 
   <!-- Join Wizard -->

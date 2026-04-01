@@ -177,6 +177,14 @@
   }
 
   // --- Waypoint editor ---
+  function moveWpItem(index: number, dir: number) {
+    const newIndex = index + dir;
+    if (newIndex < 0 || newIndex >= wpItems.length) return;
+    const arr = [...wpItems];
+    [arr[index], arr[newIndex]] = [arr[newIndex], arr[index]];
+    wpItems = arr;
+  }
+
   function addWpItem() {
     wpItems = [
       ...wpItems,
@@ -438,21 +446,30 @@
 
       <!-- Waypoints editor -->
       <div class="form-group">
-        <label style="display:flex;align-items:center;justify-content:space-between;">
-          <span><span class="ms">location_on</span> נקודות מסלול</span>
-          <button class="btn btn-ghost btn-sm" onclick={addWpItem}>
-            <span class="ms">add</span> הוסף נקודה
-          </button>
-        </label>
+        <label><span class="ms">location_on</span> נקודות מסלול</label>
 
         {#each wpItems as wp, i (wp.tempId)}
           <div class="wp-editor-item">
-            <div style="font-weight:700;font-size:.83rem;color:var(--dark);margin-bottom:.45rem;">
-              <span class="ms">add_location</span> נקודה {i + 1}
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.45rem;">
+              <span style="font-weight:700;font-size:.83rem;color:var(--dark);">
+                <span class="ms">add_location</span> נקודה {i + 1}
+              </span>
+              <div style="display:flex;gap:.2rem;">
+                {#if i > 0}
+                  <button class="wp-edit-btn up" type="button" onclick={() => moveWpItem(i, -1)}>
+                    <span class="ms">arrow_upward</span>
+                  </button>
+                {/if}
+                {#if i < wpItems.length - 1}
+                  <button class="wp-edit-btn down" type="button" onclick={() => moveWpItem(i, 1)}>
+                    <span class="ms">arrow_downward</span>
+                  </button>
+                {/if}
+                <button class="wp-edit-btn del" type="button" onclick={() => removeWpItem(wp.tempId)}>
+                  <span class="ms">close</span>
+                </button>
+              </div>
             </div>
-            <button class="wp-editor-remove" onclick={() => removeWpItem(wp.tempId)}>
-              <span class="ms" style="font-size:.8rem;">close</span>
-            </button>
             <div class="form-group" style="margin-bottom:.45rem">
               <input
                 type="text"
@@ -486,6 +503,10 @@
             </div>
           </div>
         {/each}
+
+        <button class="btn btn-ghost btn-sm" type="button" style="margin-top:.5rem;" onclick={addWpItem}>
+          <span class="ms">add</span> הוסף נקודה
+        </button>
       </div>
 
       <!-- Password -->
