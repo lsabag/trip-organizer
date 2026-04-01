@@ -908,6 +908,12 @@ function removePax(tid,pid){
 // ===================== ADD TRIP =====================
 let editingTripId=null;
 const unlockedTrips={};
+async function reloadTripWithFullData(t){
+  try{
+    const r=await fetch(`${API}/trips/${t.id}`,{headers:{'X-Trip-Password':unlockedTrips[t.id]||''}});
+    if(r.ok){const full=await r.json();Object.assign(t,full);}
+  }catch(e){}
+}
 async function checkTripPassword(t){
   if(unlockedTrips[t.id])return true;
   if(!t.hasPassword){
@@ -917,7 +923,7 @@ async function checkTripPassword(t){
       const r=await fetch(`${API}/trips/${t.id}`,{method:'PATCH',
         headers:{'Content-Type':'application/json'},body:JSON.stringify({setPassword:pw})});
       const d=await r.json();
-      if(d.valid){t.hasPassword=true;unlockedTrips[t.id]=pw;showToast('סיסמה הוגדרה');return true;}
+      if(d.valid){t.hasPassword=true;unlockedTrips[t.id]=pw;await reloadTripWithFullData(t);showToast('סיסמה הוגדרה');return true;}
     }catch(e){}
     showToast('שגיאה');return false;
   }
@@ -927,7 +933,7 @@ async function checkTripPassword(t){
     const r=await fetch(`${API}/trips/${t.id}`,{method:'PATCH',
       headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pw})});
     const d=await r.json();
-    if(d.valid){unlockedTrips[t.id]=pw;return true;}
+    if(d.valid){unlockedTrips[t.id]=pw;await reloadTripWithFullData(t);return true;}
   }catch(e){}
   showToast('סיסמה שגויה');return false;
 }

@@ -11,12 +11,16 @@ async function hashPw(pw) {
   return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
+function maskPhone(p) { return p ? p.replace(/^(.{3}).*(.{2})$/, '$1-***-$2') : ''; }
+
 function tripRow(t) {
   const { password, ...rest } = t;
+  const participants = JSON.parse(t.participants || '[]').map(p => ({ ...p, phone: maskPhone(p.phone) }));
+  const waypoints = JSON.parse(t.waypoints || '[]').map(w => ({ ...w, phone: maskPhone(w.phone) }));
   return {
     ...rest,
-    participants: JSON.parse(t.participants || '[]'),
-    waypoints: JSON.parse(t.waypoints || '[]'),
+    participants,
+    waypoints,
     hidden: !!t.hidden,
     hasPassword: !!(password && password.length > 0),
     desc: t.description,
