@@ -110,15 +110,13 @@
       {#if waypoint.notes}
         <div class="wp-notes">{waypoint.notes}</div>
       {/if}
-      <div class="wp-rating">
-        {#if waypoint.rating}
+      {#if waypoint.rating}
+        <div class="wp-rating">
           <span class="wp-stars">{ratingStars}</span>
           <b style="font-size:.85rem;">{ratingNum}</b>
           <span class="wp-rating-count">({ratingCount})</span>
-        {:else}
-          <span class="wp-rating-loading">הפעל גוגל מאפס לביקורות</span>
-        {/if}
-      </div>
+        </div>
+      {/if}
     </div>
     <div class="wp-edit-row">
       {#if index > 0}
