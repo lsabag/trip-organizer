@@ -244,9 +244,9 @@
     if (isEdit && editingId) {
       // Update existing trip
       const cached = get(unlockedTrips);
-      const pw = cached[editingId] || undefined;
+      const authPw = cached[editingId] || undefined;
 
-      const tripData: Trip = {
+      const tripData: Trip & { password?: string } = {
         id: editingId,
         name: name.trim(),
         date,
@@ -263,13 +263,18 @@
         waypoints
       };
 
+      // Send new password in body if user entered one
+      if (password && password.length >= 4) {
+        tripData.password = password;
+      }
+
       // Merge participants from existing trip
       const current = get(currentTrip);
       if (current && current.id === editingId) {
         tripData.participants = current.participants;
       }
 
-      const { data: result, error } = await updateTrip(tripData, ct, pw);
+      const { data: result, error } = await updateTrip(tripData, ct, authPw);
       if (error) {
         showToast('שגיאה בשמירה: ' + error);
         return;

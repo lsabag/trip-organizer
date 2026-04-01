@@ -109,11 +109,14 @@ export async function checkPassword(
 
 export async function setPassword(
   id: string,
-  password: string
+  password: string,
+  creatorToken?: string
 ): Promise<ApiResult<{ valid: boolean }>> {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  if (creatorToken) headers['X-Creator-Token'] = creatorToken;
   return request<{ valid: boolean }>(`${API}/trips/${id}`, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify({ setPassword: password })
   });
 }
