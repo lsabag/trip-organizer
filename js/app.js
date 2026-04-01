@@ -809,7 +809,7 @@ function buildCarsHTML(t,drivers,unassigned){
 function buildPoolHTML(t,unassigned,drivers){
   if(!unassigned.length){
     const nonDrivers=t.participants.filter(p=>!p.hasCar);
-    if(!nonDrivers.length) return`<div class="empty-state"><div class="ei"><span class="ms" style="font-size:2.3rem;color:var(--gray)">group</span></div><p>אין נוסעים — רק נהגים</p></div>`;
+    if(!nonDrivers.length) return`<div class="empty-state"><div class="ei"><span class="ms" style="font-size:2.3rem;color:var(--gray)">group</span></div><p>ממתין למשתתפים ללא רכב</p></div>`;
     if(!drivers.length) return`<div class="empty-state"><div class="ei"><span class="ms" style="font-size:2.3rem;color:var(--gray)">no_transfer</span></div><p>אין ממתינים לשיבוץ</p></div>`;
     return`<div class="empty-state"><div class="ei"><span class="ms" style="font-size:2.3rem;color:var(--green)">done_all</span></div><p>כולם שובצו לרכב!</p></div>`;
   }
