@@ -68,6 +68,28 @@ export const GET: RequestHandler = async ({ params, platform }) => {
   return Response.json(tripRow(trip), { headers: CORS });
 };
 
+// Rate limiting helper: max 5 attempts per 15 minutes per trip
+async function checkRateLimit(DB: D1Database, tripId: string): Promise<boolean> {
+  const key = `pw_${tripId}`;
+  const now = Math.floor(Date.now() / 1000);
+  const window = 900; // 15 minutes
+  const maxAttempts = 5;
+
+  const row = await DB.prepare('SELECT attempts, window_start FROM rate_limits WHERE key = ?').bind(key).first() as {attempts: number, window_start: number} | null;
+
+  if (!row || (now - row.window_start) > window) {
+    await DB.prepare('INSERT OR REPLACE INTO rate_limits (key, attempts, window_start) VALUES (?, 1, ?)').bind(key, now).run();
+    return true;
+  }
+  if (row.attempts >= maxAttempts) return false;
+  await DB.prepare('UPDATE rate_limits SET attempts = attempts + 1 WHERE key = ?').bind(key).run();
+  return true;
+}
+
+async function resetRateLimit(DB: D1Database, tripId: string) {
+  await DB.prepare('DELETE FROM rate_limits WHERE key = ?').bind(`pw_${tripId}`).run();
+}
+
 // PATCH /api/trips/:id -- verify or set password
 export const PATCH: RequestHandler = async ({ params, request, platform }) => {
   const DB = platform?.env?.DB;
@@ -95,11 +117,18 @@ export const PATCH: RequestHandler = async ({ params, request, platform }) => {
     return Response.json({ valid: true, passwordSet: true }, { headers: CORS });
   }
 
-  // Password already exists -- verify
+  // Password already exists -- verify (with rate limiting)
   if (!body.password) {
     return Response.json({ valid: false }, { headers: CORS });
   }
+
+  const allowed = await checkRateLimit(DB, params.id!);
+  if (!allowed) {
+    return Response.json({ error: 'יותר מדי ניסיונות. נסה שוב בעוד 15 דקות.', valid: false }, { status: 429, headers: CORS });
+  }
+
   const valid = await verifyPw(body.password as string, trip.password as string);
+  if (valid) await resetRateLimit(DB, params.id!);
   return Response.json({ valid }, { headers: CORS });
 };
 
