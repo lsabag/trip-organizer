@@ -424,7 +424,7 @@ input:checked+.slider::before{transform:translateX(-21px);}
 
 /* ===== JOIN SECTION (dark background with radial light circles) ===== */
 .join-section{background:linear-gradient(145deg,var(--dark) 0%,#1a3a5c 100%);border-radius:var(--radius);
-  padding:1.5rem 1.3rem;color:white;margin-bottom:1.2rem;position:relative;overflow:hidden;
+  padding:1.2rem 1.2rem;color:white;margin-bottom:1.2rem;position:relative;overflow:hidden;
   animation:fadeUp .5s ease both;}
 .join-section::before{content:'';position:absolute;top:-60%;right:-25%;width:320px;height:320px;
   background:radial-gradient(circle,rgba(0,180,216,.12) 0%,transparent 70%);border-radius:50%;}
@@ -439,9 +439,9 @@ input:checked+.slider::before{transform:translateX(-21px);}
 .join-section select option{background:var(--dark);}
 .join-section .toggle-label{color:white;}
 .join-section .inset-box{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);}
-.js-title{font-size:.98rem;font-weight:800;color:white;border-bottom:1.5px solid rgba(255,255,255,.2);
-  padding-bottom:.55rem;margin-bottom:.7rem;display:flex;align-items:center;gap:.4rem;}
-.join-steps{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:1rem;}
+.js-title{font-size:.95rem;font-weight:800;color:white;border-bottom:1.5px solid rgba(255,255,255,.15);
+  padding-bottom:.4rem;margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem;}
+.join-steps{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:.6rem;}
 .join-step{width:32px;height:32px;border-radius:10px;background:rgba(255,255,255,.1);
   color:rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;
   font-size:.82rem;font-weight:800;transition:all .3s;}
