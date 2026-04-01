@@ -101,13 +101,14 @@ export const PATCH: RequestHandler = async ({ params, request, platform }) => {
     return Response.json({ error: 'Not found' }, { status: 404, headers: CORS });
   }
 
-  // Set password if none exists
+  // Set password if none exists — first person to set it becomes owner
   if (!trip.password && body.setPassword) {
-    // Only the creator can set a password on a password-less trip
     const creatorToken = request.headers.get('X-Creator-Token');
-    if (!creatorToken || creatorToken !== trip.creator_token) {
+    if (!creatorToken) {
       return Response.json({ error: 'Unauthorized' }, { status: 403, headers: CORS });
     }
+    // Update creator_token to current user (in case old token was lost)
+    await DB.prepare('UPDATE trips SET creator_token = ? WHERE id = ?').bind(creatorToken, params.id).run();
     const setPw = body.setPassword as string;
     if (setPw.length < 4 || setPw.length > 8) {
       return Response.json({ error: 'Password must be 4-8 chars' }, { status: 400, headers: CORS });
