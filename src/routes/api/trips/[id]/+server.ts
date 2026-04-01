@@ -45,8 +45,11 @@ async function verifyAccess(request: Request, env: App.Platform['env'], trip: Re
     const creatorToken = request.headers.get('X-Creator-Token');
     return !!creatorToken && creatorToken === trip.creator_token;
   }
-  const pw = request.headers.get('X-Trip-Password');
-  if (!pw) return false;
+  const pwHeader = request.headers.get('X-Trip-Password');
+  if (!pwHeader) return false;
+  // Decode Base64 (supports Hebrew/Unicode passwords)
+  let pw: string;
+  try { pw = decodeURIComponent(escape(atob(pwHeader))); } catch { pw = pwHeader; }
   return verifyPw(pw, trip.password as string);
 }
 

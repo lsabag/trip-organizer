@@ -57,7 +57,7 @@ export async function updateTrip(
     'Content-Type': 'application/json',
     'X-Creator-Token': creatorToken
   };
-  if (password) headers['X-Trip-Password'] = password;
+  if (password) headers['X-Trip-Password'] = btoa(unescape(encodeURIComponent(password)));
   return request<Trip>(`${API}/trips/${trip.id}`, {
     method: 'PUT',
     headers,
@@ -87,7 +87,7 @@ export async function deleteTrip(
   const headers: Record<string, string> = {
     'X-Creator-Token': creatorToken
   };
-  if (password) headers['X-Trip-Password'] = password;
+  if (password) headers['X-Trip-Password'] = btoa(unescape(encodeURIComponent(password)));
   return request<{ ok: boolean }>(`${API}/trips/${id}`, {
     method: 'DELETE',
     headers
