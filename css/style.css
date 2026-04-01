@@ -274,6 +274,7 @@ input:checked+.slider::before{transform:translateX(-21px);}
   border:none;font-family:'Heebo',sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;
   display:flex;align-items:center;gap:.25rem;transition:all .2s;}
 .map-btn:hover{background:var(--teal);color:white;}
+.locate-btn{padding:.55rem 1.2rem;font-size:.88rem;border-radius:10px;}
 
 /* ===== WAYPOINTS (NO colored side borders, rounded num with gradient) ===== */
 .waypoints-list{display:flex;flex-direction:column;gap:.2rem;}

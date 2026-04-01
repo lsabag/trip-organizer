@@ -228,8 +228,7 @@ function renderDetail(t){
     </div>`:'';
 
   const mapControlsHTML=`<div class="map-controls">
-    <button class="map-btn" onclick="locateMe()"><span class="ms" style="font-size:.85rem">my_location</span> מיקום שלי</button>
-    <button class="map-btn" onclick="toggleMapType()"><span class="ms" style="font-size:.85rem">layers</span> שכבות</button>
+    <button class="map-btn locate-btn" onclick="locateMe()"><span class="ms">my_location</span> מיקום שלי</button>
   </div>`;
 
   const headerImg=t.image||TRIP_IMAGES[0];
