@@ -115,6 +115,16 @@
             });
             autocompleteAttached = true;
           } catch {}
+          // Also attach to address field
+          try {
+            const addrInput = document.getElementById('wp-address-input') as HTMLInputElement;
+            if (addrInput) {
+              new (window as any).google.maps.places.Autocomplete(addrInput, {
+                componentRestrictions: { country: 'il' },
+                fields: ['formatted_address', 'geometry', 'place_id']
+              });
+            }
+          } catch {}
         }, 300);
       }
     }
@@ -354,7 +364,7 @@
       <!-- Address -->
       <div class="form-group">
         <label>כתובת</label>
-        <input type="text" bind:value={wpAddress} placeholder="כתובת לחיפוש / ניווט" />
+        <input id="wp-address-input" type="text" bind:value={wpAddress} placeholder="כתובת לחיפוש / ניווט" autocomplete="off" />
       </div>
 
       <!-- Phone + Time -->
