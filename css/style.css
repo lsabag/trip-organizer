@@ -500,22 +500,8 @@ input:checked+.slider::before{transform:translateX(-21px);}
 
 /* ===== ANIMATIONS ===== */
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-.sec{animation:fadeUp .4s ease both;}
-.sec:nth-of-type(2){animation-delay:.06s;}
-.sec:nth-of-type(3){animation-delay:.12s;}
-.sec:nth-of-type(4){animation-delay:.18s;}
-.sec:nth-of-type(5){animation-delay:.24s;}
-.summary-bar{animation:fadeUp .35s ease both;}
-.trip-hero{animation:fadeUp .35s ease both;}
-.action-row{animation:fadeUp .35s .05s ease both;}
-.join-section{animation:fadeUp .4s .1s ease both;}
-.wp-card{animation:fadeUp .3s ease both;}
-.wp-card:nth-child(2){animation-delay:.04s;}
-.wp-card:nth-child(3){animation-delay:.08s;}
-.wp-card:nth-child(4){animation-delay:.12s;}
-.trip-card{animation:fadeUp .4s ease both;}
-.trip-card:nth-child(2){animation-delay:.06s;}
-.trip-card:nth-child(3){animation-delay:.08s;}
+.scroll-reveal{opacity:0;transform:translateY(20px);transition:opacity .45s ease,transform .45s ease;}
+.scroll-reveal.visible{opacity:1;transform:translateY(0);}
 
 /* ===== RESPONSIVE ===== */
 @media(min-width:769px){

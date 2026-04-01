@@ -169,7 +169,7 @@ function renderList(){
     const fmtShort=t.date?((d)=>{const[y,m,day]=d.split('-');const dt=new Date(y,m-1,day);const days=['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];return`${parseInt(day)}.${m.padStart(2,'0')} | ${days[dt.getDay()]}`;})(t.date):'';
     const spotsText=fs>0?`${fs} מקומות פנויים`:'מלא!';
     const spotsClass=fs>0?'available':'full';
-    return`<div class="trip-card" onclick="showTrip('${t.id}')">
+    return`<div class="trip-card scroll-reveal" onclick="showTrip('${t.id}')">
       <div class="trip-card-img">
         <img src="${img}" alt="${esc(t.name)}" loading="lazy" style="object-position:center ${t.cropY!=null?t.cropY:50}%;${t.zoom>100?`transform:scale(${t.zoom/100});transform-origin:center ${t.cropY||50}%`:''}">
         <div class="location-badge"><span class="ms" style="font-size:.85rem">location_on</span> ${esc(t.name.split(' ').slice(-2).join(' '))}</div>
@@ -188,6 +188,7 @@ function renderList(){
   }).join('');
   h+=`<div class="add-trip-card" onclick="openModal('modal-add-trip')"><div class="plus"><span class="ms">add</span></div><div>פרסם טיול חדש</div></div>`;
   g.innerHTML=h;
+  setTimeout(observeElements,50);
 }
 
 // ===================== DETAIL =====================
@@ -208,7 +209,7 @@ function renderDetail(t){
   const drivers=t.participants.filter(p=>p.hasCar);
   const unassigned=t.participants.filter(p=>!p.hasCar&&p.needRide&&!p.assignedTo);
   const fs=drivers.reduce((s,d)=>{const tk=t.participants.filter(p=>p.assignedTo===d.id).length;return s+Math.max(0,parseInt(d.seats)-tk);},0);
-  const sumH=`<div class="summary-bar">
+  const sumH=`<div class="summary-bar scroll-reveal">
     <div class="summary-item"><div class="summary-icon teal"><span class="ms">group</span></div><div class="summary-val">${t.participants.length}</div><div class="summary-lbl">נרשמו</div></div>
     <div class="summary-item"><div class="summary-icon orange"><span class="ms">directions_car</span></div><div class="summary-val">${drivers.length}</div><div class="summary-lbl">רכבים</div></div>
     <div class="summary-item"><div class="summary-icon green"><span class="ms">event_seat</span></div><div class="summary-val">${fs}</div><div class="summary-lbl">פנויים</div></div>
@@ -255,7 +256,7 @@ function renderDetail(t){
     </div>
     ${t.desc?`<div style="font-size:.88rem;color:var(--gray);line-height:1.65;margin-bottom:1rem;padding:0 .2rem;">${esc(t.desc)}</div>`:''}
     ${sumH}
-    <div class="sec" style="animation-delay:.1s;">
+    <div class="sec scroll-reveal" style="animation-delay:.1s;">
       <div class="sec-title"><span class="ms">map</span> מפת המסלול</div>
       ${mapKeyBanner}
       <div id="next-stop-bar" class="next-stop-bar hidden"><span><span class="ms">navigation</span></span><span id="next-stop-text"></span></div>
@@ -264,7 +265,7 @@ function renderDetail(t){
       </div>
       ${mapControlsHTML}
     </div>
-    <div class="sec" style="animation-delay:.15s;">
+    <div class="sec scroll-reveal" style="animation-delay:.15s;">
       <div class="sec-title" style="justify-content:space-between;">
         <span><span class="ms">location_on</span> נקודות הטיול (${t.waypoints.length})</span>
         <button class="map-btn" onclick="addWaypointProtected()"><span class="ms" style="font-size:.85rem">add</span> הוסף</button>
@@ -274,21 +275,21 @@ function renderDetail(t){
       </div>
     </div>
     ${buildJoinHTML()}
-    <div class="sec" style="animation-delay:.2s;">
+    <div class="sec scroll-reveal" style="animation-delay:.2s;">
       <div class="sec-title"><span class="ms">directions_car</span> רכבים ושיבוץ נוסעים</div>
       ${buildCarsHTML(t,drivers,unassigned)}
     </div>
-    <div class="sec" style="animation-delay:.25s;">
+    <div class="sec scroll-reveal" style="animation-delay:.25s;">
       <div class="sec-title"><span class="ms">schedule</span> ממתינים לשיבוץ (${unassigned.length})</div>
       <div class="pool-list">${buildPoolHTML(t,unassigned,drivers)}</div>
     </div>
-    <div class="sec" style="animation-delay:.3s;">
+    <div class="sec scroll-reveal" style="animation-delay:.3s;">
       <div class="sec-title"><span class="ms">group</span> כל המשתתפים (${t.participants.length})</div>
       <div class="participants-list">${buildPaxHTML(t)}</div>
     </div>
     `;
 
-  setTimeout(()=>initMap(t),100);
+  setTimeout(()=>{initMap(t);observeElements();},100);
 }
 
 function activateInlineKey(){
@@ -515,7 +516,7 @@ function buildWaypointsHTML(t){
        <b style="font-size:.85rem;">${w.rating.toFixed(1)}</b>
        <span class="wp-rating-count">(${num(w.ratingsTotal)})</span>`:
       (gmapsKey?`<span class="wp-rating-loading">טוען ביקורות...</span>`:'<span class="wp-rating-loading">הפעל גוגל מאפס לביקורות</span>');
-    return`<div class="wp-card" id="wpc-${w.id}" style="animation-delay:${i*0.05}s;">
+    return`<div class="wp-card scroll-reveal" id="wpc-${w.id}" style="animation-delay:${i*0.05}s;">
       <div class="wp-top">
         <div class="wp-num" id="wpn-${w.id}">${i+1}</div>
         <div class="wp-info">
@@ -720,7 +721,7 @@ function collectWpEditorItems(){
 
 // ===================== JOIN =====================
 function buildJoinHTML(){
-  return`<div class="join-section">
+  return`<div class="join-section scroll-reveal">
     <div class="js-title"><span class="ms">person_add</span> הצטרפות לטיול</div>
     <div class="join-steps">
       <span class="join-step active" id="jstep-1">1</span>
@@ -829,7 +830,7 @@ function buildCarsHTML(t,drivers,unassigned){
         <div style="flex:1"><div class="pax-name2" style="color:var(--gray)">${esc(p.name)}</div><div class="pax-city2"><span class="ms">location_on</span> ${esc(p.city)}</div></div>
         <button class="add-btn" onclick="assignPax('${t.id}','${p.id}','${d.id}')"><span class="ms">add</span> שבץ</button></div>`).join('');
     }
-    return`<div class="car-block">
+    return`<div class="car-block scroll-reveal">
       <div class="car-top">
         <div class="car-avatar"><span class="ms">directions_car</span></div>
         <div style="flex:1;">
@@ -1262,6 +1263,14 @@ async function adminDeleteTrip(id){
 }
 
 // ===================== INIT =====================
+// Scroll reveal
+const scrollObserver=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');scrollObserver.unobserve(e.target);}});
+},{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
+function observeElements(){
+  document.querySelectorAll('.scroll-reveal:not(.visible)').forEach(el=>scrollObserver.observe(el));
+}
+
 (async function init(){
   // Clean old localStorage data
   try{localStorage.removeItem('tiyulim_data');}catch(e){}
