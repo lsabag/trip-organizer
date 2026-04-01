@@ -395,37 +395,41 @@
         <input type="url" bind:value={imageUrl} placeholder="https://..." dir="ltr" />
       </div>
 
-      <!-- Crop preview -->
+      <!-- Crop preview (matches trip-hero exactly) -->
       {#if finalImage}
         <div class="form-group">
           <div
-            style="height:120px;border-radius:12px;overflow:hidden;margin-bottom:.5rem;position:relative;"
+            style="height:200px;border-radius:0 0 16px 16px;overflow:hidden;margin:-1.7rem -1.7rem 0.8rem;position:relative;"
           >
             <img
               src={finalImage}
               alt="תצוגה מקדימה"
-              style="width:100%;height:100%;object-position:center {cropY}%;{zoomStyle}"
+              style="width:100%;height:100%;object-fit:cover;object-position:center {cropY}%;{zoomStyle}"
             />
+            <div style="position:absolute;inset:0;background:linear-gradient(160deg,transparent 30%,rgba(13,27,42,.75) 100%);"></div>
+            <div style="position:absolute;bottom:.8rem;right:1rem;color:white;font-family:'Fredoka','Heebo',sans-serif;font-size:1.2rem;font-weight:700;text-shadow:0 2px 8px rgba(0,0,0,.3);">
+              {name || 'שם הטיול'}
+            </div>
           </div>
           <div style="display:flex;gap:1rem;align-items:center;">
             <div style="flex:1;">
-              <label style="font-size:.75rem;">מיקום חיתוך: {cropY}%</label>
+              <label style="font-size:.75rem;"><span class="ms" style="font-size:.8rem;">crop</span> חיתוך: {cropY}%</label>
               <input
                 type="range"
                 min="0"
                 max="100"
                 bind:value={cropY}
-                style="width:100%;"
+                style="width:100%;accent-color:var(--teal);"
               />
             </div>
             <div style="flex:1;">
-              <label style="font-size:.75rem;">זום: {zoom}%</label>
+              <label style="font-size:.75rem;"><span class="ms" style="font-size:.8rem;">zoom_in</span> זום: {zoom}%</label>
               <input
                 type="range"
                 min="100"
                 max="250"
                 bind:value={zoom}
-                style="width:100%;"
+                style="width:100%;accent-color:var(--orange);"
               />
             </div>
           </div>
