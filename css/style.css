@@ -25,17 +25,17 @@ h1,h2,h3,.sec-title,.tc-title,.hero-title,.trip-hero-title,.js-title,.section-he
   padding:0;position:sticky;top:0;z-index:500;
   border-bottom:1px solid rgba(0,180,216,.1);
 }
-.header-top{display:flex;align-items:center;justify-content:space-between;padding:.7rem 1.5rem;gap:1rem;}
-.logo{display:flex;align-items:center;gap:.5rem;color:var(--teal-dark);font-weight:900;font-size:1.3rem;white-space:nowrap;}
-.logo-icon{font-size:1.6rem;color:var(--teal);}
-.logo-plus{color:var(--orange);font-size:1.5rem;}
+.header-top{display:flex;align-items:center;justify-content:space-between;padding:.4rem 1rem;gap:.8rem;height:53px;}
+.logo{display:flex;align-items:center;gap:.4rem;color:var(--teal-dark);font-weight:900;font-size:1.1rem;white-space:nowrap;}
+.logo-icon{font-size:1.3rem;color:var(--teal);}
+.logo-plus{color:var(--orange);font-size:1.2rem;}
 .logo-sub{font-size:.65rem;font-weight:400;opacity:.85;display:block;margin-top:-4px;}
 .search-bar{flex:1;max-width:340px;position:relative;}
-.search-bar input{width:100%;padding:.55rem 1rem .55rem 2.2rem;border-radius:14px;border:1.5px solid rgba(0,180,216,.15);
-  font-family:'Heebo',sans-serif;font-size:.85rem;background:white;color:var(--text);outline:none;transition:all .2s;}
+.search-bar input{width:100%;padding:.38rem .8rem .38rem 2rem;border-radius:12px;border:1.5px solid rgba(0,180,216,.15);
+  font-family:'Heebo',sans-serif;font-size:.8rem;background:white;color:var(--text);outline:none;transition:all .2s;}
 .search-bar input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,180,216,.1);}
 .search-bar input::placeholder{color:var(--gray);}
-.search-bar .search-icon{position:absolute;left:.75rem;top:50%;transform:translateY(-50%);font-size:1.1rem;color:var(--gray);pointer-events:none;}
+.search-bar .search-icon{position:absolute;left:.6rem;top:50%;transform:translateY(-50%);font-size:1rem;color:var(--gray);pointer-events:none;}
 .hamburger{background:none;border:none;color:var(--teal-dark);font-size:1.4rem;cursor:pointer;padding:.4rem;
   border-radius:10px;transition:background .2s;}
 .hamburger:hover{background:var(--teal-pale);}
