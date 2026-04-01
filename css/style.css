@@ -266,6 +266,15 @@ input:checked+.slider::before{transform:translateX(-21px);}
 .next-stop-bar{background:linear-gradient(90deg,var(--teal),var(--teal-dark));color:white;border-radius:10px;
   padding:.65rem 1rem;margin-bottom:.8rem;display:flex;align-items:center;gap:.7rem;font-size:.88rem;font-weight:700;}
 .next-stop-bar.hidden{display:none;}
+.map-wrapper{position:relative;}
+.map-locate-fab{position:absolute;bottom:12px;right:12px;z-index:2;
+  width:44px;height:44px;border-radius:12px;border:none;
+  background:white;color:var(--teal-dark);
+  box-shadow:0 3px 12px rgba(0,0,0,.2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;cursor:pointer;transition:all .2s;}
+.map-locate-fab:hover{background:var(--teal);color:white;transform:scale(1.08);}
+.map-locate-fab:active{transform:scale(.95);}
 .map-controls{display:flex;gap:.5rem;margin-bottom:.8rem;flex-wrap:wrap;}
 .map-ctrl-btn{background:white;border:1.5px solid #d0d7de;color:var(--dark);
   border-radius:9px;padding:.38rem .8rem;font-family:'Heebo',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .2s;}

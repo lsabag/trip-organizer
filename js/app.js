@@ -227,9 +227,6 @@ function renderDetail(t){
       <a href="javascript:openModal('modal-api-key')">איך מקבלים מפתח? לחצו כאן</a>
     </div>`:'';
 
-  const mapControlsHTML=`<div class="map-controls">
-    <button class="map-btn locate-btn" onclick="locateMe()"><span class="ms">my_location</span> מיקום שלי</button>
-  </div>`;
 
   const headerImg=t.image||TRIP_IMAGES[0];
   const cropPos=t.cropY!=null?t.cropY:50;
@@ -259,10 +256,12 @@ function renderDetail(t){
       <div class="sec-title"><span class="ms">map</span> מפת המסלול</div>
       ${mapKeyBanner}
       <div id="next-stop-bar" class="next-stop-bar hidden"><span><span class="ms">navigation</span></span><span id="next-stop-text"></span></div>
-      <div id="trip-map" style="height:380px;border-radius:12px;background:#e8f0f5;display:flex;align-items:center;justify-content:center;color:var(--gray);font-weight:600;">
-        <div style="text-align:center"><div style="font-size:2rem;margin-bottom:.5rem"><span class="ms">map</span></div>טוען מפה...</div>
+      <div class="map-wrapper">
+        <div id="trip-map" style="height:380px;border-radius:12px;background:#e8f0f5;display:flex;align-items:center;justify-content:center;color:var(--gray);font-weight:600;">
+          <div style="text-align:center"><div style="font-size:2rem;margin-bottom:.5rem"><span class="ms">map</span></div>טוען מפה...</div>
+        </div>
+        <button class="map-locate-fab" onclick="locateMe()"><span class="ms">my_location</span></button>
       </div>
-      ${mapControlsHTML}
     </div>
     <div class="sec scroll-reveal" style="animation-delay:.15s;">
       <div class="sec-title" style="justify-content:space-between;">
