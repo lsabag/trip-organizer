@@ -225,7 +225,7 @@ input:checked+.slider::before{transform:translateX(-21px);}
 /* Section card (detail) */
 .sec{background:white;border-radius:var(--radius);padding:1.2rem;margin-bottom:1rem;
   box-shadow:var(--card-shadow);animation:fadeUp .45s ease both;}
-.sec-title{font-size:1.05rem;font-weight:800;color:var(--dark);margin-bottom:.8rem;display:flex;align-items:center;gap:.4rem;text-align:right;}
+.sec-title{font-size:1.05rem;font-weight:500;color:var(--dark);margin-bottom:.8rem;display:flex;align-items:center;gap:.4rem;text-align:right;}
 .sec-title .ms{color:var(--teal);font-size:1.15rem;}
 .section-card{background:white;border-radius:var(--radius);padding:1.2rem;margin-bottom:1.2rem;box-shadow:var(--card-shadow);animation:fadeUp .45s ease both;}
 .section-title{font-size:.98rem;font-weight:800;color:var(--dark);margin-bottom:.85rem;
