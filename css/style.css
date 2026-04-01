@@ -198,7 +198,7 @@ input:checked+.slider::before{transform:translateX(-21px);}
 .back-btn:hover{background:var(--teal-pale);}
 
 /* Trip hero (detail page) */
-.trip-hero{position:relative;height:280px;overflow:hidden;margin:0 .6rem;border-radius:var(--radius);}
+.trip-hero{position:relative;height:280px;overflow:hidden;margin:-1.8rem -1.4rem .8rem;border-radius:0;}
 .trip-hero img{width:100%;height:100%;object-fit:cover;}
 .trip-hero-overlay{position:absolute;inset:0;
   background:linear-gradient(160deg,transparent 30%,rgba(13,27,42,.75) 100%);}
