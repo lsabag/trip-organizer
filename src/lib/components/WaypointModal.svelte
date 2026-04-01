@@ -79,8 +79,51 @@
     googlePreview = '';
   }
 
+  let autocompleteAttached = false;
+  let nameInputEl: HTMLInputElement | null = null;
+
+  // Attach Google Places Autocomplete when modal opens
+  $effect(() => {
+    if (open && browser && !autocompleteAttached) {
+      const gLoaded = get(gmapsLoaded);
+      if (gLoaded && (window as any).google?.maps?.places) {
+        setTimeout(() => {
+          const input = document.getElementById('wp-name-input') as HTMLInputElement;
+          if (!input) return;
+          nameInputEl = input;
+          try {
+            const ac = new (window as any).google.maps.places.Autocomplete(input, {
+              componentRestrictions: { country: 'il' },
+              fields: ['name', 'formatted_address', 'geometry', 'place_id']
+            });
+            ac.addListener('place_changed', async () => {
+              const raw = ac.getPlace();
+              if (!raw?.place_id) return;
+              try {
+                const { Place } = (window as any).google.maps.places;
+                const det = new Place({ id: raw.place_id });
+                await det.fetchFields({
+                  fields: ['displayName', 'formattedAddress', 'nationalPhoneNumber', 'location', 'rating', 'userRatingCount']
+                });
+                applyDetails(det);
+              } catch {
+                if (raw.formatted_address) wpAddress = raw.formatted_address;
+                if (raw.geometry?.location) {
+                  googleData = { lat: raw.geometry.location.lat(), lng: raw.geometry.location.lng(), rating: null, ratingsTotal: null, placeId: raw.place_id };
+                }
+              }
+            });
+            autocompleteAttached = true;
+          } catch {}
+        }, 300);
+      }
+    }
+    if (!open) autocompleteAttached = false;
+  });
+
   function closeModal() {
     open = false;
+    autocompleteAttached = false;
     resetForm();
     modalState.update((s) => ({
       ...s,
@@ -305,7 +348,7 @@
       <!-- Name -->
       <div class="form-group">
         <label>שם המקום *</label>
-        <input type="text" bind:value={wpName} placeholder="למשל: נחל גמלא" />
+        <input id="wp-name-input" type="text" bind:value={wpName} placeholder="למשל: נחל גמלא" autocomplete="off" />
       </div>
 
       <!-- Address -->

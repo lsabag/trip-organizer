@@ -9,6 +9,7 @@
     unlockedTrips,
     currentTrip,
     trips as tripsStore,
+    gmapsLoaded,
     showToast
   } from '$lib/stores/app';
   import {
@@ -74,6 +75,28 @@
       }
     });
     return unsub;
+  });
+
+  // Attach Google Places Autocomplete to meeting field
+  let meetingAcAttached = false;
+  $effect(() => {
+    if (open && browser && !meetingAcAttached) {
+      const gLoaded = get(gmapsLoaded);
+      if (gLoaded && (window as any).google?.maps?.places) {
+        setTimeout(() => {
+          const input = document.getElementById('trip-meeting-input') as HTMLInputElement;
+          if (!input) return;
+          try {
+            new (window as any).google.maps.places.Autocomplete(input, {
+              componentRestrictions: { country: 'il' },
+              fields: ['formatted_address', 'geometry']
+            });
+            meetingAcAttached = true;
+          } catch {}
+        }, 300);
+      }
+    }
+    if (!open) meetingAcAttached = false;
   });
 
   async function loadEditTrip(id: string) {
@@ -339,7 +362,7 @@
       <!-- Meeting point -->
       <div class="form-group">
         <label>נקודת מפגש</label>
-        <input type="text" bind:value={meeting} placeholder="חניון, כיכר..." />
+        <input id="trip-meeting-input" type="text" bind:value={meeting} placeholder="חניון, כיכר..." autocomplete="off" />
       </div>
 
       <!-- Description -->
