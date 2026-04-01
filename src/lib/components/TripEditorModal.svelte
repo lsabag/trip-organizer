@@ -388,7 +388,7 @@
       <div class="form-group">
         <label>תיאור</label>
         <textarea bind:value={desc} placeholder="תיאור קצר של הטיול..." rows="3"></textarea>
-        <div style="font-size:.7rem;color:var(--gray);margin-top:.25rem;">להדגשה: *טקסט מודגש*</div>
+        <div style="font-size:.7rem;color:var(--gray);margin-top:.25rem;">כדי להדגיש, יש לשים את המילים בין כוכביות: *דוגמה*</div>
       </div>
 
       <!-- Image picker -->
