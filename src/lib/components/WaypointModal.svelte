@@ -291,13 +291,24 @@
       trip.waypoints = [...trip.waypoints, newWp];
     }
 
-    // Save to API
+    // Save to API — need password for full update (waypoints)
     const ct = get(creatorToken);
-    const cached = get(unlockedTrips);
-    const pw = cached[trip.id] || undefined;
+    let cached = get(unlockedTrips);
+    let pw = cached[trip.id] || undefined;
+
+    // If no password cached, ask user
+    if (!pw && trip.hasPassword) {
+      const entered = prompt('הזן סיסמה לטיול');
+      if (!entered) return;
+      const { data: check } = await import('$lib/api/client').then(m => m.checkPassword(trip.id, entered));
+      if (!check?.valid) { showToast('סיסמה שגויה'); return; }
+      pw = entered;
+      unlockedTrips.update(u => ({ ...u, [trip.id]: entered }));
+    }
+
     const { data: result, error } = await updateTrip(trip, ct, pw);
     if (error) {
-      showToast('שגיאה בשמירה');
+      showToast('שגיאה בשמירה: ' + error);
       return;
     }
 
