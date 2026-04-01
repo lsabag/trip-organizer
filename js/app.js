@@ -272,7 +272,7 @@ function renderDetail(t){
     <div class="section-card">
       <div class="section-title">
         <span><span class="ms">location_on</span> נקודות הטיול (${t.waypoints.length})</span>
-        <button class="btn btn-ghost btn-sm" onclick="openModal('modal-add-wp')">+ הוסף נקודה</button>
+        <button class="btn btn-ghost btn-sm" onclick="addWaypointProtected()">+ הוסף נקודה</button>
       </div>
       <div class="waypoints-list" id="waypoints-list">
         ${buildWaypointsHTML(t)||`<div class="empty-state"><div class="ei"><span class="ms" style="font-size:2.3rem">map</span></div><p>הוסף נקודות מסלול</p></div>`}
@@ -606,6 +606,11 @@ function applyGoogleDetails(p){
   if(p.formatted_phone_number) info+=` | <span class="ms" style="font-size:.8rem;">phone</span> ${p.formatted_phone_number}`;
   prev.innerHTML=info;prev.style.display='block';
   showToast('פרטים נמשכו מ-Google Maps');
+}
+async function addWaypointProtected(){
+  const t=trips.find(x=>x.id===currentTripId);if(!t)return;
+  if(!await checkTripPassword(t))return;
+  openModal('modal-add-wp');
 }
 function saveWaypoint(){
   const name=document.getElementById('wp-name').value.trim();
