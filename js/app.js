@@ -238,7 +238,7 @@ function renderDetail(t){
     <div class="trip-hero">
       <img src="${headerImg}" style="object-position:center ${cropPos}%;${zoomStyle}" loading="lazy" alt="${esc(t.name)}">
       <div class="trip-hero-overlay"></div>
-      <div class="trip-hero-badge" onclick="toggleTripHidden('${t.id}')" style="cursor:pointer;" title="לחץ לשינוי"><span class="ms" style="font-size:.85rem">${t.hidden?'visibility_off':'visibility'}</span> ${t.hidden?'פרטי':'ציבורי'}${isDirectLink?' | קישור ישיר':''}</div>
+      <div class="trip-hero-badge" onclick="toggleTripHidden('${t.id}')" style="cursor:pointer;" title="לחץ לשינוי"><span class="ms" style="font-size:.85rem">${t.hidden?'visibility_off':'visibility'}</span> ${t.hidden?'פרטי':'ציבורי'}</div>
       <div class="trip-hero-content">
         <div class="trip-hero-title">${esc(t.name)}</div>
         <div class="trip-hero-meta">
