@@ -166,32 +166,22 @@ function renderList(){
     const drivers=t.participants.filter(p=>p.hasCar);
     const fs=drivers.reduce((s,d)=>{const tk=t.participants.filter(p=>p.assignedTo===d.id).length;return s+Math.max(0,parseInt(d.seats)-tk);},0);
     const img=t.image||TRIP_IMAGES[idx%TRIP_IMAGES.length];
-    const paxAvatars=t.participants.slice(0,3).map((p,i)=>
-      `<div class="tc-avatar-mini" style="background:${AVC[i%8]}">${ini(p.name)}</div>`).join('');
-    const paxNames=t.participants.slice(0,2).map(p=>p.name.split(' ')[0]).join(', ');
+    const fmtShort=t.date?((d)=>{const[y,m,day]=d.split('-');const dt=new Date(y,m-1,day);const days=['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];return`${parseInt(day)}.${m.padStart(2,'0')} | ${days[dt.getDay()]}`;})(t.date):'';
+    const spotsText=fs>0?`${fs} מקומות פנויים`:'מלא!';
+    const spotsClass=fs>0?'available':'full';
     return`<div class="trip-card" onclick="showTrip('${t.id}')">
       <div class="trip-card-img">
         <img src="${img}" alt="${esc(t.name)}" loading="lazy" style="object-position:center ${t.cropY!=null?t.cropY:50}%;${t.zoom>100?`transform:scale(${t.zoom/100});transform-origin:center ${t.cropY||50}%`:''}">
-        <div class="location-badge"><span class="ms">location_on</span> ${esc(t.name.split(' ').slice(-2).join(' '))}</div>
+        <div class="location-badge"><span class="ms" style="font-size:.85rem">location_on</span> ${esc(t.name.split(' ').slice(-2).join(' '))}</div>
+        ${fmtShort?`<div class="date-badge">${fmtShort}</div>`:''}
       </div>
       <div class="trip-card-body">
         <div class="tc-title">${esc(t.name)}</div>
-        <div class="tc-meta"><span class="ms">calendar_today</span> ${fmtDate(t.date)} &nbsp;|&nbsp; <span class="ms">schedule</span> ${t.time}</div>
-        <div class="tc-meta"><span class="ms">location_on</span> ${esc(t.meeting)}</div>
+        <div class="tc-meta"><span class="ms">schedule</span> ${t.time} &nbsp;|&nbsp; <span class="ms">location_on</span> ${esc(t.meeting)}</div>
         <div class="tc-divider"></div>
-        <div class="tc-carpool">
-          <div class="tc-carpool-status">
-            <span class="tc-carpool-icon"><span class="ms">directions_car</span></span>
-            <span>Carpool: ${drivers.length} רכבים | ${fs} פנויים</span>
-          </div>
-          <div class="tc-pax-count"><span class="ms">group</span> ${t.participants.length}</div>
-        </div>
         <div class="tc-footer">
-          <button class="tc-join-btn" onclick="event.stopPropagation();joinFromCard('${t.id}')"><span class="ms">person_add</span> הצטרף</button>
-          <div style="display:flex;align-items:center;gap:.3rem;">
-            ${paxNames?`<span class="tc-avatar-name">${paxNames}</span>`:''}
-            <div class="tc-avatars">${paxAvatars}</div>
-          </div>
+          <div class="tc-pax"><span class="ms">group</span> ${t.participants.length} נרשמו</div>
+          <div class="tc-spots ${spotsClass}">${spotsText}</div>
         </div>
       </div>
     </div>`;
@@ -220,10 +210,10 @@ function renderDetail(t){
   const fs=drivers.reduce((s,d)=>{const tk=t.participants.filter(p=>p.assignedTo===d.id).length;return s+Math.max(0,parseInt(d.seats)-tk);},0);
   const directNotice=isDirectLink?`<div class="direct-link-notice"><span class="ms">link</span> אתה צופה בטיול זה דרך קישור ישיר</div>`:'';
   const sumH=`<div class="summary-bar">
-    <div class="summary-item"><div class="summary-icon"><span class="ms" style="font-size:1.4rem;color:var(--teal)">group</span></div><div><div class="summary-val">${t.participants.length}</div><div class="summary-lbl">נרשמו</div></div></div>
-    <div class="summary-item"><div class="summary-icon"><span class="ms" style="font-size:1.4rem;color:var(--orange)">directions_car</span></div><div><div class="summary-val">${drivers.length}</div><div class="summary-lbl">רכבים</div></div></div>
-    <div class="summary-item"><div class="summary-icon"><span class="ms" style="font-size:1.4rem;color:var(--green)">event_seat</span></div><div><div class="summary-val">${fs}</div><div class="summary-lbl">מקומות פנויים</div></div></div>
-    <div class="summary-item"><div class="summary-icon"><span class="ms" style="font-size:1.4rem;color:#e65100">location_on</span></div><div><div class="summary-val">${t.waypoints.length}</div><div class="summary-lbl">נקודות מסלול</div></div></div>
+    <div class="summary-item"><div class="summary-icon teal"><span class="ms">group</span></div><div class="summary-val">${t.participants.length}</div><div class="summary-lbl">נרשמו</div></div>
+    <div class="summary-item"><div class="summary-icon orange"><span class="ms">directions_car</span></div><div class="summary-val">${drivers.length}</div><div class="summary-lbl">רכבים</div></div>
+    <div class="summary-item"><div class="summary-icon green"><span class="ms">event_seat</span></div><div class="summary-val">${fs}</div><div class="summary-lbl">פנויים</div></div>
+    <div class="summary-item"><div class="summary-icon warm"><span class="ms">location_on</span></div><div class="summary-val">${t.waypoints.length}</div><div class="summary-lbl">נקודות</div></div>
   </div>`;
 
   const mapKeyBanner=!gmapsKey?`
@@ -247,24 +237,27 @@ function renderDetail(t){
   const zoomStyle=zoomVal>100?`transform:scale(${zoomVal/100});transform-origin:center ${cropPos}%;`:'';
   document.getElementById('detail-content').innerHTML=`
     ${directNotice?`<div class="direct-link-notice" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;"><span><span class="ms">link</span> צפייה דרך קישור ישיר</span><button class="privacy-toggle-btn${t.hidden?' is-private':''}" onclick="toggleTripHidden('${t.id}')" style="margin:0;"><span class="ms">${t.hidden?'visibility_off':'visibility'}</span> ${t.hidden?'פרטי':'ציבורי'}</button></div>`:`<div class="privacy-bar"><button class="privacy-toggle-btn${t.hidden?' is-private':''}" onclick="toggleTripHidden('${t.id}')"><span class="ms">${t.hidden?'visibility_off':'visibility'}</span> ${t.hidden?'טיול פרטי':'ציבורי — גלוי לכולם'}</button></div>`}
-    <div style="position:relative;border-radius:var(--radius);overflow:hidden;margin-bottom:1rem;">
-      <img src="${headerImg}" style="width:100%;height:180px;object-fit:cover;object-position:center ${cropPos}%;display:block;${zoomStyle}" loading="lazy">
-      <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.6) 0%,transparent 50%);"></div>
-      <div style="position:absolute;bottom:0;left:0;right:0;padding:1rem 1.2rem;color:white;">
-        <div style="font-size:1.4rem;font-weight:900;text-shadow:0 2px 8px rgba(0,0,0,.4);">${esc(t.name)}</div>
-        <div style="font-size:.82rem;opacity:.9;margin-top:.2rem;"><span class="ms" style="font-size:.85rem;">calendar_today</span> ${fmtDate(t.date)} &nbsp;<span class="ms" style="font-size:.85rem;">schedule</span> ${t.time} &nbsp;<span class="ms" style="font-size:.85rem;">location_on</span> ${esc(t.meeting)}</div>
+    <div class="trip-hero">
+      <img src="${headerImg}" style="object-position:center ${cropPos}%;${zoomStyle}" loading="lazy" alt="${esc(t.name)}">
+      <div class="trip-hero-overlay"></div>
+      <div class="trip-hero-badge"><span class="ms" style="font-size:.85rem">${t.hidden?'visibility_off':'visibility'}</span> ${t.hidden?'פרטי':'ציבורי'}</div>
+      <div class="trip-hero-content">
+        <div class="trip-hero-title">${esc(t.name)}</div>
+        <div class="trip-hero-meta">
+          <span><span class="ms" style="font-size:.9rem">calendar_today</span> ${fmtDate(t.date)}</span>
+          <span><span class="ms" style="font-size:.9rem">schedule</span> ${t.time}</span>
+          <span><span class="ms" style="font-size:.9rem">location_on</span> ${esc(t.meeting)}</span>
+        </div>
       </div>
     </div>
-    <div class="trip-header-card">
-      ${t.desc?`<div class="trip-header-desc">${esc(t.desc)}</div>`:''}
-      <div style="display:flex;gap:.4rem;">
-        <button class="share-btn" style="flex:1;padding:.45rem .8rem;font-size:.82rem;" onclick="copyShareLink('${t.id}')"><span class="ms">share</span> שתף</button>
-        <button class="share-btn" style="flex:1;padding:.45rem .8rem;font-size:.82rem;background:var(--teal-pale);color:var(--teal-dark);" onclick="editTrip('${t.id}')"><span class="ms">edit</span> ערוך</button>
-      </div>
+    <div class="action-row">
+      <button class="action-btn btn-share" onclick="copyShareLink('${t.id}')"><span class="ms">share</span> שתף</button>
+      <button class="action-btn btn-edit" onclick="editTrip('${t.id}')"><span class="ms">edit</span> ערוך</button>
     </div>
+    ${t.desc?`<div style="font-size:.88rem;color:var(--gray);line-height:1.65;margin-bottom:1rem;padding:0 .2rem;">${esc(t.desc)}</div>`:''}
     ${sumH}
-    <div class="section-card">
-      <div class="section-title"><span><span class="ms">map</span> מפת המסלול</span></div>
+    <div class="sec" style="animation-delay:.1s;">
+      <div class="sec-title"><span class="ms">map</span> מפת המסלול</div>
       ${mapKeyBanner}
       <div id="next-stop-bar" class="next-stop-bar hidden"><span><span class="ms">navigation</span></span><span id="next-stop-text"></span></div>
       ${mapControlsHTML}
@@ -272,26 +265,26 @@ function renderDetail(t){
         <div style="text-align:center"><div style="font-size:2rem;margin-bottom:.5rem"><span class="ms">map</span></div>טוען מפה...</div>
       </div>
     </div>
-    <div class="section-card">
-      <div class="section-title">
+    <div class="sec" style="animation-delay:.15s;">
+      <div class="sec-title" style="justify-content:space-between;">
         <span><span class="ms">location_on</span> נקודות הטיול (${t.waypoints.length})</span>
-        <button class="btn btn-ghost btn-sm" onclick="addWaypointProtected()">+ הוסף נקודה</button>
+        <button class="map-btn" onclick="addWaypointProtected()"><span class="ms" style="font-size:.85rem">add</span> הוסף</button>
       </div>
       <div class="waypoints-list" id="waypoints-list">
         ${buildWaypointsHTML(t)||`<div class="empty-state"><div class="ei"><span class="ms" style="font-size:2.3rem">map</span></div><p>הוסף נקודות מסלול</p></div>`}
       </div>
     </div>
     ${buildJoinHTML()}
-    <div class="section-card">
-      <div class="section-title"><span class="ms">directions_car</span> רכבים ושיבוץ נוסעים</div>
+    <div class="sec" style="animation-delay:.2s;">
+      <div class="sec-title"><span class="ms">directions_car</span> רכבים ושיבוץ נוסעים</div>
       ${buildCarsHTML(t,drivers,unassigned)}
     </div>
-    <div class="section-card">
-      <div class="section-title"><span class="ms">schedule</span> ממתינים לשיבוץ (${unassigned.length})</div>
+    <div class="sec" style="animation-delay:.25s;">
+      <div class="sec-title"><span class="ms">schedule</span> ממתינים לשיבוץ (${unassigned.length})</div>
       <div class="pool-list">${buildPoolHTML(t,unassigned,drivers)}</div>
     </div>
-    <div class="section-card">
-      <div class="section-title"><span class="ms">group</span> כל המשתתפים (${t.participants.length})</div>
+    <div class="sec" style="animation-delay:.3s;">
+      <div class="sec-title"><span class="ms">group</span> כל המשתתפים (${t.participants.length})</div>
       <div class="participants-list">${buildPaxHTML(t)}</div>
     </div>
     `;
@@ -514,32 +507,28 @@ function buildWaypointsHTML(t){
        <span class="wp-rating-num">${w.rating.toFixed(1)}</span>
        <span class="wp-rating-count">(${num(w.ratingsTotal)} ביקורות)</span>`:
       (gmapsKey?`<span class="wp-rating-loading">טוען ביקורות...</span>`:'<span class="wp-rating-loading">הפעל גוגל מאפס לביקורות</span>');
-    return`<div class="wp-card" id="wpc-${w.id}">
-      <div class="wp-card-header">
+    return`<div class="wp-card" id="wpc-${w.id}" style="animation-delay:${i*0.05}s;">
+      <div class="wp-top">
         <div class="wp-num" id="wpn-${w.id}">${i+1}</div>
         <div class="wp-info">
           <div class="wp-name">${esc(w.name)}</div>
-          ${w.address?`<div class="wp-address"><span class="ms">location_on</span> ${esc(w.address)}</div>`:''}
-          ${w.time?`<div class="wp-time-badge"><span class="ms">schedule</span> ${w.time}</div>`:''}
+          ${w.address?`<div class="wp-addr"><span class="ms" style="font-size:.78rem">location_on</span> ${esc(w.address)}</div>`:''}
+          ${w.time?`<div class="wp-time-tag"><span class="ms" style="font-size:.72rem">schedule</span> ${w.time}</div>`:''}
           ${w.notes?`<div class="wp-notes">${esc(w.notes)}</div>`:''}
-          <div class="wp-rating-row" id="wpr-${w.id}">${ratingContent}</div>
+          <div class="wp-rating" id="wpr-${w.id}">${ratingContent}</div>
         </div>
-        <div style="display:flex;flex-direction:column;gap:.2rem;align-items:center;">
-          <div style="display:flex;gap:.2rem;">
-            ${i>0?`<button class="wp-move" onclick="moveWaypoint('${t.id}',${i},-1)" title="הזז למעלה"><span class="ms">arrow_upward</span></button>`:''}
-            ${i<t.waypoints.length-1?`<button class="wp-move" onclick="moveWaypoint('${t.id}',${i},1)" title="הזז למטה"><span class="ms">arrow_downward</span></button>`:''}
-          </div>
-          <div style="display:flex;gap:.2rem;">
-            <button class="wp-edit" onclick="editWaypoint('${t.id}','${w.id}')" title="ערוך"><span class="ms">edit</span></button>
-            <button class="wp-rm" onclick="removeWaypoint('${t.id}','${w.id}')" title="מחק"><span class="ms">close</span></button>
-          </div>
+        <div class="wp-edit-row">
+          ${i>0?`<button class="wp-edit-btn up" onclick="moveWaypoint('${t.id}',${i},-1)" title="הזז למעלה"><span class="ms">arrow_upward</span></button>`:''}
+          ${i<t.waypoints.length-1?`<button class="wp-edit-btn down" onclick="moveWaypoint('${t.id}',${i},1)" title="הזז למטה"><span class="ms">arrow_downward</span></button>`:''}
+          <button class="wp-edit-btn edit" onclick="editWaypoint('${t.id}','${w.id}')" title="ערוך"><span class="ms">edit</span></button>
+          <button class="wp-edit-btn del" onclick="removeWaypoint('${t.id}','${w.id}')" title="מחק"><span class="ms">close</span></button>
         </div>
       </div>
       <div class="wp-actions">
-        <a class="wp-action-btn wp-nav" href="${navUrl}" target="_blank"><span class="ms">location_on</span> Google</a>
-        <a class="wp-action-btn wp-waze" href="${wazeUrl}" target="_blank"><span class="ms">navigation</span> Waze</a>
-        <a class="wp-action-btn wp-reviews" id="wpa-reviews-${w.id}" href="${reviewUrl}" target="_blank"><span class="ms">star</span> ביקורות</a>
-        ${w.phone?`<a class="wp-action-btn wp-phone-btn" href="tel:${esc(w.phone)}"><span class="ms">phone</span> ${esc(w.phone)}</a>`:''}
+        <a class="wp-btn g" href="${navUrl}" target="_blank"><span class="ms" style="font-size:.78rem">location_on</span> Google</a>
+        <a class="wp-btn w" href="${wazeUrl}" target="_blank"><span class="ms" style="font-size:.78rem">navigation</span> Waze</a>
+        <a class="wp-btn r" id="wpa-reviews-${w.id}" href="${reviewUrl}" target="_blank"><span class="ms" style="font-size:.78rem">star</span> ביקורות</a>
+        ${w.phone?`<a class="wp-btn p" href="tel:${esc(w.phone)}"><span class="ms" style="font-size:.78rem">phone</span> ${esc(w.phone)}</a>`:''}
       </div>
     </div>`;
   }).join('');
@@ -731,10 +720,13 @@ function buildJoinHTML(){
       <span class="join-step" id="jstep-2">2</span>
     </div>
     <div id="join-step-1">
-      <div class="form-group"><label>שם מלא</label><input id="j-name" type="text" placeholder="השם שלך"></div>
-      <div class="form-group"><label>טלפון</label><input id="j-phone" type="tel" placeholder="050-..."></div>
-      <div class="form-group"><label><span class="ms">location_on</span> עיר מגורים</label><input id="j-city" type="text" placeholder="מאיפה אתה?"></div>
-      <button class="btn btn-primary btn-full" onclick="joinNext(2)"><span class="ms ms-flip">arrow_back</span> המשך</button>
+      <label>שם מלא</label>
+      <input id="j-name" type="text" placeholder="השם שלך">
+      <label>טלפון</label>
+      <input id="j-phone" type="tel" placeholder="050-...">
+      <label>עיר מגורים</label>
+      <input id="j-city" type="text" placeholder="מאיפה אתה?">
+      <button class="join-submit" onclick="joinNext(2)"><span class="ms">arrow_back</span> המשך</button>
     </div>
     <div id="join-step-2" style="display:none;">
       <div class="toggle-row">
@@ -742,12 +734,14 @@ function buildJoinHTML(){
         <span class="toggle-label"><span class="ms">directions_car</span> אני מגיע/ה עם רכב</span>
       </div>
       <div id="j-car-fields" class="inset-box" style="display:none;">
-        <div class="form-group"><label>מקומות פנויים (מלבדך)</label><input id="j-seats" type="number" min="1" max="8" value="3"></div>
-        <div class="form-row">
-          <div class="form-group"><label>יוצא מ־</label><input id="j-car-from" type="text"></div>
-          <div class="form-group"><label>חוזר ל־</label><input id="j-car-to" type="text"></div>
+        <label>מקומות פנויים (מלבדך)</label>
+        <input id="j-seats" type="number" min="1" max="8" value="3">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;">
+          <div><label>יוצא מ־</label><input id="j-car-from" type="text"></div>
+          <div><label>חוזר ל־</label><input id="j-car-to" type="text"></div>
         </div>
-        <div class="form-group" style="margin-bottom:0"><label>הערות לגבי הנסיעה</label><textarea id="j-car-notes" rows="2"></textarea></div>
+        <label>הערות לגבי הנסיעה</label>
+        <textarea id="j-car-notes" rows="2"></textarea>
       </div>
       <div id="j-no-car-sec">
         <div class="toggle-row">
@@ -755,10 +749,11 @@ function buildJoinHTML(){
           <span class="toggle-label"><span class="ms">volunteer_activism</span> אני מחפש/ת הסעה</span>
         </div>
       </div>
-      <div class="form-group" style="margin-top:.6rem;"><label>הערות (אופציונלי)</label><textarea id="j-notes" rows="2" placeholder="אלרגיות, בקשות מיוחדות..."></textarea></div>
-      <div style="display:flex;gap:.5rem;">
-        <button class="btn btn-ghost" style="flex:1;" onclick="joinNext(1)"><span class="ms ms-flip">arrow_forward</span> חזרה</button>
-        <button class="btn btn-clay" style="flex:1;" onclick="joinTrip()"><span class="ms">check</span> אני בפנים!</button>
+      <label style="margin-top:.6rem;">הערות (אופציונלי)</label>
+      <textarea id="j-notes" rows="2" placeholder="אלרגיות, בקשות מיוחדות..."></textarea>
+      <div style="display:flex;gap:.5rem;margin-top:.3rem;">
+        <button class="join-submit" style="flex:1;background:transparent;border:1.5px solid rgba(255,255,255,.3);color:white;" onclick="joinNext(1)"><span class="ms">arrow_forward</span> חזרה</button>
+        <button class="join-submit" style="flex:1;background:var(--orange);color:white;" onclick="joinTrip()"><span class="ms">check</span> אני בפנים!</button>
       </div>
     </div>
   </div>`;
@@ -810,16 +805,15 @@ function buildCarsHTML(t,drivers,unassigned){
   return drivers.map(d=>{
     const assigned=t.participants.filter(p=>p.assignedTo===d.id);
     const freeC=Math.max(0,parseInt(d.seats)-assigned.length);
-    let seatsH=`<span class="seats-lbl">מקומות:</span><span class="seat driver-seat"><span class="ms">person</span></span>`;
-    assigned.forEach(()=>seatsH+=`<span class="seat taken"><span class="ms">person</span></span>`);
-    for(let i=0;i<freeC;i++) seatsH+=`<span class="seat free"><span class="ms">event_seat</span></span>`;
+    let seatsH=`<span class="seats-lbl">מקומות:</span><div class="seat drv"><span class="ms">person</span></div>`;
+    assigned.forEach(()=>seatsH+=`<div class="seat occ"><span class="ms">person</span></div>`);
+    for(let i=0;i<freeC;i++) seatsH+=`<div class="seat free"><span class="ms">event_seat</span></div>`;
     let paxH=assigned.map(p=>{
-      const wa=p.phone?`<a class="pax-contact-btn" href="https://wa.me/${waNum(p.phone)}" target="_blank" title="וואטסאפ"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492a.5.5 0 00.611.611l4.458-1.495A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-2.387 0-4.592-.838-6.313-2.236l-.44-.363-3.09 1.036 1.036-3.09-.363-.44A9.956 9.956 0 012 12C2 6.486 6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"/></svg> WA</a>`:'';
-      const call=p.phone?`<a class="pax-contact-btn pax-call-btn" href="tel:${esc(p.phone)}" title="חיוג"><span class="ms">phone</span></a>`:'';
-      return`<div class="car-pax-row">
-      <div class="pax-av" style="background:${avc(p.id)}">${ini(p.name)}</div>
-      <div style="flex:1"><div class="pax-name2">${esc(p.name)}</div><div class="pax-city2"><span class="ms">location_on</span> ${esc(p.city)}</div></div>
-      ${wa}${call}<button class="unassign-btn" onclick="unassignPax('${t.id}','${p.id}')"><span class="ms">close</span></button></div>`;}).join('');
+      return`<div class="car-pax">
+      <div class="car-pax-av" style="background:${avc(p.id)}">${ini(p.name)}</div>
+      <div class="car-pax-name">${esc(p.name)}</div>
+      <div class="car-pax-city">${esc(p.city)}</div>
+      <button class="unassign-btn" onclick="unassignPax('${t.id}','${p.id}')"><span class="ms">close</span></button></div>`;}).join('');
     let sugH='';
     if(freeC>0&&unassigned.length>0){
       sugH=unassigned.map(p=>`<div class="suggest-row">
@@ -828,19 +822,19 @@ function buildCarsHTML(t,drivers,unassigned){
         <button class="add-btn" onclick="assignPax('${t.id}','${p.id}','${d.id}')"><span class="ms">add</span> שבץ</button></div>`).join('');
     }
     return`<div class="car-block">
-      <div class="car-block-header">
-        <div style="font-size:1.5rem;color:var(--orange)"><span class="ms">directions_car</span></div>
-        <div style="flex:1">
-          <div class="car-driver-name">${esc(d.name)}</div>
-          <div class="car-driver-meta"><span class="ms">home</span> ${esc(d.city)} &nbsp;|&nbsp; ${esc(d.carFrom||'?')} → ${esc(d.carTo||d.carFrom||'?')}</div>
-          ${d.carNotes?`<div class="car-driver-meta"><span class="ms">chat_bubble</span> ${esc(d.carNotes)}</div>`:''}
+      <div class="car-top">
+        <div class="car-avatar"><span class="ms">directions_car</span></div>
+        <div style="flex:1;">
+          <div class="car-name">${esc(d.name)}</div>
+          <div class="car-route"><span class="ms" style="font-size:.78rem">home</span> ${esc(d.city)} &nbsp;|&nbsp; ${esc(d.carFrom||'?')} ← ${esc(d.carTo||d.carFrom||'?')}</div>
+          ${d.carNotes?`<div class="car-route"><span class="ms" style="font-size:.78rem">chat_bubble</span> ${esc(d.carNotes)}</div>`:''}
         </div>
-        <div style="display:flex;align-items:center;gap:.3rem;flex-shrink:0;">
-          ${d.phone?`<a class="pax-contact-btn" href="https://wa.me/${waNum(d.phone)}" target="_blank" title="וואטסאפ לנהג"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492a.5.5 0 00.611.611l4.458-1.495A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-2.387 0-4.592-.838-6.313-2.236l-.44-.363-3.09 1.036 1.036-3.09-.363-.44A9.956 9.956 0 012 12C2 6.486 6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"/></svg></a>`:''}
-          ${d.phone?`<a class="pax-contact-btn pax-call-btn" href="tel:${esc(d.phone)}" title="חיוג לנהג"><span class="ms">phone</span></a>`:''}
+        <div class="car-contacts">
+          ${d.phone?`<a class="car-contact wa" href="https://wa.me/${waNum(d.phone)}" target="_blank" title="וואטסאפ לנהג"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492a.5.5 0 00.611.611l4.458-1.495A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-2.387 0-4.592-.838-6.313-2.236l-.44-.363-3.09 1.036 1.036-3.09-.363-.44A9.956 9.956 0 012 12C2 6.486 6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"/></svg> WA</a>`:''}
+          ${d.phone?`<a class="car-contact call" href="tel:${esc(d.phone)}" title="חיוג לנהג"><span class="ms" style="font-size:.85rem">phone</span></a>`:''}
         </div>
       </div>
-      <div class="seats-row">${seatsH}</div>
+      <div class="seats">${seatsH}</div>
       <div class="car-passengers">${!paxH&&!sugH?`<div class="car-empty">אין נוסעים משובצים</div>`:''}${paxH}${sugH}</div>
     </div>`;
   }).join('');
@@ -888,7 +882,7 @@ function assignPax(tid,pid,did){
   const tk=t.participants.filter(p=>p.assignedTo===did).length;
   if(tk>=parseInt(d.seats)){showToast('הרכב מלא!');return;}
   const p=t.participants.find(x=>x.id===pid);p.assignedTo=did;
-  saveParticipants();showToast(`${esc(p.name)} → רכב של ${esc(d.name)}`);renderDetail(t);
+  saveParticipants();showToast(`${esc(p.name)} ← רכב של ${esc(d.name)}`);renderDetail(t);
 }
 function assignFromSelect(tid,pid){
   const sel=document.getElementById('sel-'+pid);if(!sel||!sel.value){showToast('בחר רכב');return;}
@@ -1232,7 +1226,7 @@ function renderAdminTrips(all){
     <span style="font-weight:700;color:var(--dark);">כל הטיולים</span>
     <div style="display:flex;gap:.5rem;">
       <button class="btn btn-ghost btn-sm" onclick="loadAdminTrips()"><span class="ms">refresh</span> רענן</button>
-      <button class="btn btn-ghost btn-sm" onclick="showList()"><span class="ms ms-flip">arrow_forward</span> חזרה</button>
+      <button class="btn btn-ghost btn-sm" onclick="showList()"><span class="ms">arrow_forward</span> חזרה</button>
     </div>
   </div>`;
   h+=all.map(t=>`<div style="background:white;border-radius:12px;padding:.8rem 1rem;margin-bottom:.65rem;box-shadow:var(--card-shadow);display:flex;align-items:center;gap:.8rem;">
