@@ -227,7 +227,8 @@ function renderDetail(t){
     </div>`:'';
 
   const mapControlsHTML=`<div class="map-controls">
-    <button class="map-ctrl-btn" onclick="locateMe()"><span class="ms">my_location</span> מיקום שלי</button>
+    <button class="map-btn" onclick="locateMe()"><span class="ms" style="font-size:.85rem">my_location</span> מיקום שלי</button>
+    <button class="map-btn" onclick="toggleMapType()"><span class="ms" style="font-size:.85rem">layers</span> שכבות</button>
   </div>`;
 
   const headerImg=t.image||TRIP_IMAGES[0];
@@ -429,6 +430,15 @@ function _initLeaflet(t,el){
 function tryGeolocation(t){
   if(!navigator.geolocation)return;
   navigator.geolocation.getCurrentPosition(pos=>{placeUserMarker(pos.coords.latitude,pos.coords.longitude,t);},null,{enableHighAccuracy:true,timeout:6000});
+}
+function toggleMapType(){
+  if(gmapsMap){
+    const current=gmapsMap.getMapTypeId();
+    gmapsMap.setMapTypeId(current==='roadmap'?'satellite':'roadmap');
+  }else if(leafletMapObj){
+    // Toggle between default and satellite tiles
+    showToast('שכבות זמינות רק עם Google Maps');
+  }
 }
 function locateMe(){
   if(!navigator.geolocation){showToast('גישה למיקום לא נתמכת');return;}
