@@ -104,13 +104,13 @@ export async function onRequestPut(context) {
     }
     await DB.prepare(`
       UPDATE trips SET name=?, date=?, time=?, meeting=?, description=?, image=?, hidden=?,
-      participants=?, waypoints=?, password=?, updated_at=datetime('now') WHERE id=?
+      participants=?, waypoints=?, password=?, cropY=?, zoom=?, updated_at=datetime('now') WHERE id=?
     `).bind(
       body.name || '', body.date || '', body.time || '', body.meeting || '',
       body.desc || '', body.image || '', body.hidden ? 1 : 0,
       JSON.stringify(body.participants || []),
       JSON.stringify(body.waypoints || []),
-      newPassword, id
+      newPassword, body.cropY ?? 50, body.zoom ?? 100, id
     ).run();
     return Response.json({ success: true, full: true }, { headers: CORS });
   } else {

@@ -63,8 +63,8 @@ export async function onRequestPost(context) {
   const pw = body.password ? await hashPw(body.password) : '';
 
   await DB.prepare(`
-    INSERT INTO trips (id, name, date, time, meeting, description, image, hidden, status, creator_token, participants, waypoints, password)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO trips (id, name, date, time, meeting, description, image, hidden, status, creator_token, participants, waypoints, password, cropY, zoom)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).bind(
     id,
     body.name.slice(0, 200),
@@ -78,7 +78,9 @@ export async function onRequestPost(context) {
     creatorToken,
     JSON.stringify((body.participants || []).slice(0, 100)),
     JSON.stringify((body.waypoints || []).slice(0, 50)),
-    pw
+    pw,
+    body.cropY ?? 50,
+    body.zoom ?? 100
   ).run();
 
   return Response.json({ id, success: true }, { status: 201, headers: CORS });
