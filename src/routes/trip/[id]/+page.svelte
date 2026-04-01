@@ -14,6 +14,7 @@
   import CarBlock from '$lib/components/CarBlock.svelte';
   import PoolSection from '$lib/components/PoolSection.svelte';
   import ParticipantRow from '$lib/components/ParticipantRow.svelte';
+  import MapSection from '$lib/components/MapSection.svelte';
 
   let { data } = $props();
 
@@ -94,20 +95,10 @@
     waypoints={trip.waypoints.length}
   />
 
-  <!-- Map Section (placeholder) -->
+  <!-- Map Section -->
   <div class="sec scroll-reveal" style="animation-delay:.1s;">
     <div class="sec-title"><span class="ms">map</span> מפת המסלול</div>
-    <div class="map-wrapper">
-      <div
-        id="trip-map"
-        style="height:380px;border-radius:12px;background:#e8f0f5;display:flex;align-items:center;justify-content:center;color:var(--gray);font-weight:600;"
-      >
-        <div style="text-align:center">
-          <div style="font-size:2rem;margin-bottom:.5rem"><span class="ms">map</span></div>
-          טוען מפה...
-        </div>
-      </div>
-    </div>
+    <MapSection {trip} />
   </div>
 
   <!-- Waypoints Section -->
