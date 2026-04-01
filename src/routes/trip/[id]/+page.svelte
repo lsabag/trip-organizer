@@ -4,7 +4,14 @@
   import type { Trip } from '$lib/types';
   import { currentTrip, modalState, unlockedTrips, showToast } from '$lib/stores/app';
   import { checkPassword } from '$lib/api/client';
+  import { esc } from '$lib/utils/format';
   import { get } from 'svelte/store';
+
+  function formatDesc(text: string): string {
+    let safe = esc(text);
+    safe = safe.replace(/\*([^*]+)\*/g, '<b>$1</b>');
+    return safe;
+  }
 
   import TripHero from '$lib/components/TripHero.svelte';
   import ActionRow from '$lib/components/ActionRow.svelte';
@@ -83,8 +90,8 @@
   <ActionRow {trip} />
 
   {#if trip.desc || trip.description}
-    <div style="font-size:.88rem;color:var(--gray);line-height:1.65;margin-bottom:1rem;padding:0 .2rem;">
-      {trip.desc || trip.description}
+    <div style="font-size:.88rem;color:var(--gray);line-height:1.65;margin-bottom:1rem;padding:0 .2rem;white-space:pre-line;">
+      {@html formatDesc(trip.desc || trip.description || '')}
     </div>
   {/if}
 
