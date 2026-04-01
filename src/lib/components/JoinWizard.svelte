@@ -15,7 +15,7 @@
 
   // Step 2 fields
   let hasCar = $state(false);
-  let seats = $state(3);
+  let seats = $state(4);
   let carFrom = $state('');
   let carTo = $state('');
   let carNotes = $state('');
@@ -69,7 +69,7 @@
     phone = '';
     city = '';
     hasCar = false;
-    seats = 3;
+    seats = 4;
     carFrom = '';
     carTo = '';
     carNotes = '';
