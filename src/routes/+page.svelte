@@ -9,14 +9,11 @@
   let { data } = $props();
 
   let searchQuery = $state('');
-  let allTrips: Trip[] = $state([]);
+  let allTrips: Trip[] = $state(data.trips ?? []);
 
-  // Sync loaded data into the store and local state
-  $effect(() => {
-    if (data.trips) {
-      allTrips = data.trips;
-      tripsStore.set(data.trips);
-    }
+  // Sync to store on mount only
+  onMount(() => {
+    tripsStore.set(allTrips);
   });
 
   // Filter: only visible (non-hidden) trips, then apply search

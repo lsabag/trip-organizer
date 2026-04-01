@@ -32,24 +32,16 @@
     }, 0)
   );
 
-  // Set currentTrip store on mount
+  // Sync trip data on mount and route change
   onMount(() => {
     currentTrip.set(trip);
   });
 
-  // Re-sync when store changes (from child components saving)
+  // Re-sync when data changes (route param change)
+  let prevDataId = data.trip?.id;
   $effect(() => {
-    const unsub = currentTrip.subscribe((t) => {
-      if (t && t.id === trip.id) {
-        trip = t;
-      }
-    });
-    return unsub;
-  });
-
-  // Also sync if data changes (e.g. route param change)
-  $effect(() => {
-    if (data.trip) {
+    if (data.trip && data.trip.id !== prevDataId) {
+      prevDataId = data.trip.id;
       trip = data.trip;
       currentTrip.set(data.trip);
     }
