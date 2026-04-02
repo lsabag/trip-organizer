@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Participant, Trip } from '$lib/types';
   import { ini, avc } from '$lib/utils/format';
-  import { showToast, currentTrip, unlockedTrips } from '$lib/stores/app';
+  import { showToast, currentTrip, unlockedTrips, adminToken } from '$lib/stores/app';
   import { assignParticipant, loadTrip, checkPassword } from '$lib/api/client';
   import { get } from 'svelte/store';
 
@@ -33,10 +33,13 @@
   });
 
   let adminMap: Record<string,string> = $state({});
+  let hasAdminToken = $state(false);
   $effect(() => { const unsub = unlockedTrips.subscribe(u => { adminMap = u; }); return unsub; });
-  let isAdmin = $derived(!!adminMap[trip.id]);
+  $effect(() => { const unsub = adminToken.subscribe(t => { hasAdminToken = !!t; }); return unsub; });
+  let isAdmin = $derived(!!adminMap[trip.id] || hasAdminToken);
 
   async function ensureAdmin(): Promise<boolean> {
+    if (get(adminToken)) return true;
     const cached = get(unlockedTrips);
     if (cached[trip.id]) return true;
     if (!trip.hasPassword) { showToast('רק מנהל הטיול יכול לשבץ'); return false; }
