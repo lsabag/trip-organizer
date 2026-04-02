@@ -100,7 +100,7 @@
         <input type="text" placeholder="השם שלך" bind:value={name} />
       </div>
       <div class="form-group">
-        <label>טלפון</label>
+        <label>טלפון <span style="font-weight:400;color:var(--gray);font-size:.75rem;">(לא חובה)</span></label>
         <input type="tel" placeholder="050-..." bind:value={phone} />
       </div>
       <div class="form-group">
