@@ -96,7 +96,7 @@
             &nbsp;<span class="ms">phone</span> {p.phone}
           </div>
         </div>
-        {#if drivers.length}
+        {#if isAdmin && drivers.length}
           <select
             class="assign-select"
             bind:value={selections[p.id]}
@@ -109,8 +109,6 @@
             {/each}
           </select>
           <button class="assign-btn" onclick={() => assignFromSelect(p.id)}>שבץ</button>
-        {:else}
-          <span style="font-size:.76rem;color:var(--gray)">אין רכבים</span>
         {/if}
       </div>
     {/each}
