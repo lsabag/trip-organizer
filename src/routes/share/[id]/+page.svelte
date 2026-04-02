@@ -14,6 +14,7 @@
 </script>
 
 <svelte:head>
+  <meta name="robots" content="noindex, nofollow" />
   {#if data.trip}
     <meta property="og:title" content={data.trip.name} />
     <meta property="og:description" content={data.trip.desc || data.trip.description || ''} />

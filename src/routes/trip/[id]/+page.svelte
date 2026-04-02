@@ -102,6 +102,11 @@
   }
 </script>
 
+<svelte:head>
+  <meta name="robots" content="noindex, nofollow" />
+  <title>{trip.name} | Tiyulim+</title>
+</svelte:head>
+
 <div class="container">
   <button class="back-btn" onclick={goBack}>
     <span class="ms">arrow_forward</span> חזרה לטיולים
