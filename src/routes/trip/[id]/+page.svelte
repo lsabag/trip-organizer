@@ -40,6 +40,16 @@
     }, 0)
   );
 
+  // Listen to currentTrip store changes from child components
+  $effect(() => {
+    const unsub = currentTrip.subscribe((t) => {
+      if (t && t.id === trip.id && t !== trip) {
+        trip = t;
+      }
+    });
+    return unsub;
+  });
+
   // Sync trip data on mount + auto-refresh every 15s
   let pollInterval: ReturnType<typeof setInterval>;
 
