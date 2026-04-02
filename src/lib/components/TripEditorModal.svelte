@@ -68,6 +68,7 @@
           loadEditTrip(editingId);
         } else {
           resetForm();
+          setTimeout(() => { initialSnapshot = takeSnapshot(); }, 50);
         }
       } else if (!s.tripEditor && open) {
         open = false;
@@ -109,7 +110,7 @@
     const { data: tripData } = await loadTrip(id);
     if (!tripData) {
       showToast('שגיאה בטעינת טיול');
-      closeModal();
+      forceClose();
       return;
     }
     name = tripData.name || '';
@@ -139,6 +140,7 @@
       notes: w.notes || '',
       existingData: w
     }));
+    setTimeout(() => { initialSnapshot = takeSnapshot(); }, 50);
   }
 
   function resetForm() {
@@ -156,16 +158,35 @@
     wpItems = [];
   }
 
-  function closeModal() {
+  // Track initial snapshot to detect unsaved changes
+  let initialSnapshot = '';
+
+  function takeSnapshot(): string {
+    return JSON.stringify({ name, date, time, meeting, desc, isPrivate, selectedImage, cropY, zoom, password, wpItems: wpItems.map(w => ({ name: w.name, address: w.address, phone: w.phone, notes: w.notes })) });
+  }
+
+  function isDirty(): boolean {
+    return initialSnapshot !== '' && takeSnapshot() !== initialSnapshot;
+  }
+
+  function tryClose() {
+    if (isDirty()) {
+      if (!confirm('יש שינויים שלא נשמרו. לצאת בלי לשמור?')) return;
+    }
+    forceClose();
+  }
+
+  function forceClose() {
     open = false;
     editingId = null;
+    initialSnapshot = '';
     resetForm();
     modalState.update((s) => ({ ...s, tripEditor: false, editingTripId: null }));
   }
 
   function handleOverlayClick(e: MouseEvent) {
     if ((e.target as HTMLElement).classList.contains('modal-overlay')) {
-      closeModal();
+      tryClose();
     }
   }
 
@@ -286,7 +307,7 @@
       }
 
       showToast('הטיול עודכן');
-      closeModal();
+      forceClose();
     } else {
       // Create new trip
       if (!password || password.length < 4) {
@@ -318,7 +339,7 @@
       if (result?.id) {
         unlockedTrips.update((u) => ({ ...u, [result.id]: password }));
         showToast(isPrivate ? 'טיול פרטי נוצר! שתפו קישור ישיר' : 'הטיול פורסם!');
-        closeModal();
+        forceClose();
         goto(`/trip/${result.id}`);
       }
     }
@@ -335,7 +356,7 @@
 
     await apiDeleteTrip(editingId, ct, pw);
     showToast('הטיול נמחק');
-    closeModal();
+    forceClose();
     goto('/');
   }
 </script>
@@ -350,7 +371,7 @@
           <span class="ms">{isEdit ? 'edit' : 'add'}</span>
           {isEdit ? 'עריכת טיול' : 'פרסום טיול חדש'}
         </span>
-        <button class="modal-close" onclick={closeModal}>
+        <button class="modal-close" onclick={tryClose}>
           <span class="ms">close</span>
         </button>
       </div>
