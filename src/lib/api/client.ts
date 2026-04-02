@@ -68,8 +68,22 @@ export async function updateTrip(
 export async function saveParticipants(
   trip: Trip,
   creatorToken: string
-): Promise<ApiResult<Trip>> {
-  return request<Trip>(`${API}/trips/${trip.id}`, {
+): Promise<ApiResult<{ success: boolean }>> {
+  // Fetch fresh participants from server to avoid overwriting concurrent changes
+  const { data: fresh } = await loadTrip(trip.id);
+  if (fresh) {
+    // Merge: keep server's non-participant data, apply our participant changes
+    const body = { ...fresh, participants: trip.participants };
+    return request<{ success: boolean }>(`${API}/trips/${trip.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Creator-Token': creatorToken
+      },
+      body: JSON.stringify(body)
+    });
+  }
+  return request<{ success: boolean }>(`${API}/trips/${trip.id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
