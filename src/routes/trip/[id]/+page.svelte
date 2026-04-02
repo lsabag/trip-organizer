@@ -40,9 +40,31 @@
     }, 0)
   );
 
-  // Sync trip data on mount and route change
+  // Sync trip data on mount + auto-refresh every 15s
+  let pollInterval: ReturnType<typeof setInterval>;
+
   onMount(() => {
     currentTrip.set(trip);
+
+    pollInterval = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/trips/${trip.id}`);
+        if (!res.ok) return;
+        const fresh = await res.json();
+        // Only update if participants changed (avoid disrupting user interaction)
+        if (JSON.stringify(fresh.participants) !== JSON.stringify(trip.participants)) {
+          trip.participants = fresh.participants;
+          currentTrip.set({ ...trip, participants: fresh.participants });
+        }
+        // Also sync waypoints if changed
+        if (JSON.stringify(fresh.waypoints) !== JSON.stringify(trip.waypoints)) {
+          trip.waypoints = fresh.waypoints;
+          currentTrip.set({ ...trip });
+        }
+      } catch {}
+    }, 15000);
+
+    return () => clearInterval(pollInterval);
   });
 
   // Re-sync when data changes (route param change)
