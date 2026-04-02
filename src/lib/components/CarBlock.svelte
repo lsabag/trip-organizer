@@ -5,7 +5,9 @@
   import { assignParticipant, loadTrip, checkPassword } from '$lib/api/client';
   import { get } from 'svelte/store';
 
-  let isAdmin = $derived(!!get(unlockedTrips)[trip.id]);
+  let adminMap: Record<string,string> = $state({});
+  $effect(() => { const unsub = unlockedTrips.subscribe(u => { adminMap = u; }); return unsub; });
+  let isAdmin = $derived(!!adminMap[trip.id]);
 
   async function ensureAdmin(): Promise<boolean> {
     const cached = get(unlockedTrips);
