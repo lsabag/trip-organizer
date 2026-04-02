@@ -3,7 +3,7 @@
   import { ini, waNum } from '$lib/utils/format';
   import { AVC } from '$lib/utils/constants';
   import { showToast, currentTrip, unlockedTrips, adminToken } from '$lib/stores/app';
-  import { removeParticipant, loadTrip, checkPassword } from '$lib/api/client';
+  import { removeParticipant, loadTrip, checkPassword, toggleParticipantCar } from '$lib/api/client';
   import { get } from 'svelte/store';
 
   let { participant, trip, index = 0 }: {
@@ -46,6 +46,17 @@
     const { data: fresh } = await loadTrip(trip.id);
     if (fresh) { trip = fresh; currentTrip.set(fresh); }
     showToast(`${pName} הוסר`);
+  }
+
+  async function toggleCar() {
+    const newHasCar = !participant.hasCar;
+    const label = newHasCar ? 'נהג' : 'נוסע';
+    if (!confirm(`לשנות את ${participant.name} ל${label}?`)) return;
+    const { error } = await toggleParticipantCar(trip.id, participant.id, newHasCar);
+    if (error) { showToast('שגיאה'); return; }
+    const { data: fresh } = await loadTrip(trip.id);
+    if (fresh) { trip = fresh; currentTrip.set(fresh); }
+    showToast(`${participant.name} הפך ל${label}`);
   }
 </script>
 
@@ -105,6 +116,9 @@
     </div>
   {/if}
   {#if isAdmin}
+    <button class="rm-btn" style="color:var(--teal-dark);border-color:var(--teal-light);" onclick={toggleCar} title={participant.hasCar ? 'הפוך לנוסע' : 'הפוך לנהג'}>
+      <span class="ms">{participant.hasCar ? 'person' : 'directions_car'}</span>
+    </button>
     <button class="rm-btn" onclick={removePax}>
       <span class="ms">close</span>
     </button>

@@ -83,7 +83,7 @@ export const PUT: RequestHandler = async ({ params, request, platform }) => {
   const DB = platform?.env?.DB;
   if (!DB) return Response.json({ error: 'DB unavailable' }, { status: 500, headers: CORS });
 
-  const body = await request.json() as { pid: string; assignedTo?: string | null };
+  const body = await request.json() as { pid: string; assignedTo?: string | null; hasCar?: boolean; seats?: number };
   if (!body.pid) return Response.json({ error: 'pid required' }, { status: 400, headers: CORS });
 
   const trip = await DB.prepare('SELECT participants FROM trips WHERE id = ?').bind(params.id).first();
@@ -102,6 +102,26 @@ export const PUT: RequestHandler = async ({ params, request, platform }) => {
       if (taken >= driver.seats) return Response.json({ error: 'Car full' }, { status: 409, headers: CORS });
     }
     pax.assignedTo = body.assignedTo || null;
+  }
+
+  if ('hasCar' in body) {
+    if (body.hasCar) {
+      // Convert to driver
+      pax.hasCar = true;
+      pax.seats = body.seats || 4;
+      pax.needRide = false;
+      pax.assignedTo = null;
+    } else {
+      // Convert to rider — unassign anyone who was in this car
+      participants.forEach((p: any) => {
+        if (p.assignedTo === pax.id) p.assignedTo = null;
+      });
+      pax.hasCar = false;
+      pax.seats = 0;
+      pax.carFrom = '';
+      pax.carTo = '';
+      pax.carNotes = '';
+    }
   }
 
   await DB.prepare('UPDATE trips SET participants=?, updated_at=datetime(\'now\') WHERE id=?')

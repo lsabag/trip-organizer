@@ -99,6 +99,19 @@ export async function assignParticipant(
   });
 }
 
+export async function toggleParticipantCar(
+  tripId: string,
+  pid: string,
+  hasCar: boolean,
+  seats?: number
+): Promise<ApiResult<{ success: boolean; participants: unknown[] }>> {
+  return request(`${API}/trips/${tripId}/participants`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ pid, hasCar, seats: hasCar ? (seats || 4) : 0 })
+  });
+}
+
 // Legacy: full participant save (kept for backward compat)
 export async function saveParticipants(
   trip: Trip,
