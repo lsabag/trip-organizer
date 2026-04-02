@@ -1,9 +1,8 @@
 <script lang="ts">
   import type { Participant, Trip } from '$lib/types';
   import { ini, avc } from '$lib/utils/format';
-  import { showToast, currentTrip, creatorToken } from '$lib/stores/app';
-  import { saveParticipants } from '$lib/api/client';
-  import { get } from 'svelte/store';
+  import { showToast, currentTrip } from '$lib/stores/app';
+  import { assignParticipant, loadTrip } from '$lib/api/client';
 
   let { trip, unassigned, drivers }: {
     trip: Trip;
@@ -35,16 +34,17 @@
   async function assignFromSelect(paxId: string) {
     const driverId = selections[paxId];
     if (!driverId) { showToast('בחר רכב'); return; }
-    const d = trip.participants.find((x) => x.id === driverId);
-    if (!d) return;
-    const taken = trip.participants.filter((p) => p.assignedTo === driverId).length;
-    if (taken >= d.seats) { showToast('הרכב מלא!'); return; }
     const p = trip.participants.find((x) => x.id === paxId);
-    if (!p) return;
-    p.assignedTo = driverId;
-    const { error } = await saveParticipants(trip, get(creatorToken));
-    if (error) { showToast('שגיאה בשמירה'); return; }
-    currentTrip.set({ ...trip });
+    const d = trip.participants.find((x) => x.id === driverId);
+    if (!p || !d) return;
+    const { data, error } = await assignParticipant(trip.id, paxId, driverId);
+    if (error) {
+      if (error.includes('full')) showToast('הרכב מלא!');
+      else showToast('שגיאה');
+      return;
+    }
+    const { data: fresh } = await loadTrip(trip.id);
+    if (fresh) { trip = fresh; currentTrip.set(fresh); }
     showToast(`${p.name} שובץ לרכב של ${d.name}`);
   }
 </script>

@@ -1,9 +1,8 @@
 <script lang="ts">
   import type { Participant, Trip } from '$lib/types';
   import { ini, waNum, avc } from '$lib/utils/format';
-  import { showToast, currentTrip, creatorToken } from '$lib/stores/app';
-  import { saveParticipants } from '$lib/api/client';
-  import { get } from 'svelte/store';
+  import { showToast, currentTrip } from '$lib/stores/app';
+  import { assignParticipant, loadTrip } from '$lib/api/client';
 
   let { driver, trip }: { driver: Participant; trip: Trip } = $props();
 
@@ -25,10 +24,10 @@
   async function unassignPax(paxId: string) {
     const p = trip.participants.find((x) => x.id === paxId);
     if (!p) return;
-    p.assignedTo = null;
-    const { error } = await saveParticipants(trip, get(creatorToken));
-    if (error) { showToast('שגיאה בשמירה'); return; }
-    currentTrip.set({ ...trip });
+    const { error } = await assignParticipant(trip.id, paxId, null);
+    if (error) { showToast('שגיאה'); return; }
+    const { data: fresh } = await loadTrip(trip.id);
+    if (fresh) { trip = fresh; currentTrip.set(fresh); }
     showToast(`${p.name} הוסר מהרכב`);
   }
 
@@ -38,10 +37,14 @@
     if (freeCount <= 0) { showToast('הרכב מלא!'); return; }
     const p = trip.participants.find((x) => x.id === paxId);
     if (!p) return;
-    p.assignedTo = driver.id;
-    const { error } = await saveParticipants(trip, get(creatorToken));
-    if (error) { showToast('שגיאה בשמירה'); return; }
-    currentTrip.set({ ...trip });
+    const { data, error } = await assignParticipant(trip.id, paxId, driver.id);
+    if (error) {
+      if (error.includes('full')) showToast('הרכב מלא!');
+      else showToast('שגיאה');
+      return;
+    }
+    const { data: fresh } = await loadTrip(trip.id);
+    if (fresh) { trip = fresh; currentTrip.set(fresh); }
     showToast(`${p.name} שובץ לרכב של ${driver.name}`);
   }
 </script>

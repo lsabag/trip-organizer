@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Trip } from '$lib/types';
   import { showToast, currentTrip, creatorToken } from '$lib/stores/app';
-  import { saveParticipants } from '$lib/api/client';
+  import { addParticipant, loadTrip } from '$lib/api/client';
   import { get } from 'svelte/store';
 
   let { trip }: { trip: Trip } = $props();
@@ -55,13 +55,16 @@
       assignedTo: null,
       notes: notes.trim()
     };
-    trip.participants = [...trip.participants, newPax];
-    const { error } = await saveParticipants(trip, get(creatorToken));
+    const { data, error } = await addParticipant(trip.id, newPax);
     if (error) {
+      if (error.includes('duplicate') || error.includes('Already')) { showToast('כבר נרשמת!'); return; }
       showToast('שגיאה בשמירה');
       return;
     }
-    currentTrip.set({ ...trip });
+    // Refresh trip from server
+    const { data: fresh } = await loadTrip(trip.id);
+    if (fresh) { trip = fresh; currentTrip.set(fresh); }
+    else { trip.participants = [...trip.participants, newPax]; currentTrip.set({ ...trip }); }
     showToast(`${newPax.name} נרשם/ה לטיול!`);
 
     // Reset form

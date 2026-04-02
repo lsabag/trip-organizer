@@ -65,24 +65,45 @@ export async function updateTrip(
   });
 }
 
+// Atomic participant operations — no race conditions
+
+export async function addParticipant(
+  tripId: string,
+  participant: Record<string, unknown>
+): Promise<ApiResult<{ success: boolean; participant: unknown; total: number }>> {
+  return request(`${API}/trips/${tripId}/participants`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(participant)
+  });
+}
+
+export async function removeParticipant(
+  tripId: string,
+  pid: string
+): Promise<ApiResult<{ success: boolean }>> {
+  return request(`${API}/trips/${tripId}/participants?pid=${pid}`, {
+    method: 'DELETE'
+  });
+}
+
+export async function assignParticipant(
+  tripId: string,
+  pid: string,
+  assignedTo: string | null
+): Promise<ApiResult<{ success: boolean; participants: unknown[] }>> {
+  return request(`${API}/trips/${tripId}/participants`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ pid, assignedTo })
+  });
+}
+
+// Legacy: full participant save (kept for backward compat)
 export async function saveParticipants(
   trip: Trip,
   creatorToken: string
 ): Promise<ApiResult<{ success: boolean }>> {
-  // Fetch fresh participants from server to avoid overwriting concurrent changes
-  const { data: fresh } = await loadTrip(trip.id);
-  if (fresh) {
-    // Merge: keep server's non-participant data, apply our participant changes
-    const body = { ...fresh, participants: trip.participants };
-    return request<{ success: boolean }>(`${API}/trips/${trip.id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Creator-Token': creatorToken
-      },
-      body: JSON.stringify(body)
-    });
-  }
   return request<{ success: boolean }>(`${API}/trips/${trip.id}`, {
     method: 'PUT',
     headers: {
