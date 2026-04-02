@@ -20,7 +20,20 @@
   let carTo = $state('');
   let carNotes = $state('');
   let needRide = $state(false);
+  let selectedDriver = $state('');
   let notes = $state('');
+
+  // Available drivers with free seats
+  let driverOptions = $derived(
+    trip.participants
+      .filter(p => p.hasCar)
+      .map(d => {
+        const taken = trip.participants.filter(p => p.assignedTo === d.id).length;
+        const free = Math.max(0, d.seats - taken);
+        return { id: d.id, name: d.name, city: d.carFrom || d.city, free };
+      })
+      .filter(d => d.free > 0)
+  );
 
   function goToStep(s: number) {
     if (s === 2) {
@@ -51,8 +64,8 @@
       carFrom: hasCar ? carFrom.trim() : '',
       carTo: hasCar ? carTo.trim() : '',
       carNotes: hasCar ? carNotes.trim() : '',
-      needRide: !hasCar && needRide,
-      assignedTo: null,
+      needRide: !hasCar && !selectedDriver,
+      assignedTo: (!hasCar && selectedDriver) ? selectedDriver : null,
       notes: notes.trim()
     };
     const { data, error } = await addParticipant(trip.id, newPax);
@@ -73,6 +86,7 @@
     city = '';
     hasCar = false;
     seats = 4;
+    selectedDriver = '';
     carFrom = '';
     carTo = '';
     carNotes = '';
@@ -147,15 +161,21 @@
           </div>
         </div>
       {:else}
-        <div class="toggle-row">
-          <label class="toggle">
-            <input type="checkbox" bind:checked={needRide} />
-            <span class="slider"></span>
-          </label>
-          <span class="toggle-label">
-            <span class="ms">volunteer_activism</span> אני מחפש/ת הסעה
-          </span>
-        </div>
+        {#if driverOptions.length > 0}
+          <div class="form-group" style="margin-top:.5rem;">
+            <label><span class="ms">directions_car</span> רוצה לנסוע עם</label>
+            <select bind:value={selectedDriver} style="background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.25);color:white;border-radius:10px;padding:.5rem .8rem;font-family:'Heebo',sans-serif;font-size:.85rem;width:100%;">
+              <option value="">לא משנה לי / אסתדר לבד</option>
+              {#each driverOptions as d (d.id)}
+                <option value={d.id}>{d.name} ({d.city}) — {d.free} מקומות</option>
+              {/each}
+            </select>
+          </div>
+        {:else}
+          <div style="font-size:.8rem;color:rgba(255,255,255,.5);margin-top:.5rem;">
+            <span class="ms" style="font-size:.85rem;">info</span> אין רכבים עדיין — תשובץ כשיהיו
+          </div>
+        {/if}
       {/if}
 
       <div class="form-group" style="margin-top:.6rem;">

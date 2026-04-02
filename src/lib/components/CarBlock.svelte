@@ -1,8 +1,23 @@
 <script lang="ts">
   import type { Participant, Trip } from '$lib/types';
   import { ini, waNum, avc } from '$lib/utils/format';
-  import { showToast, currentTrip } from '$lib/stores/app';
-  import { assignParticipant, loadTrip } from '$lib/api/client';
+  import { showToast, currentTrip, unlockedTrips } from '$lib/stores/app';
+  import { assignParticipant, loadTrip, checkPassword } from '$lib/api/client';
+  import { get } from 'svelte/store';
+
+  let isAdmin = $derived(!!get(unlockedTrips)[trip.id]);
+
+  async function ensureAdmin(): Promise<boolean> {
+    const cached = get(unlockedTrips);
+    if (cached[trip.id]) return true;
+    if (!trip.hasPassword) { showToast('רק מנהל הטיול יכול לשנות שיבוצים'); return false; }
+    const pw = prompt('הזן סיסמה לטיול');
+    if (!pw) return false;
+    const { data } = await checkPassword(trip.id, pw);
+    if (!data?.valid) { showToast('סיסמה שגויה'); return false; }
+    unlockedTrips.update(u => ({ ...u, [trip.id]: pw }));
+    return true;
+  }
 
   let { driver, trip }: { driver: Participant; trip: Trip } = $props();
 
@@ -22,6 +37,7 @@
   );
 
   async function unassignPax(paxId: string) {
+    if (!await ensureAdmin()) return;
     const p = trip.participants.find((x) => x.id === paxId);
     if (!p) return;
     const { error } = await assignParticipant(trip.id, paxId, null);
@@ -103,9 +119,11 @@
         <div class="car-pax-av" style="background:{avc(p.id)}">{ini(p.name)}</div>
         <div class="car-pax-name">{p.name}</div>
         <div class="car-pax-city">{p.city}</div>
-        <button class="unassign-btn" onclick={() => unassignPax(p.id)}>
-          <span class="ms">close</span>
-        </button>
+        {#if isAdmin}
+          <button class="unassign-btn" onclick={() => unassignPax(p.id)}>
+            <span class="ms">close</span>
+          </button>
+        {/if}
       </div>
     {/each}
 

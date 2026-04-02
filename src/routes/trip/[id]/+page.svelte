@@ -31,7 +31,7 @@
   // Computed values
   let drivers = $derived(trip.participants.filter((p) => p.hasCar));
   let unassigned = $derived(
-    trip.participants.filter((p) => !p.hasCar && p.needRide && !p.assignedTo)
+    trip.participants.filter((p) => !p.hasCar && !p.assignedTo)
   );
   let freeSeats = $derived(
     drivers.reduce((s, d) => {

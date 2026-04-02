@@ -1,8 +1,9 @@
 <script lang="ts">
   import type { Participant, Trip } from '$lib/types';
   import { ini, avc } from '$lib/utils/format';
-  import { showToast, currentTrip } from '$lib/stores/app';
-  import { assignParticipant, loadTrip } from '$lib/api/client';
+  import { showToast, currentTrip, unlockedTrips } from '$lib/stores/app';
+  import { assignParticipant, loadTrip, checkPassword } from '$lib/api/client';
+  import { get } from 'svelte/store';
 
   let { trip, unassigned, drivers }: {
     trip: Trip;
@@ -31,9 +32,24 @@
     return 'all-assigned';
   });
 
+  let isAdmin = $derived(!!get(unlockedTrips)[trip.id]);
+
+  async function ensureAdmin(): Promise<boolean> {
+    const cached = get(unlockedTrips);
+    if (cached[trip.id]) return true;
+    if (!trip.hasPassword) { showToast('רק מנהל הטיול יכול לשבץ'); return false; }
+    const pw = prompt('הזן סיסמה לטיול');
+    if (!pw) return false;
+    const { data } = await checkPassword(trip.id, pw);
+    if (!data?.valid) { showToast('סיסמה שגויה'); return false; }
+    unlockedTrips.update(u => ({ ...u, [trip.id]: pw }));
+    return true;
+  }
+
   async function assignFromSelect(paxId: string) {
     const driverId = selections[paxId];
     if (!driverId) { showToast('בחר רכב'); return; }
+    if (!await ensureAdmin()) return;
     const p = trip.participants.find((x) => x.id === paxId);
     const d = trip.participants.find((x) => x.id === driverId);
     if (!p || !d) return;
